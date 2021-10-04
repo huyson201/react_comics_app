@@ -1,3 +1,12 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Baloo 2", serif;
+}
+*:focus {
+  outline: none;
+}
 .App {
   text-align: center;
 }
@@ -12,7 +21,10 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
-
+input,button{
+  border:0 black;
+  border-radius: 0;
+}
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -36,3 +48,43 @@
     transform: rotate(360deg);
   }
 }
+a{
+  text-decoration: none !important;
+  color: #fff !important;
+}
+.wrapper {
+  max-width: 1050px;
+  margin: 0 auto;
+  text-align: center;
+}
+.nav-bar,.search {
+  display: flex;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: center;
+  background-color: #000;
+  
+}
+.nav-item {
+  flex: 1;
+  padding: 14px 0;
+  font-size: 16px;
+}
+.search-filter{
+  max-width: 30px;
+flex: 1;
+background-color: #61dafb;
+}
+.form-search{
+  flex:1;
+  display: flex;
+}
+.input-search{
+  font-size: 13px;
+  padding: 0 10px;
+  width: 100%;
+  background: #000;
+  color: white;
+}
+
+
