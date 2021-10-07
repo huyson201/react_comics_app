@@ -3,7 +3,7 @@ import { MdHome, MdBookmark, MdPerson, MdFilterAlt } from "react-icons/md";
 import { ImBooks, ImHistory, ImSearch } from "react-icons/im";
 import { Collapse } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import "./header.css";
+import "./Header.css";
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   return (
@@ -87,17 +87,18 @@ const SearchForm = () => {
     </>
   );
 };
-export class Header extends Component {
-  render() {
-    return (
-      <>
-      <header>
-        <Navbar />
-        <SearchForm/>
-        </header>
-      </>
-    );
-  }
+
+
+const Header = () => {
+  return (
+    <>
+    <header>
+      <Navbar />
+      <SearchForm/>
+      </header>
+    </>
+  )
 }
 
-export default Header;
+export default Header
+
