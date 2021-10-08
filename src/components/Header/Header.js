@@ -3,7 +3,7 @@ import { MdHome, MdBookmark, MdPerson, MdFilterAlt } from "react-icons/md";
 import { ImBooks, ImHistory, ImSearch } from "react-icons/im";
 import { Collapse } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import "./Header.css";
+import "./header.css";
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   return (
@@ -32,6 +32,7 @@ const Navbar = () => {
         <Link to="/account" className="nav-item">
           <MdPerson />
           Tài khoản
+
         </Link>
       </nav>
       <Collapse in={open}>
