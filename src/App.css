@@ -4,8 +4,9 @@
   margin: 0;
   box-sizing: border-box;
   font-family: "Baloo 2", serif;
+
 }
-#root{
+#root {
   background: #5a5454;
 }
 *:focus {
@@ -17,7 +18,6 @@ button {
   border: 0 black;
   border-radius: 0;
 }
-
 
 a {
   text-decoration: none !important;

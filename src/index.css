@@ -1,13 +1,91 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+@import url("https://fonts.googleapis.com/css?family=Fira+Sans:400,500,600,700,800");
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+label,
+span {
+  font-weight: 500;
+  font-family: "Fira Sans", sans-serif;
+}
+
+.form {
+  background-color: #ffffff;
+  width: 50%;
+  height: 70%;
+  padding: 50px;
+  border-radius: 20px;
+  margin-left: 25%;
+  margin-top: 20px;
+  display: grid;
+  /* opacity: 0.9; */
+}
+
+label,
+input {
+  float: left;
+}
+
+.form-group {
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+.invalid-feedback {
+  float: right;
+}
+
+.custom-control {
+  font-weight: 300;
+  font-size: smaller;
+}
+.custom-control-label {
+  font-weight: 400;
+  margin-left: 7px;
+}
+
+.forgot-password,
+.forgot-password a {
+  text-align: right;
+  font-size: 13px;
+  padding-top: 10px;
+  color: #7f7d7d;
+  margin: 0;
+}
+
+.forgot-password a {
+  color: #167bff !important;
+}
+.btn-block {
+  margin-top: 7px;
+}
+
+.here {
+  color: #0d6efd !important;
+}
+
+.flex-remember{
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-check-label{
+  margin-left:5px;
 }
