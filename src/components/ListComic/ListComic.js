@@ -1,27 +1,47 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./listComic.css";
 import { BsStars } from "react-icons/bs";
-const ListItem = () => {
+import comicApi from "../../api/comicApi";
+import { Link, useLocation } from "react-router-dom";
+const ListItem = ({ item }) => {
+  console.log(item);
+  //   const location = useLocation();
+  // console.log(location.pathname);
   return (
     <>
       <div className="list-comic-item">
-        <a href="/">
-          <div className="item-lastest-update">5 giờ trước</div>
+        <Link to={"/comics/" + item["comic_id"]}>
+          {/* <div className="item-lastest-update">5 giờ trước</div> */}
           <img
             className="item-img"
-            src="https://wcomic.site/upload/poster/comicid-4386.jpg"
+            src={item["comic_img"]}
+            alt={item["comic_name"]}
           ></img>
           <div className="item-row">
             <div className="item-new-chapter">Chap 50</div>
             <div className="item-rate">5.0</div>
           </div>
-          <div className="item-name">Minh nhật chi kiếp</div>
-        </a>
+          <div className="item-name">{item["comic_name"]}</div>
+        </Link>
       </div>
     </>
   );
 };
 const ListComic = () => {
+  const [comicData, setcomicData] = useState([]);
+  useEffect(() => {
+    const getAllComics = () => {
+      comicApi
+        .getAll()
+        .then((response) => {
+          setcomicData(response.data.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    getAllComics();
+  }, []);
   return (
     <>
       <div className="list-title">
@@ -29,13 +49,9 @@ const ListComic = () => {
         Truyện mới cập nhật
       </div>
       <div className="list-comic">
-        <ListItem></ListItem>
-        <ListItem></ListItem>
-        <ListItem></ListItem>
-        <ListItem></ListItem>
-        <ListItem></ListItem>
-        <ListItem></ListItem>
-        <ListItem></ListItem>
+        {comicData.map((e, i) => {
+          return <ListItem key={i} item={e}></ListItem>;
+        })}
       </div>
     </>
   );

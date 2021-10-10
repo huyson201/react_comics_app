@@ -1,15 +1,31 @@
 import React, { Component, useState, useEffect, useCallback } from "react";
 import { MdHome, MdBookmark, MdPerson, MdFilterAlt } from "react-icons/md";
 import { ImBooks, ImHistory, ImSearch } from "react-icons/im";
-import { Collapse } from "react-bootstrap";
+import { Collapse, Dropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "./header.css";
 import jwt_decode from "jwt-decode";
 import { useUser } from "../../context/UserProvider";
 
-const Navbar = (props) => {
+import comicApi from "../../api/comicApi";
+const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
 
+  useEffect(() => {
+    const getAllCategories = () => {
+      comicApi
+        .getAllCategories()
+        .then((response) => {
+          setCategories(response.data.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    getAllCategories();
+  }, []);
   return (
     <>
       <nav className="nav-bar">
@@ -17,7 +33,8 @@ const Navbar = (props) => {
           <MdHome />
           Trang chủ
         </Link>
-        <a
+        <Link
+          to=""
           className="nav-item"
           onClick={() => setOpen(!open)}
           aria-controls="example-collapse-text"
@@ -38,16 +55,40 @@ const Navbar = (props) => {
           {props.username}
         </Link>
         
+        <div className="nav-item account">
+          <Link to="/account" className="">
+            <MdPerson />
+            Tài khoản
+          </Link>
+          <div className="drop-down">
+              <Link to="" className="drop-down-item">
+                Login
+              </Link>
+              <Link to="" className="drop-down-item">
+                Sign in
+              </Link>
+              <Link to="" className="drop-down-item">
+                Login
+              </Link>
+            </div>
+        </div>
       </nav>
+
       <Collapse in={open}>
         <div id="example-collapse-text">
           <div className="list-category">
-            <a className="category-item">Hành động</a>
-            <a className="category-item">Hành động</a>
-            <a className="category-item">Hành động</a>
-            <a className="category-item">Hành động</a>
-            <a className="category-item">Hành động</a>
-            <a className="category-item">Hành động</a>
+            {categories.map((item) => {
+              return (
+                <>
+                  <Link
+                    to={`/categories/${item["category_id"]}/comics`}
+                    className="category-item"
+                  >
+                    {item["category_name"]}
+                  </Link>
+                </>
+              );
+            })}
           </div>
         </div>
       </Collapse>
