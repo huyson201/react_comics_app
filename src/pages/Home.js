@@ -4,9 +4,9 @@ import ListComic from "../components/ListComic/ListComic";
 const Home = () => {
   return (
     <div>
-      <ListComic/>
+      <ListComic />
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

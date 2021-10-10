@@ -1,5 +1,5 @@
 import React from "react";
-import "./ListComic.css";
+import "./listComic.css";
 import { BsStars } from "react-icons/bs";
 const ListItem = () => {
   return (
