@@ -6,13 +6,12 @@ import { Link } from "react-router-dom";
 import "./header.css";
 import jwt_decode from "jwt-decode";
 import { useUser } from "../../context/UserProvider";
-
+import { useHistory } from "react-router";
 import comicApi from "../../api/comicApi";
-const Navbar = () => {
+const Navbar = (props) => {
   const [open, setOpen] = useState(false);
   const [categories, setCategories] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
-
+  const history = useHistory();
   useEffect(() => {
     const getAllCategories = () => {
       comicApi
@@ -33,8 +32,7 @@ const Navbar = () => {
           <MdHome />
           Trang chủ
         </Link>
-        <Link
-          to=""
+        <div
           className="nav-item"
           onClick={() => setOpen(!open)}
           aria-controls="example-collapse-text"
@@ -42,7 +40,7 @@ const Navbar = () => {
         >
           <ImBooks />
           Thể loại
-        </a>
+        </div>
         <Link to="/account" className="nav-item">
           <ImHistory /> Lịch sử
         </Link>
@@ -50,43 +48,36 @@ const Navbar = () => {
           <MdBookmark />
           Theo dõi
         </Link>
-        <Link to="/login" className="nav-item">
-          <MdPerson />
-          {props.username}
-        </Link>
-        
+
         <div className="nav-item account">
-          <Link to="/account" className="">
+          <Link to="/login" className="">
             <MdPerson />
-            Tài khoản
+            {props.username}
           </Link>
           <div className="drop-down">
-              <Link to="" className="drop-down-item">
-                Login
-              </Link>
-              <Link to="" className="drop-down-item">
-                Sign in
-              </Link>
-              <Link to="" className="drop-down-item">
-                Login
-              </Link>
-            </div>
+            <Link to="" className="drop-down-item">
+              Login
+            </Link>
+            <Link to="" className="drop-down-item">
+              Sign in
+            </Link>
+            <Link to="" className="drop-down-item">
+              Login
+            </Link>
+          </div>
         </div>
       </nav>
 
       <Collapse in={open}>
         <div id="example-collapse-text">
           <div className="list-category">
-            {categories.map((item) => {
+            {categories.map((item, i) => {
               return (
-                <>
-                  <Link
-                    to={`/categories/${item["category_id"]}/comics`}
-                    className="category-item"
-                  >
+                <div className="category-item" key={i}>
+                  <Link to={`/categories/${item["category_id"]}`}>
                     {item["category_name"]}
                   </Link>
-                </>
+                </div>
               );
             })}
           </div>
@@ -126,7 +117,6 @@ const Header = () => {
     // );
     // const token = token;
     const userToken = token ? jwt_decode(token) : null;
-    console.log(userToken);
     setUsername(userToken ? userToken.user_name : "Tài khoản");
     // if (tokenDataRemember != null) {
     //   const config = {

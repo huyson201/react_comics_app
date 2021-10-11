@@ -14,7 +14,7 @@
   margin: 0 10px;
   background: #000;
 }
-.list-comic-item:hover{
+.list-comic-item:hover {
   opacity: 0.7;
 }
 .list-comic-item {
@@ -54,4 +54,30 @@
   font-size: 15px;
   background: #232323;
   color: #ffb970;
+}
+.pagination {
+  justify-content: center;
+}
+.page-link {
+  background-color: #585858;
+  border: none;
+}
+.page-link:hover {
+  z-index: 2;
+  background-color: #4caf50;
+}
+.page-link:focus {
+  z-index: 3;
+  outline: 0;
+  box-shadow: none;
+}
+.paginate-item.active .page-link {
+  z-index: 3;
+  background-color: #4caf50;
+}
+.paginate-item.disabled .page-link:focus {
+  background-color: #585858;
+}
+.paginate-item:not(.disabled) .page-link:focus {
+  background-color: #4caf50;
 }

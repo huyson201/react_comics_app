@@ -2,11 +2,9 @@ import React, { useEffect, useState } from "react";
 import "./listComic.css";
 import { BsStars } from "react-icons/bs";
 import comicApi from "../../api/comicApi";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
+import Pagination from "react-js-pagination";
 const ListItem = ({ item }) => {
-  console.log(item);
-  //   const location = useLocation();
-  // console.log(location.pathname);
   return (
     <>
       <div className="list-comic-item">
@@ -27,32 +25,31 @@ const ListItem = ({ item }) => {
     </>
   );
 };
-const ListComic = () => {
-  const [comicData, setcomicData] = useState([]);
-  useEffect(() => {
-    const getAllComics = () => {
-      comicApi
-        .getAll()
-        .then((response) => {
-          setcomicData(response.data.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
-    getAllComics();
-  }, []);
+const ListComic = ({title,data}) => {
+
+
   return (
     <>
       <div className="list-title">
-        <BsStars />
-        Truyện mới cập nhật
+        <BsStars />{title}
       </div>
       <div className="list-comic">
-        {comicData.map((e, i) => {
+        {data.map((e, i) => {
           return <ListItem key={i} item={e}></ListItem>;
         })}
       </div>
+      {/* <Pagination
+        activePage={activePage}
+        itemClass="paginate-item"
+        linkClass="page-link"
+        itemsCountPerPage={filters.limit}
+        totalItemsCount={20}
+        pageRangeDisplayed={3}
+        hideNavigation={true}
+        firstPageText={"Đầu"}
+        lastPageText={"Cuối"}
+        onChange={(val) => handlePageChange(val)}
+      /> */}
     </>
   );
 };
