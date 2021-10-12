@@ -1,8 +1,8 @@
-import React, { Component, useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { MdHome, MdBookmark, MdPerson, MdFilterAlt } from "react-icons/md";
 import { ImBooks, ImHistory, ImSearch } from "react-icons/im";
-import { Collapse, Dropdown } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Collapse } from "react-bootstrap";
+import { Link, useHistory } from "react-router-dom";
 import "./header.css";
 import jwt_decode from "jwt-decode";
 import { useUser } from "../../context/UserProvider";
@@ -12,6 +12,8 @@ const Navbar = (props) => {
   const [open, setOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const history = useHistory();
+  const { dispatch } = useUser();
+
   useEffect(() => {
     const getAllCategories = () => {
       comicApi
@@ -25,6 +27,14 @@ const Navbar = (props) => {
     };
     getAllCategories();
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token_refreshToken");
+    dispatch({ type: "TOKEN", payload: null });
+    history.push("/");
+    // alert("logout thanh cong");
+  };
+
   return (
     <>
       <nav className="nav-bar">
@@ -41,29 +51,43 @@ const Navbar = (props) => {
           <ImBooks />
           Thể loại
         </div>
-        <Link to="/account" className="nav-item">
+        <Link to="/history" className="nav-item">
           <ImHistory /> Lịch sử
         </Link>
-        <Link to="/register" className="nav-item">
+        <Link to="/follow" className="nav-item">
           <MdBookmark />
           Theo dõi
         </Link>
 
         <div className="nav-item account">
-          <Link to="/login" className="">
-            <MdPerson />
-            {props.username}
-          </Link>
+          {/* <Link to="#"> */}
+          <MdPerson />
+          {props.username}
+          {/* </Link> */}
           <div className="drop-down">
-            <Link to="" className="drop-down-item">
-              Login
-            </Link>
-            <Link to="" className="drop-down-item">
-              Sign in
-            </Link>
-            <Link to="" className="drop-down-item">
-              Login
-            </Link>
+            {props.username === "Tài khoản" ? (
+              <>
+                <Link to="/login" className="drop-down-item">
+                  Login
+                </Link>
+                <Link to="/register" className="drop-down-item">
+                  Register
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link to="/account" className="drop-down-item">
+                  Thông tin cá nhân
+                </Link>
+                <Link
+                  to="/logout"
+                  onClick={handleLogout}
+                  className="drop-down-item"
+                >
+                  Log out
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -71,10 +95,14 @@ const Navbar = (props) => {
       <Collapse in={open}>
         <div id="example-collapse-text">
           <div className="list-category">
-            {categories.map((item, i) => {
+            {categories.map((item, index) => {
               return (
-                <div className="category-item" key={i}>
-                  <Link to={`/categories/${item["category_id"]}`}>
+                <>
+                  <Link
+                    key={index}
+                    to={`/categories/${item["category_id"]}/comics`}
+                    className="category-item"
+                  >
                     {item["category_name"]}
                   </Link>
                 </div>
@@ -109,23 +137,19 @@ const SearchForm = () => {
 };
 
 const Header = () => {
-  const { token } = useUser();
-  const [username, setUsername] = useState();
+  const { token, update } = useUser();
+
+  const [username, setUsername] = useState("Tài khoản");
   useEffect(() => {
-    // const tokenDataRemember = JSON.parse(
-    //   localStorage.getItem("token_refreshToken")
-    // );
-    // const token = token;
     const userToken = token ? jwt_decode(token) : null;
-    setUsername(userToken ? userToken.user_name : "Tài khoản");
-    // if (tokenDataRemember != null) {
-    //   const config = {
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       Authorization: "Bearer" + tokenDataRemember.token,
-    //     },
-    //   };
-  }, [token]);
+    if (userToken) {
+      if (update) {
+        setUsername(update);
+      } else {
+        setUsername(userToken.user_name);
+      }
+    }
+  }, [token, update]);
 
   return (
     <>

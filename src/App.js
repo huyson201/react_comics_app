@@ -6,7 +6,6 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Redirect,
 } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -27,6 +26,7 @@ function App() {
             <Route path="/register" component={Register}></Route>
             <Route path="/account" component={Profile}></Route>
             <Route path="/profile" component={Profile}></Route>
+            <Route path="/changePassword" component={Profile}></Route>
             <Route path="*" component={() => "404 NOT FOUND"}></Route>
           </Switch>
           <Footer />

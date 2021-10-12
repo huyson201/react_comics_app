@@ -2,15 +2,18 @@ import React, { useEffect, useState } from "react";
 import { useHistory, Link } from "react-router-dom";
 import { Form, FormLabel, FormGroup, Button } from "react-bootstrap";
 import { ACTIONS } from "../context/Action";
+import jwt_decode from "jwt-decode";
 import { useUser } from "../context/UserProvider";
+import axiosClient from "../api/axiosClient";
 
 const Profile = () => {
   const history = useHistory();
   const { dispatch } = useUser();
+
   const handleLogout = () => {
     localStorage.removeItem("token_refreshToken");
-    localStorage.removeItem("token");
     dispatch({ type: ACTIONS.TOKEN, payload: null });
+    dispatch({ type: ACTIONS.UPDATE, payload: null });
     alert("logout thanh cong");
   };
 
@@ -44,7 +47,7 @@ const Profile = () => {
                     </Link>
                   </li>
                   <li className="nav-li">
-                    <Link>
+                    <Link to="/changePassword">
                       <i className="fas fa-key"></i> Đổi mật khẩu
                     </Link>
                   </li>
@@ -58,8 +61,13 @@ const Profile = () => {
             </div>
             <div className="col-8 custom-form-text">
               <div className="info">
-                {history.location.pathname === "/follow" ? <Info /> : "djfkjsd"}
-                {console.log(history.location)}
+                {history.location.pathname === "/profile" ? (
+                  <Info />
+                ) : history.location.pathname === "/changePassword" ? (
+                  <ChangePassword />
+                ) : (
+                  "djfkjsd"
+                )}
               </div>
             </div>
           </div>
@@ -72,19 +80,68 @@ const Profile = () => {
 const Info = () => {
   const [user_name, setUserName] = useState();
   const [user_email, setEmail] = useState();
+  const [user_uuid, setUserId] = useState(0);
+  const { token, refreshToken } = useUser();
+  const { dispatch } = useUser();
+  useEffect(() => {
+    const userToken = token ? jwt_decode(token) : null;
 
-  const handleSubmit = (e) => {
+    if (userToken != null) {
+      setUserName(userToken.user_name);
+      setEmail(userToken.user_email);
+      setUserId(userToken.user_uuid);
+    }
+  }, [token, refreshToken]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      if (token) {
+        const res = await axiosClient.patch(
+          "/users/" + user_uuid,
+          {
+            user_name: user_name,
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        );
+
+        if (!res.data.error && refreshToken) {
+          const res = await axiosClient.post("/refresh-token", {
+            refreshToken: refreshToken,
+          });
+          // console.log(res);
+          // // dispatch({
+          // //   type: ACTIONS.TOKEN,
+          // //   payload: {
+          // //     token: res.data.data.token,
+          // //     refreshToken: res.data.data.refreshToken,
+          // //   },
+          // // });
+          dispatch({ type: ACTIONS.UPDATE, payload: user_name });
+        }
+        alert(res.data.msg);
+      } else {
+        alert("Vui lòng đăng nhập");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
+
   return (
     <Form className="form-profile" onSubmit={handleSubmit}>
       <h3>Thông tin tài khoản</h3>
       <FormGroup className="form-group">
-        <FormLabel>Fullname</FormLabel>
+        <FormLabel>Fullname </FormLabel>
         <Form.Control
+          className="input-text"
           required
           type="text"
-          value="kieu oanh ne"
+          value={user_name ? user_name : ""}
           onChange={(e) => setUserName(e.target.value)}
         />
       </FormGroup>
@@ -92,9 +149,10 @@ const Info = () => {
       <FormGroup className="form-group">
         <FormLabel>Email </FormLabel>
         <Form.Control
+          className="input-text"
           required
           type="email"
-          value="oanhhihih@gmail.com"
+          value={user_email ? user_email : ""}
           onChange={(e) => setEmail(e.target.value)}
         />
       </FormGroup>
@@ -105,6 +163,58 @@ const Info = () => {
         variant="dark"
       >
         Cập nhật
+      </Button>
+    </Form>
+  );
+};
+
+const ChangePassword = () => {
+  const [user_password, setUserPassword] = useState();
+  const [user_password_new, setUserPasswordNew] = useState();
+  const [user_password_cfnew, setUserPasswordCfNew] = useState();
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  };
+
+  return (
+    <Form className="form-profile" onSubmit={handleSubmit}>
+      <h3>Đổi mật khẩu</h3>
+      <FormGroup className="form-group">
+        <FormLabel>Nhập mật khẩu cũ </FormLabel>
+        <Form.Control
+          className="input-text"
+          required
+          type="password"
+          onChange={(e) => setUserPassword(e.target.value)}
+        />
+      </FormGroup>
+
+      <FormGroup className="form-group">
+        <FormLabel>Nhập mật khẩu mới </FormLabel>
+        <Form.Control
+          className="input-text"
+          required
+          type="password"
+          onChange={(e) => setUserPasswordNew(e.target.value)}
+        />
+      </FormGroup>
+
+      <FormGroup className="form-group">
+        <FormLabel>Nhập lại mật khẩu mới </FormLabel>
+        <Form.Control
+          className="input-text"
+          required
+          type="password"
+          onChange={(e) => setUserPasswordCfNew(e.target.value)}
+        />
+      </FormGroup>
+
+      <Button
+        type="submit"
+        className="btn btn-primary btn-block"
+        variant="dark"
+      >
+        Đổi mật khẩu
       </Button>
     </Form>
   );

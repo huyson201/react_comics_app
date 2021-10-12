@@ -1,4 +1,4 @@
-import { useReducer, useEffect, createContext, useContext } from "react";
+import { useReducer, createContext, useContext } from "react";
 import reducer from "./Reducer";
 
 export const UserContext = createContext();
@@ -8,13 +8,15 @@ export const useUser = () => {
 };
 
 const UserProvider = ({ children }) => {
-  const initialState = { token: null };
+  const initialState = { token: null, update: null, refreshToken: null };
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { token } = state;
+  const { token, refreshToken, update } = state;
 
   const value = {
     dispatch,
     token,
+    update,
+    refreshToken,
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

@@ -5,7 +5,13 @@ const reducers = (state, action) => {
     case ACTIONS.TOKEN:
       return {
         ...state,
-        token: action.payload,
+        token: action.payload.token,
+        refreshToken: action.payload.refreshToken,
+      };
+    case ACTIONS.UPDATE:
+      return {
+        ...state,
+        update: action.payload,
       };
     default:
       return state;

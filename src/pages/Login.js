@@ -32,8 +32,13 @@ const Login = () => {
           user_email: user_email,
           user_password: user_password,
         });
-        // localStorage.setItem("token", JSON.stringify(res.data.data.token));
-        dispatch({ type: ACTIONS.TOKEN, payload: res.data.data.token });
+        dispatch({
+          type: ACTIONS.TOKEN,
+          payload: {
+            token: res.data.data.token,
+            refreshToken: res.data.data.refreshToken,
+          },
+        });
         alert(res.data.msg);
         storageData(res, checked);
         history.push("/");

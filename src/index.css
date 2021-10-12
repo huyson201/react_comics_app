@@ -117,19 +117,16 @@ li:hover {
   float: left;
 }
 
-/* .custom-form-text {
-  color: black;
-} */
-
 .custom-form-text {
-  /* background-color: #ffffff; */
-  /* width: 50%; */
-  /* height: 70%; */
   padding: 20px;
   padding-left: 50px;
-  /* border-radius: 20px; */
-  /* margin-left: 25%; */
-  /* margin-top: 20px; */
   display: grid;
-  /* opacity: 0.9; */
+}
+
+.btn-block{
+  margin-top: 30px;
+}
+
+.input-text{
+  margin-bottom:10px
 }

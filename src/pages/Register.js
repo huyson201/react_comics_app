@@ -18,14 +18,16 @@ const Register = () => {
       user_name: user_name,
       user_email: user_email,
       user_password: user_password,
+      cf_password: cf_password,
     });
   }, [user_name, user_email, user_password, cf_password]);
 
   const handleSubmit = async (event) => {
+    event.preventDefault();
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
-      event.preventDefault();
       event.stopPropagation();
+      event.preventDefault();
     }
     setValidated(true);
 
@@ -58,7 +60,7 @@ const Register = () => {
       <h3>Đăng ký</h3>
 
       <FormGroup className="form-group">
-        <FormLabel>Fullname</FormLabel>
+        <FormLabel>Họ và tên</FormLabel>
         <Form.Control
           required
           type="text"

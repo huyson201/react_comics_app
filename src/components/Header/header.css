@@ -15,11 +15,12 @@
   background-color: #000;
 }
 .nav-item:nth-child(odd) {
-  background-color: #1d1c1c;
+  background-color: #1d1c1c ;
 }
 .nav-item:hover {
-  background: #54655f;
+  background: #54655f !important;
 }
+
 .search-filter {
   padding: 7px 5px;
   max-width: 45px;
@@ -62,6 +63,7 @@
   background: #fff;
 }
 .account {
+  color: #fff !important;
   position: relative;
   display: inline-block;
 }
@@ -86,3 +88,4 @@
   color: black !important;
   background: white;
 }
+
