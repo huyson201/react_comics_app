@@ -6,7 +6,6 @@ import { Link, useHistory } from "react-router-dom";
 import "./header.css";
 import jwt_decode from "jwt-decode";
 import { useUser } from "../../context/UserProvider";
-import { useHistory } from "react-router";
 import comicApi from "../../api/comicApi";
 const Navbar = (props) => {
   const [open, setOpen] = useState(false);
@@ -95,14 +94,10 @@ const Navbar = (props) => {
       <Collapse in={open}>
         <div id="example-collapse-text">
           <div className="list-category">
-            {categories.map((item, index) => {
+          {categories.map((item, i) => {
               return (
-                <>
-                  <Link
-                    key={index}
-                    to={`/categories/${item["category_id"]}/comics`}
-                    className="category-item"
-                  >
+                <div className="category-item" key={i}>
+                  <Link to={`/categories/${item["category_id"]}`}>
                     {item["category_name"]}
                   </Link>
                 </div>

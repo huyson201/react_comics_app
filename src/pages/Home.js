@@ -6,16 +6,15 @@ import { useHistory, useParams } from "react-router";
 const Home = () => {
   const { id } = useParams();
   const history = useHistory();
-  console.log(history);
-  let string = history.location.pathname;
-  console.log(history.location.pathname);
+  let pathname = history.location.pathname;
   const [comicData, setcomicData] = useState([]);
   const [activePage, setActivePage] = useState(1);
   const [title, setTitle] = useState("");
   const [filters, setFilters] = useState({
-    limit: 10,
+    limit: 12,
     offset: 0,
   });
+  const [total, setTotal] = useState(0);
   const handlePageChange = (pageNumber) => {
     setActivePage(pageNumber);
     setFilters({
@@ -24,12 +23,14 @@ const Home = () => {
     });
   };
   useEffect(() => {
-    if (string === "/") {
+    if (pathname === "/") {
       const getAllComics = () => {
         comicApi
           .getAll(filters)
           .then((res) => {
-            setcomicData(res.data.data);
+            const data = res.data.data;
+            setTotal(data['count'])
+            setcomicData(data['rows']);
             setTitle("Truyện mới cập nhật");
           })
           .catch((err) => {
@@ -40,11 +41,12 @@ const Home = () => {
     } else {
       const getComicsByCategory = () => {
         comicApi
-          .getComicsByCategory(id, filters)
+          .getComicsByCategory(id)
           .then((res) => {
             const data = res.data.data[0];
             setTitle(`Truyện theo thể loại ${data["category_name"]}`);
             setcomicData(data["comics"]);
+            setTotal(data.length)
           })
           .catch((err) => {
             console.log(err);
@@ -52,7 +54,7 @@ const Home = () => {
       };
       getComicsByCategory();
     }
-  }, [filters, string]);
+  }, [filters, pathname,total]);
 
   return (
     <div>
@@ -62,7 +64,7 @@ const Home = () => {
         itemClass="paginate-item"
         linkClass="page-link"
         itemsCountPerPage={filters.limit}
-        totalItemsCount={20}
+        totalItemsCount={total}
         pageRangeDisplayed={3}
         hideNavigation={true}
         firstPageText={"Đầu"}
