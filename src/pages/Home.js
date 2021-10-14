@@ -2,11 +2,9 @@ import React, { useEffect, useState } from "react";
 import Pagination from "react-js-pagination";
 import comicApi from "../api/comicApi";
 import ListComic from "../components/ListComic/ListComic";
-import { useHistory, useParams } from "react-router";
+import { useParams } from "react-router-dom";
 const Home = () => {
-  const { id } = useParams();
-  const history = useHistory();
-  let pathname = history.location.pathname;
+  const { id, keyword } = useParams();
   const [comicData, setcomicData] = useState([]);
   const [activePage, setActivePage] = useState(1);
   const [title, setTitle] = useState("");
@@ -23,39 +21,48 @@ const Home = () => {
     });
   };
   useEffect(() => {
-    if (pathname === "/") {
-      const getAllComics = () => {
-        comicApi
-          .getAll(filters)
-          .then((res) => {
-            const data = res.data.data;
-            setTotal(data['count'])
-            setcomicData(data['rows']);
-            setTitle("Truyện mới cập nhật");
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      };
-      getAllComics();
-    } else {
-      const getComicsByCategory = () => {
-        comicApi
-          .getComicsByCategory(id)
-          .then((res) => {
-            const data = res.data.data[0];
-            setTitle(`Truyện theo thể loại ${data["category_name"]}`);
-            setcomicData(data["comics"]);
-            setTotal(data.length)
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+    if (id) {
+      const getComicsByCategory = async () => {
+        try {
+          const res = await comicApi.getComicsByCategory(id);
+          const data = res.data.data[0];
+          setTitle(`Truyện theo thể loại ${data["category_name"]}`);
+          setcomicData(data["comics"]);
+          setTotal(data.length);
+        } catch (error) {
+          console.log(error);
+        }
       };
       getComicsByCategory();
+    } else if (keyword) {
+      const getComicsByKeyword = async () => {
+        try {
+          const res = await comicApi.getComicsByKeyword(keyword);
+          const data = res.data.data;
+          setTitle(`Tìm kiếm theo từ khoá ${keyword}`);
+          setcomicData(data);
+          console.log(data.length);
+          setTotal(data.length);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      getComicsByKeyword();
+    } else {
+      const getAllComics = async () => {
+        try {
+          const res = await comicApi.getAll(filters);
+          const data = res.data.data;
+          setTotal(data["count"]);
+          setcomicData(data["rows"]);
+          setTitle("Truyện mới cập nhật");
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      getAllComics();
     }
-  }, [filters, pathname,total]);
-
+  }, [filters, id, keyword]);
   return (
     <div>
       <ListComic title={title} data={comicData} />

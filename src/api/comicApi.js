@@ -12,5 +12,9 @@ const comicApi={
         const url = `/categories/${id}/comics`;
         return axiosClient.get(url,{params})
     },
+    getComicsByKeyword: (key)=>{
+        const url = `/comics/search?q=${key}`;
+        return axiosClient.get(url)
+    },
 }
 export default comicApi;

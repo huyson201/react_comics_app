@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { MdHome, MdBookmark, MdPerson, MdFilterAlt } from "react-icons/md";
 import { ImBooks, ImHistory, ImSearch } from "react-icons/im";
-import { Collapse } from "react-bootstrap";
+import { Collapse, Dropdown } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
 import "./header.css";
 import jwt_decode from "jwt-decode";
@@ -110,14 +110,23 @@ const Navbar = (props) => {
   );
 };
 const SearchForm = () => {
+  const history = useHistory();
+  const [key, setKey] = useState("");
+  const handleSubmit = (e) => {
+    // e.preventDefault();
+    history.push(`/search/${key}`);
+  };
   return (
     <>
       <div className="search">
         <a className="search-filter">
           <MdFilterAlt />
         </a>
-        <form className="form-search">
+        <form onSubmit={handleSubmit} className="form-search">
           <input
+            onChange={(e) => {
+              setKey(e.target.value);
+            }}
             className="input-search"
             type="text"
             placeholder="Nhập từ khoá..."
@@ -127,6 +136,13 @@ const SearchForm = () => {
           </button>
         </form>
       </div>
+      {/* <div>
+        <div>Thể loại</div>
+        <form>
+
+
+        </form>
+      </div> */}
     </>
   );
 };
