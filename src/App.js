@@ -21,8 +21,9 @@ function App() {
           <Header />
           <Switch>
             <Route exact path="/" component={Home}></Route>
-            <Route path="/search/:keyword" component={Home}></Route>
-            <Route path="/categories/:id" component={Home}></Route>
+            <Route path="/tim-kiem" component={Home}></Route>
+            <Route path="/the-loai/:name" component={Home}></Route>
+            <Route path="/truyen-tranh/:name" component={Home}></Route>
             <Route path="/login" component={Login}></Route>
             <Route path="/register" component={Register}></Route>
             <Route path="/account" component={Profile}></Route>

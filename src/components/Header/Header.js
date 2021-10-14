@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { MdHome, MdBookmark, MdPerson, MdFilterAlt } from "react-icons/md";
 import { ImBooks, ImHistory, ImSearch } from "react-icons/im";
-import { Collapse, Dropdown } from "react-bootstrap";
+import { Collapse } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
 import "./header.css";
 import jwt_decode from "jwt-decode";
 import { useUser } from "../../context/UserProvider";
 import comicApi from "../../api/comicApi";
+import { xoaDau } from "../../utilFunction";
 const Navbar = (props) => {
   const [open, setOpen] = useState(false);
   const [categories, setCategories] = useState([]);
@@ -94,13 +95,17 @@ const Navbar = (props) => {
       <Collapse in={open}>
         <div id="example-collapse-text">
           <div className="list-category">
-          {categories.map((item, i) => {
+            {categories.map((item, i) => {
+              const name = xoaDau(item["category_name"]);
+              const linkTo = {
+                pathname: `/the-loai/${name}`,
+                id: item["category_id"],
+                category_name: item["category_name"],
+              };
               return (
-                <div className="category-item" key={i}>
-                  <Link to={`/categories/${item["category_id"]}`}>
-                    {item["category_name"]}
-                  </Link>
-                </div>
+                <Link to={linkTo} className="category-item" key={i}>
+                  {item["category_name"]}
+                </Link>
               );
             })}
           </div>
@@ -111,10 +116,17 @@ const Navbar = (props) => {
 };
 const SearchForm = () => {
   const history = useHistory();
+  console.log(history.location);
   const [key, setKey] = useState("");
   const handleSubmit = (e) => {
-    // e.preventDefault();
-    history.push(`/search/${key}`);
+    const keyUrl = xoaDau(key);
+    e.preventDefault();
+    history.push({
+      pathname: "/tim-kiem",
+      search: `keyword=${keyUrl}`,
+      keyword: key,
+    });
+    setKey("");
   };
   return (
     <>
@@ -124,6 +136,7 @@ const SearchForm = () => {
         </a>
         <form onSubmit={handleSubmit} className="form-search">
           <input
+            value={key}
             onChange={(e) => {
               setKey(e.target.value);
             }}

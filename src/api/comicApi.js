@@ -12,9 +12,13 @@ const comicApi={
         const url = `/categories/${id}/comics`;
         return axiosClient.get(url,{params})
     },
-    getComicsByKeyword: (key)=>{
+    getComicsByKeyword: (key,params)=>{
         const url = `/comics/search?q=${key}`;
-        return axiosClient.get(url)
+        return axiosClient.get(url,{params})
+    },
+    getComicByID: (id)=>{
+        const url = `/comics/${id}`;
+        return axiosClient.get(url);
     },
 }
 export default comicApi;
