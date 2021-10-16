@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./listComic.css";
+import "./ListComic.css";
 import { BsStars } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { xoaDau } from "../../utilFunction";

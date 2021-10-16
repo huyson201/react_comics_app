@@ -77,7 +77,7 @@ const Home = () => {
   };
 
   useEffect(() => {
-    setActivePage(1);
+    // setActivePage(1);
     if (pathCate) {
       setCheckOther(true);
       getComicsByCategory();

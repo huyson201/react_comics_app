@@ -20,22 +20,8 @@ import axiosClient from "../../api/axiosClient";
 
 const Navbar = (props) => {
   const [open, setOpen] = useState(false);
-  const [categories, setCategories] = useState([]);
+  const history = useHistory();
   const { dispatch } = useUser();
-
-  useEffect(() => {
-    const getAllCategories = () => {
-      comicApi
-        .getAllCategories()
-        .then((response) => {
-          setCategories(response.data.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
-    getAllCategories();
-  }, []);
 
   const handleLogout = () => {
     Cookies.remove("token");
@@ -58,7 +44,7 @@ const Navbar = (props) => {
         <div
           className="nav-item"
           onClick={() => setOpen(!open)}
-          aria-controls="example-collapse-text"
+          aria-controls="categories-collapse"
           aria-expanded={open}
         >
           <ImBooks />
@@ -102,9 +88,9 @@ const Navbar = (props) => {
       </nav>
 
       <Collapse in={open}>
-        <div id="example-collapse-text">
+        <div id="categories-collapse">
           <div className="list-category">
-            {categories.map((item, i) => {
+            {props.categories.map((item, i) => {
               const name = xoaDau(item["category_name"]);
               const linkTo = {
                 pathname: `/the-loai/${name}`,
@@ -123,10 +109,10 @@ const Navbar = (props) => {
     </>
   );
 };
-const SearchForm = () => {
+const SearchForm = ({ categories }) => {
   const history = useHistory();
-  console.log(history.location);
   const [key, setKey] = useState("");
+  const [open, setOpen] = useState(false);
   const handleSubmit = (e) => {
     const keyUrl = xoaDau(key);
     e.preventDefault();
@@ -140,7 +126,12 @@ const SearchForm = () => {
   return (
     <>
       <div className="search">
-        <a className="search-filter">
+        <a
+          className="search-filter"
+          onClick={() => setOpen(!open)}
+          aria-controls="filter-collapse"
+          aria-expanded={open}
+        >
           <MdFilterAlt />
         </a>
         <form onSubmit={handleSubmit} className="form-search">
@@ -158,19 +149,56 @@ const SearchForm = () => {
           </button>
         </form>
       </div>
-      {/* <div>
-        <div>Thể loại</div>
-        <form>
-
-
-        </form>
-      </div> */}
+      <Collapse in={open}>
+        <div id="filter-collapse">
+          <div className="filter-form">
+            <div className="filter-category">Thể loại</div>
+            <form>
+              <div className="check-box-form">
+                {categories.map((item, i) => {
+                  return (
+                    <label key={item['category_id']} className="checkbox-item">
+                      <input type="checkbox" />
+                      <span className="checkmark"></span>
+                      <div>{item["category_name"]}</div>
+                    </label>
+                  );
+                })}
+              </div>
+              <div className="filter-status">Trình trạng</div>
+              <div className="status-form">
+                <select className="select-status">
+                  <option value="0">Bỏ trống</option>
+                  <option value="1">Đang tiến hành</option>
+                  <option value="2">Đã hoàn thành</option>
+                </select>
+              </div>
+              <div className="btn-wrap"><button>Lọc ngay</button></div>
+         
+            </form>
+          </div>
+        </div>
+      </Collapse>
     </>
   );
 };
 
 const Header = () => {
   const { token, update } = useUser();
+  const [categories, setCategories] = useState([]);
+  useEffect(() => {
+    const getAllCategories = () => {
+      comicApi
+        .getAllCategories()
+        .then((response) => {
+          setCategories(response.data.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    getAllCategories();
+  }, []);
   const [username, setUsername] = useState("Tài khoản");
   const { dispatch } = useUser();
 
@@ -205,8 +233,8 @@ const Header = () => {
   return (
     <>
       <header>
-        <Navbar username={username} />
-        <SearchForm />
+        <Navbar username={username} categories={categories} />
+        <SearchForm categories={categories} />
       </header>
     </>
   );
