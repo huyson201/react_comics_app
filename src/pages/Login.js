@@ -4,6 +4,8 @@ import { Link, useHistory } from "react-router-dom";
 import axiosClient from "../api/axiosClient";
 import { ACTIONS } from "../context/Action";
 import { useUser } from "../context/UserProvider";
+import Cookies from "js-cookie";
+import ModalNotify from "../components/Modal/ModalNotify";
 
 const Login = () => {
   const history = useHistory();
@@ -12,14 +14,16 @@ const Login = () => {
   const [checked, setChecked] = useState(false);
   const { dispatch } = useUser();
 
-  function storageData(res, checkremember) {
-    if (checkremember === true) {
-      const token = {
-        token: res.data.data.token,
-        refreshToken: res.data.data.refreshToken,
-      };
-      localStorage.setItem("token_refreshToken", JSON.stringify(token));
-    }
+  // const [show, setShow] = useState(false);
+
+  // const open = () => {
+  //   setShow((prev) => !prev);
+  // };
+
+  function storageData(res) {
+    Cookies.set("refreshToken", res.data.data.refreshToken, {
+      expires: 7,
+    });
   }
 
   const handleSubmit = async (event) => {
@@ -28,10 +32,12 @@ const Login = () => {
       if (user_password.length < 6) {
         alert("Mật khẩu >= 6 ký tự");
       } else {
+        //POST data to login
         const res = await axiosClient.post("/login", {
           user_email: user_email,
           user_password: user_password,
         });
+        //dispatch token data
         dispatch({
           type: ACTIONS.TOKEN,
           payload: {
@@ -39,8 +45,12 @@ const Login = () => {
             refreshToken: res.data.data.refreshToken,
           },
         });
+        //remember me
+        if (checked === true) {
+          storageData(res);
+        }
+        // open();
         alert(res.data.msg);
-        storageData(res, checked);
         history.push("/");
       }
     } catch (error) {
@@ -81,7 +91,7 @@ const Login = () => {
       <div className="flex-remember">
         <Form.Check
           type="checkbox"
-          label=" Remember me"
+          label=" Nhớ phiên đăng nhập"
           checked={checked}
           onChange={() => setChecked(!checked)}
           // feedback="You must agree before sign in."
@@ -109,6 +119,8 @@ const Login = () => {
           Nhấn vào đây để đăng ký
         </Link>
       </p>
+
+      {/* <ModalNotify show={show} setShow={setShow} /> */}
     </Form>
   );
 };

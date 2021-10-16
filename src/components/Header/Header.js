@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { MdHome, MdBookmark, MdPerson, MdFilterAlt } from "react-icons/md";
+import {
+  MdHome,
+  MdBookmark,
+  MdPerson,
+  MdFilterAlt,
+  MdTrendingUp,
+} from "react-icons/md";
 import { ImBooks, ImHistory, ImSearch } from "react-icons/im";
 import { Collapse } from "react-bootstrap";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./header.css";
 import jwt_decode from "jwt-decode";
 import { useUser } from "../../context/UserProvider";
 import comicApi from "../../api/comicApi";
 import { xoaDau } from "../../utilFunction";
+import { ACTIONS } from "../../context/Action";
+import Cookies from "js-cookie";
+import axiosClient from "../../api/axiosClient";
+
 const Navbar = (props) => {
   const [open, setOpen] = useState(false);
   const [categories, setCategories] = useState([]);
-  const history = useHistory();
   const { dispatch } = useUser();
 
   useEffect(() => {
@@ -29,10 +38,14 @@ const Navbar = (props) => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token_refreshToken");
-    dispatch({ type: "TOKEN", payload: null });
-    history.push("/");
-    // alert("logout thanh cong");
+    Cookies.remove("token");
+    Cookies.remove("refreshToken");
+    dispatch({ type: ACTIONS.TOKEN, payload: null });
+    dispatch({
+      type: ACTIONS.UPDATE,
+      payload: false,
+    });
+    alert("logout thanh cong");
   };
 
   return (
@@ -68,10 +81,10 @@ const Navbar = (props) => {
             {props.username === "Tài khoản" ? (
               <>
                 <Link to="/login" className="drop-down-item">
-                  Login
+                  Đăng nhập
                 </Link>
                 <Link to="/register" className="drop-down-item">
-                  Register
+                  Đăng ký
                 </Link>
               </>
             ) : (
@@ -79,12 +92,8 @@ const Navbar = (props) => {
                 <Link to="/account" className="drop-down-item">
                   Thông tin cá nhân
                 </Link>
-                <Link
-                  to="/logout"
-                  onClick={handleLogout}
-                  className="drop-down-item"
-                >
-                  Log out
+                <Link to="/" onClick={handleLogout} className="drop-down-item">
+                  Đăng xuất
                 </Link>
               </>
             )}
@@ -162,19 +171,37 @@ const SearchForm = () => {
 
 const Header = () => {
   const { token, update } = useUser();
-
   const [username, setUsername] = useState("Tài khoản");
-  useEffect(() => {
-    const userToken = token ? jwt_decode(token) : null;
-    if (userToken) {
-      if (update) {
-        setUsername(update);
-      } else {
-        setUsername(userToken.user_name);
-      }
-    }
-  }, [token, update]);
+  const { dispatch } = useUser();
 
+  useEffect(() => {
+    let localToken = null;
+    let userToken = null;
+
+    if (Cookies.get("refreshToken")) {
+      axiosClient
+        .post("/refresh-token", {
+          refreshToken: Cookies.get("refreshToken"),
+        })
+        .then((res) => {
+          localToken = res.data.token;
+          dispatch({
+            type: ACTIONS.TOKEN,
+            payload: {
+              token: localToken,
+              refreshToken: Cookies.get("refreshToken"),
+            },
+          });
+        });
+    }
+
+    if (localToken) {
+      userToken = jwt_decode(localToken);
+    } else {
+      userToken = token ? jwt_decode(token) : null;
+    }
+    userToken ? setUsername(userToken.user_name) : setUsername("Tài khoản");
+  }, [token]);
   return (
     <>
       <header>

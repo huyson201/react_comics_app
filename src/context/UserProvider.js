@@ -8,7 +8,7 @@ export const useUser = () => {
 };
 
 const UserProvider = ({ children }) => {
-  const initialState = { token: null, update: null, refreshToken: null };
+  const initialState = { token: null, update: false, refreshToken: null };
   const [state, dispatch] = useReducer(reducer, initialState);
   const { token, refreshToken, update } = state;
 

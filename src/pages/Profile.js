@@ -5,15 +5,21 @@ import { ACTIONS } from "../context/Action";
 import jwt_decode from "jwt-decode";
 import { useUser } from "../context/UserProvider";
 import axiosClient from "../api/axiosClient";
+import Cookies from "js-cookie";
 
 const Profile = () => {
   const history = useHistory();
   const { dispatch } = useUser();
 
   const handleLogout = () => {
-    localStorage.removeItem("token_refreshToken");
+    Cookies.remove("token");
+    Cookies.remove("refreshToken");
+    Cookies.remove("token_refreshToken");
     dispatch({ type: ACTIONS.TOKEN, payload: null });
-    dispatch({ type: ACTIONS.UPDATE, payload: null });
+    dispatch({
+      type: ACTIONS.UPDATE,
+      payload: false,
+    });
     alert("logout thanh cong");
   };
 
@@ -85,7 +91,6 @@ const Info = () => {
   const { dispatch } = useUser();
   useEffect(() => {
     const userToken = token ? jwt_decode(token) : null;
-
     if (userToken != null) {
       setUserName(userToken.user_name);
       setEmail(userToken.user_email);
@@ -110,18 +115,16 @@ const Info = () => {
         );
 
         if (!res.data.error && refreshToken) {
-          const res = await axiosClient.post("/refresh-token", {
+          const resUpdate = await axiosClient.post("/refresh-token", {
             refreshToken: refreshToken,
           });
-          // console.log(res);
-          // // dispatch({
-          // //   type: ACTIONS.TOKEN,
-          // //   payload: {
-          // //     token: res.data.data.token,
-          // //     refreshToken: res.data.data.refreshToken,
-          // //   },
-          // // });
-          dispatch({ type: ACTIONS.UPDATE, payload: user_name });
+          dispatch({
+            type: ACTIONS.TOKEN,
+            payload: {
+              token: resUpdate.data.token,
+              refreshToken: refreshToken,
+            },
+          });
         }
         alert(res.data.msg);
       } else {
@@ -149,6 +152,7 @@ const Info = () => {
       <FormGroup className="form-group">
         <FormLabel>Email </FormLabel>
         <Form.Control
+          readOnly
           className="input-text"
           required
           type="email"
