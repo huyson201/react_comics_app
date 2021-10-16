@@ -103,7 +103,7 @@ const Info = () => {
     try {
       if (token) {
         const res = await axiosClient.patch(
-          "/users/" + user_uuid,
+          "/users/",
           {
             user_name: user_name,
           },

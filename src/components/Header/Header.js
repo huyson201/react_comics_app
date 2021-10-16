@@ -8,7 +8,7 @@ import {
 } from "react-icons/md";
 import { ImBooks, ImHistory, ImSearch } from "react-icons/im";
 import { Collapse } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import "./header.css";
 import jwt_decode from "jwt-decode";
 import { useUser } from "../../context/UserProvider";
@@ -17,7 +17,8 @@ import { xoaDau } from "../../utilFunction";
 import { ACTIONS } from "../../context/Action";
 import Cookies from "js-cookie";
 import axiosClient from "../../api/axiosClient";
-import { useHistory } from "react-router-dom";
+import { isJwtExpired } from "jwt-check-expiration";
+
 const Navbar = (props) => {
   const [open, setOpen] = useState(false);
   const history = useHistory();
@@ -226,7 +227,12 @@ const Header = () => {
     if (localToken) {
       userToken = jwt_decode(localToken);
     } else {
+      // if(isJwtExpired(token)===true){
+
+      // }
+
       userToken = token ? jwt_decode(token) : null;
+      // console.log("isExpired is:", token ? isJwtExpired(token) : "hihi");
     }
     userToken ? setUsername(userToken.user_name) : setUsername("Tài khoản");
   }, [token]);
