@@ -33,22 +33,22 @@ const Profile = () => {
               <nav className="user-sidelink clearfix">
                 <ul>
                   <li className="nav-li">
-                    <Link>
+                    <Link to="">
                       <i className="fas fa-tachometer-alt"></i> Thông tin chung
                     </Link>
                   </li>
                   <li className="nav-li">
                     <Link to="/profile">
                       <i className="fas fa-info-circle"></i> Thông tin tài khoản
-                    </Link>
+                    </Link >
                   </li>
                   <li className="nav-li">
-                    <Link>
+                    <Link to="">
                       <i className="fas fa-book"></i> Truyện theo dõi
                     </Link>
                   </li>
                   <li className="nav-li">
-                    <Link>
+                    <Link to="">
                       <i className="far fa-list-alt"></i> Truyện đã đăng
                     </Link>
                   </li>

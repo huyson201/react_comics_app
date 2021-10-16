@@ -17,7 +17,7 @@ import { xoaDau } from "../../utilFunction";
 import { ACTIONS } from "../../context/Action";
 import Cookies from "js-cookie";
 import axiosClient from "../../api/axiosClient";
-
+import { useHistory } from "react-router-dom";
 const Navbar = (props) => {
   const [open, setOpen] = useState(false);
   const history = useHistory();

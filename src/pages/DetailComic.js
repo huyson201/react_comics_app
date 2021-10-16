@@ -11,7 +11,11 @@ import { BsStar, BsStarFill } from "react-icons/bs";
 
 const DetailComic = () => {
   const history = useHistory();
-  const { id } = useParams();
+
+  const { name } = useParams();
+  const arrName = name.split("-")
+  const id = arrName[arrName.length - 1]
+  console.log(id)
   const [data, setData] = useState();
   const [checked, setChecked] = useState(false);
   // this.dialog.showAlert('Hello Dialog!')

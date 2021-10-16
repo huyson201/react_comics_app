@@ -22,13 +22,13 @@ function App() {
             <Route exact path="/" component={Home}></Route>
             <Route path="/tim-kiem" component={Home}></Route>
             <Route path="/the-loai/:name" component={Home}></Route>
-            <Route path="/truyen-tranh/:name" component={Home}></Route>
+            <Route path="/truyen-tranh/:name" component={DetailComic}></Route>
             <Route path="/login" component={Login}></Route>
             <Route path="/register" component={Register}></Route>
             <Route path="/account" component={Profile}></Route>
             <Route path="/profile" component={Profile}></Route>
             <Route path="/changePassword" component={Profile}></Route>
-            <Route path="/comics/:id" component={DetailComic}></Route>
+            {/* <Route path="/comics/:id" component={DetailComic}></Route> */}
             <Route path="*" component={() => "404 NOT FOUND"}></Route>
           </Switch>
           <Footer />
