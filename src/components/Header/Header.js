@@ -17,7 +17,6 @@ import { xoaDau } from "../../utilFunction";
 import { ACTIONS } from "../../context/Action";
 import Cookies from "js-cookie";
 import axiosClient from "../../api/axiosClient";
-import { isJwtExpired } from "jwt-check-expiration";
 
 const Navbar = (props) => {
   const [open, setOpen] = useState(false);
@@ -110,10 +109,12 @@ const Navbar = (props) => {
     </>
   );
 };
-const SearchForm = ({ categories }) => {
+const SearchForm = ({}) => {
+  const [categories, setCategories] = useState([]);
   const history = useHistory();
   const [key, setKey] = useState("");
   const [open, setOpen] = useState(false);
+  const [checkedState, setCheckedState] = useState([0]);
   const handleSubmit = (e) => {
     const keyUrl = xoaDau(key);
     e.preventDefault();
@@ -123,6 +124,43 @@ const SearchForm = ({ categories }) => {
       keyword: key,
     });
     setKey("");
+  };
+  useEffect(() => {
+    const getAllCategories = () => {
+      comicApi
+        .getAllCategories()
+        .then((response) => {
+          setCategories(response.data.data);
+          setCheckedState(new Array(response.data.data.length).fill(false));
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    getAllCategories();
+  }, []);
+  const [status, setStatus] = useState("");
+  const handleSubmitFilter = (e) => {
+    e.preventDefault();
+    let arr = [];
+    categories.map((item, i) => {
+      if (checkedState[i] == true) {
+        arr.push(item["category_id"]);
+      }
+    });
+    console.log(status);
+    console.log(arr);
+    history.push({
+      pathname: "/tim-kiem-nang-cao",
+      search: `the-loai=${arr}&tinh-trang=${status}`,
+    });
+  };
+
+  const handleOnChange = (position) => {
+    const updatedCheckedState = checkedState.map((item, index) =>
+      index === position ? !item : item
+    );
+    setCheckedState(updatedCheckedState);
   };
   return (
     <>
@@ -154,12 +192,18 @@ const SearchForm = ({ categories }) => {
         <div id="filter-collapse">
           <div className="filter-form">
             <div className="filter-category">Thể loại</div>
-            <form>
+            <form onSubmit={handleSubmitFilter}>
               <div className="check-box-form">
                 {categories.map((item, i) => {
                   return (
-                    <label key={item['category_id']} className="checkbox-item">
-                      <input type="checkbox" />
+                    <label key={item["category_id"]} className="checkbox-item">
+                      <input
+                        onChange={() => handleOnChange(i)}
+                        checked={!!checkedState[i]}
+                        id={item["category_id"]}
+                        name={item["category_name"]}
+                        type="checkbox"
+                      />
                       <span className="checkmark"></span>
                       <div>{item["category_name"]}</div>
                     </label>
@@ -168,14 +212,19 @@ const SearchForm = ({ categories }) => {
               </div>
               <div className="filter-status">Trình trạng</div>
               <div className="status-form">
-                <select className="select-status">
-                  <option value="0">Bỏ trống</option>
-                  <option value="1">Đang tiến hành</option>
-                  <option value="2">Đã hoàn thành</option>
+                <select
+                  value={status}
+                  className="select-status"
+                  onChange={(e) => setStatus(e.target.value)}
+                >
+                  <option value="Tất cả">Tất cả</option>
+                  <option value="Đang tiến hành">Đang tiến hành</option>
+                  <option value="Đã hoàn thành">Đã hoàn thành</option>
                 </select>
               </div>
-              <div className="btn-wrap"><button>Lọc ngay</button></div>
-         
+              <div className="btn-wrap">
+                <button>Lọc ngay</button>
+              </div>
             </form>
           </div>
         </div>
@@ -187,12 +236,14 @@ const SearchForm = ({ categories }) => {
 const Header = () => {
   const { token, update } = useUser();
   const [categories, setCategories] = useState([]);
+  const [checkedState, setCheckedState] = useState([]);
   useEffect(() => {
     const getAllCategories = () => {
       comicApi
         .getAllCategories()
         .then((response) => {
           setCategories(response.data.data);
+          setCheckedState(new Array(response.data.data.length).fill(false));
         })
         .catch((err) => {
           console.log(err);
@@ -200,6 +251,8 @@ const Header = () => {
     };
     getAllCategories();
   }, []);
+  console.log(checkedState);
+
   const [username, setUsername] = useState("Tài khoản");
   const { dispatch } = useUser();
 
@@ -240,7 +293,7 @@ const Header = () => {
     <>
       <header>
         <Navbar username={username} categories={categories} />
-        <SearchForm categories={categories} />
+        <SearchForm checkedState={checkedState} categories={categories} />
       </header>
     </>
   );

@@ -52,7 +52,6 @@ const ListItem = ({ other, item }) => {
   );
 };
 const ListComic = ({ other, title, data }) => {
-  console.log(data);
   return (
     <>
       <div className="list-title">

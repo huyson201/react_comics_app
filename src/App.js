@@ -21,6 +21,7 @@ function App() {
           <Switch>
             <Route exact path="/" component={Home}></Route>
             <Route path="/tim-kiem" component={Home}></Route>
+            <Route path="/tim-kiem-nang-cao" component={Home}></Route>
             <Route path="/the-loai/:name" component={Home}></Route>
             <Route path="/truyen-tranh/:name" component={DetailComic}></Route>
             <Route path="/login" component={Login}></Route>

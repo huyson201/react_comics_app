@@ -3,15 +3,19 @@ import Pagination from "react-js-pagination";
 import comicApi from "../api/comicApi";
 import ListComic from "../components/ListComic/ListComic";
 import { useHistory, matchPath } from "react-router-dom";
+import queryString from "query-string";
 const Home = () => {
   const history = useHistory();
+  console.log(history.location);
   // const ourRequest = axios.CancelToken.source();
+  const params = queryString.parse(history.location.search);
   const key = history.location.keyword;
   const idCate = history.location.id;
   const pathName = history.location.pathname;
   const pathCate = matchPath(pathName, { path: "/the-loai/:name" });
   const [comicData, setcomicData] = useState([]);
   const [activePage, setActivePage] = useState(1);
+  const [activePageSearch, setActivePageSearch] = useState(1);
   const [title, setTitle] = useState("");
   const [other, setCheckOther] = useState(false);
   const [filters, setFilters] = useState({
@@ -33,7 +37,7 @@ const Home = () => {
   };
 
   const handleSearchPageChange = (pageNumber) => {
-    setActivePage(pageNumber);
+    setActivePageSearch(pageNumber);
     setFiltersSearch({
       ...filtersSearch,
       offset: filtersSearch.limit * (pageNumber - 1),
@@ -75,15 +79,33 @@ const Home = () => {
       console.log(error);
     }
   };
+  const getComicsByFilters = async () => {
+    try {
+      const res = await comicApi.getComicByFilters(
+        params["the-loai"],
+        params["tinh-trang"]
+      );
+      const data = res.data;
+      console.log(res.data);
+      setTitle(`Trang lọc truyện`);
+      setcomicData(data["rows"]);
+      // setTotal(data["count"]);
+    } catch (error) {
+      setcomicData([]);
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-    // setActivePage(1);
     if (pathCate) {
       setCheckOther(true);
       getComicsByCategory();
     } else if (key) {
       setCheckOther(true);
       getComicsByKeyword();
+    } else if (Object.keys(params).length != 0) {
+      setCheckOther(true);
+      getComicsByFilters();
     } else {
       setCheckOther(false);
       getAllComics();
@@ -91,14 +113,18 @@ const Home = () => {
     return () => {
       setcomicData([]);
       // ourRequest.cancel();
+      if (filters.offset != 0) {
+        setActivePage(1);
+        setFilters({ limit: 12, offset: 0 });
+      }
     };
-  }, [filters, pathName, key, filtersSearch]);
+  }, [filters, pathName, key, filtersSearch,params["the-loai"],params["tinh-trang"]]);
   return (
     <div>
       <ListComic title={title} other={other} data={comicData} />
-      {!idCate ? (
+      {!idCate && Object.keys(params).length == 0? (
         <Pagination
-          activePage={activePage}
+          activePage={key ? activePageSearch : activePage}
           itemClass="paginate-item"
           linkClass="page-link"
           itemsCountPerPage={filters.limit}
