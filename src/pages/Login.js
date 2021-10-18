@@ -1,24 +1,31 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Form, FormLabel, FormGroup, Button } from "react-bootstrap";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axiosClient from "../api/axiosClient";
 import { ACTIONS } from "../context/Action";
-import { useUser } from "../context/UserProvider";
+import { useData } from "../context/Provider";
 import Cookies from "js-cookie";
 import ModalNotify from "../components/Modal/ModalNotify";
+import {
+  FB_EMAIL,
+  FB_PW,
+  LABEL_EMAIL,
+  LABEL_FORGOT,
+  LABEL_PW,
+  LABEL_REMEMBER,
+  LOGIN_SUCCESS,
+  TITLE_LOGIN,
+  VALIDATE_PW,
+} from "../constants";
 
 const Login = () => {
-  const history = useHistory();
   const [user_email, setEmail] = useState();
   const [user_password, setPassword] = useState();
   const [checked, setChecked] = useState(false);
-  const { dispatch } = useUser();
-
+  const { dispatch, show, error, message } = useData();
+  // const [message, setMessage] = useState(null);
+  // const [error, setError] = useState(null);
   // const [show, setShow] = useState(false);
-
-  // const open = () => {
-  //   setShow((prev) => !prev);
-  // };
 
   function storageData(res) {
     Cookies.set("refreshToken", res.data.data.refreshToken, {
@@ -30,98 +37,132 @@ const Login = () => {
     try {
       event.preventDefault();
       if (user_password.length < 6) {
-        alert("Mật khẩu >= 6 ký tự");
+        dispatch({
+          type: ACTIONS.MODAL_NOTIFY,
+          payload: {
+            show: true,
+            message: null,
+            error: VALIDATE_PW,
+          },
+        });
+
+        // setError(VALIDATE_PW);
+        // setShow(true);
       } else {
         //POST data to login
         const res = await axiosClient.post("/login", {
           user_email: user_email,
           user_password: user_password,
         });
-        //dispatch token data
-        dispatch({
-          type: ACTIONS.TOKEN,
-          payload: {
-            token: res.data.data.token,
-            refreshToken: res.data.data.refreshToken,
-          },
-        });
-        //remember me
-        if (checked === true) {
-          storageData(res);
+
+        //set show modal
+        if (res.data.error || res.data.message) {
+          dispatch({
+            type: ACTIONS.MODAL_NOTIFY,
+            payload: {
+              show: true,
+              message: null,
+              error: res.data.error ? res.data.error : res.data.message,
+            },
+          });
+          // setShow(true);
+          // res.data.error
+          //   ? setError(res.data.error)
+          //   : setError(res.data.message);
+        } else {
+          dispatch({
+            type: ACTIONS.MODAL_NOTIFY,
+            payload: {
+              show: true,
+              message: LOGIN_SUCCESS,
+              error: null,
+            },
+          });
+          // setShow(true);
+          // setMessage("Đăng nhập thành công ! ");
+          // setError(null);
+          //dispatch token data
+          dispatch({
+            type: ACTIONS.TOKEN,
+            payload: {
+              token: res.data.data.token,
+              refreshToken: res.data.data.refreshToken,
+            },
+          });
+          //remember me
+          if (checked === true) {
+            storageData(res);
+          }
         }
-        // open();
-        alert(res.data.msg);
-        history.push("/");
       }
     } catch (error) {
       console.log(error);
     }
   };
+
   return (
-    <Form className="form" onSubmit={handleSubmit}>
-      <h3>Đăng nhập</h3>
+    <>
+      <ModalNotify show={show} error={error} message={message} />
 
-      <FormGroup className="form-group">
-        <FormLabel>Email </FormLabel>
-        <Form.Control
-          required
-          type="email"
-          placeholder="Nhập email ..."
-          onChange={(e) => setEmail(e.target.value)}
-        />
+      <Form className="form" onSubmit={handleSubmit}>
+        <h3>{TITLE_LOGIN}</h3>
 
-        <Form.Control.Feedback type="invalid">
-          Vui lòng nhập email !
-        </Form.Control.Feedback>
-      </FormGroup>
+        <FormGroup className="form-group">
+          <FormLabel>{LABEL_EMAIL}</FormLabel>
+          <Form.Control
+            required
+            type="email"
+            placeholder="Nhập email ..."
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-      <FormGroup className="form-group">
-        <FormLabel>Mật khẩu</FormLabel>
-        <Form.Control
-          required
-          type="password"
-          placeholder="Nhập mật khẩu ..."
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <Form.Control.Feedback type="invalid">
-          Vui lòng nhập mật khẩu !
-        </Form.Control.Feedback>
-      </FormGroup>
+          <Form.Control.Feedback type="invalid">
+            {FB_EMAIL}
+          </Form.Control.Feedback>
+        </FormGroup>
 
-      <div className="flex-remember">
-        <Form.Check
-          type="checkbox"
-          label=" Nhớ phiên đăng nhập"
-          checked={checked}
-          onChange={() => setChecked(!checked)}
-          // feedback="You must agree before sign in."
-          // feedbackType="invalid"
-        />
+        <FormGroup className="form-group">
+          <FormLabel>{LABEL_PW}</FormLabel>
+          <Form.Control
+            required
+            type="password"
+            placeholder="Nhập mật khẩu ..."
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Form.Control.Feedback type="invalid">{FB_PW}</Form.Control.Feedback>
+        </FormGroup>
 
-        <p className="forgot-password text-right">
-          <a href="#">Quên mật khẩu ?</a>
+        <div className="flex-remember">
+          <Form.Check
+            type="checkbox"
+            label={LABEL_REMEMBER}
+            checked={checked}
+            onChange={() => setChecked(!checked)}
+          />
+
+          <p className="forgot-password text-right">
+            <a href="#">{LABEL_FORGOT}</a>
+          </p>
+        </div>
+
+        <Button
+          type="submit"
+          className="btn btn-primary btn-block"
+          variant="dark"
+        >
+          {TITLE_LOGIN}
+        </Button>
+
+        <p className="text-right">
+          Bạn chưa có tài khoản?
+          {/*  */}
+          <Link to="/register" className="here">
+            {" "}
+            Nhấn vào đây để đăng ký
+          </Link>
         </p>
-      </div>
-
-      <Button
-        type="submit"
-        className="btn btn-primary btn-block"
-        variant="dark"
-      >
-        Đăng nhập
-      </Button>
-
-      <p className="text-right">
-        Bạn chưa có tài khoản?
-        {/*  */}
-        <Link to="/register" className="here">
-          {" "}
-          Nhấn vào đây để đăng ký
-        </Link>
-      </p>
-
-      {/* <ModalNotify show={show} setShow={setShow} /> */}
-    </Form>
+      </Form>
+    </>
   );
 };
 

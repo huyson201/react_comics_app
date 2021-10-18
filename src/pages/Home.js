@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Pagination from "react-js-pagination";
 import comicApi from "../api/comicApi";
 import ListComic from "../components/ListComic/ListComic";

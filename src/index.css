@@ -252,6 +252,7 @@ li:hover {
 
 .icon_star {
   font-size: 32px;
+  margin: 2px;
   color: #ffe290;
 }
 
@@ -340,10 +341,53 @@ li:hover {
 }
 
 /* Track */
-.list_item_chap::-webkit-scrollbar-track {
+/* .list_item_chap::-webkit-scrollbar-track {
   box-shadow: inset 0 0 6px rgb(214 212 212 / 30%);
-}
+} */
 /* Handle */
 .list_item_chap::-webkit-scrollbar-thumb {
   background: #794b4b;
+}
+
+/* ===================Modal=================== */
+
+.modal-body {
+  font-size: 18px !important;
+  display: flex;
+  justify-content: space-between;
+  padding-right: 20px !important;
+}
+
+.custom-dialog {
+  top: 3% !important;
+  left: 27% !important;
+}
+
+.fa-check-circle {
+  font-size: 25px;
+  color: rgb(68, 0, 255);
+}
+
+.close {
+  font-size: 20px;
+  margin-top: 2px;
+  color: #404040;
+}
+
+.error {
+  font-size: 27px;
+  color: red;
+}
+
+.star {
+  cursor: pointer;
+}
+
+.stars_radio-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  clip: rect(1px, 1px, 1px, 1px);
 }

@@ -20,6 +20,22 @@ const reducers = (state, action) => {
         ...state,
         update: action.payload,
       };
+    case ACTIONS.MODAL_NOTIFY:
+      if (action.payload) {
+        return {
+          ...state,
+          show: action.payload.show,
+          error: action.payload.error,
+          message: action.payload.message,
+        };
+      }
+      return {
+        ...state,
+        show: false,
+        error: null,
+        message: null,
+      };
+
     default:
       return state;
   }

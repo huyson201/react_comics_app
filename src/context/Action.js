@@ -1,4 +1,5 @@
 export const ACTIONS = {
     TOKEN: "TOKEN",
-    UPDATE:"UPDATE"
+    CHAPTERS:"CHAPTERS",
+    MODAL_NOTIFY:"MODAL_NOTIFY"
 };

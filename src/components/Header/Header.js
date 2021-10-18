@@ -11,31 +11,38 @@ import { Collapse } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
 import "./header.css";
 import jwt_decode from "jwt-decode";
-import { useUser } from "../../context/UserProvider";
+import { useData } from "../../context/Provider";
 import comicApi from "../../api/comicApi";
 import { xoaDau } from "../../utilFunction";
 import { ACTIONS } from "../../context/Action";
 import Cookies from "js-cookie";
 import axiosClient from "../../api/axiosClient";
+import ModalNotify from "../Modal/ModalNotify";
+import { LOGOUT_SUCCESS } from "../../constants";
 
 const Navbar = (props) => {
   const [open, setOpen] = useState(false);
-  const history = useHistory();
-  const { dispatch } = useUser();
-
+  const { dispatch, show, error, message } = useData();
   const handleLogout = () => {
-    Cookies.remove("token");
+    dispatch({
+      type: ACTIONS.MODAL_NOTIFY,
+      payload: {
+        show: true,
+        message: LOGOUT_SUCCESS,
+        error: null,
+      },
+    });
     Cookies.remove("refreshToken");
     dispatch({ type: ACTIONS.TOKEN, payload: null });
-    dispatch({
-      type: ACTIONS.UPDATE,
-      payload: false,
-    });
-    alert("logout thanh cong");
   };
 
   return (
     <>
+      <ModalNotify
+        show={show}
+        error={error}
+        message={message ? message : null}
+      />
       <nav className="nav-bar">
         <Link to="/" className="nav-item">
           <MdHome />
@@ -234,7 +241,7 @@ const SearchForm = ({}) => {
 };
 
 const Header = () => {
-  const { token, update } = useUser();
+  const { token, dispatch } = useData();
   const [categories, setCategories] = useState([]);
   const [checkedState, setCheckedState] = useState([]);
   useEffect(() => {
@@ -254,7 +261,6 @@ const Header = () => {
   console.log(checkedState);
 
   const [username, setUsername] = useState("Tài khoản");
-  const { dispatch } = useUser();
 
   useEffect(() => {
     let localToken = null;
@@ -280,15 +286,12 @@ const Header = () => {
     if (localToken) {
       userToken = jwt_decode(localToken);
     } else {
-      // if(isJwtExpired(token)===true){
-
-      // }
-
       userToken = token ? jwt_decode(token) : null;
-      // console.log("isExpired is:", token ? isJwtExpired(token) : "hihi");
     }
     userToken ? setUsername(userToken.user_name) : setUsername("Tài khoản");
+    // console.log(userToken);
   }, [token]);
+
   return (
     <>
       <header>
