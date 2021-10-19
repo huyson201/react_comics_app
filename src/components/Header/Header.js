@@ -23,24 +23,7 @@ import ModalNotify from "../Modal/ModalNotify";
 import { LOGOUT_SUCCESS } from "../../constants";
 const Navbar = (props) => {
   const [open, setOpen] = useState(false);
-  const history = useHistory();
-  // const { dispatch } = useUser();
-  const dispatch = useDispatch();
-  const handleLogout = () => {
-    Cookies.remove("token");
-    Cookies.remove("refreshToken");
-    dispatch(logout());
-    // dispatch({ type: ACTIONS.TOKEN, payload: null });
-    // dispatch({
-    //   type: ACTIONS.UPDATE,
-    //   payload: false,
-    // });
-    alert("logout thanh cong");
-}
-
-//const Navbar = (props) => {
-  const [open, setOpen] = useState(false);
-  const { dispatch, show, error, message } = useData();
+  const dispatch_redux = useDispatch();
   const handleLogout = () => {
     dispatch({
       type: ACTIONS.MODAL_NOTIFY,
@@ -51,8 +34,9 @@ const Navbar = (props) => {
       },
     });
     Cookies.remove("refreshToken");
-    dispatch({ type: ACTIONS.TOKEN, payload: null });
+    dispatch_redux(logout());
   };
+  const { dispatch, show, error, message } = useData();
 
   return (
     <>
@@ -257,8 +241,7 @@ const SearchForm = ({}) => {
 };
 
 const Header = () => {
-  const { token, dispatch } = useData();
-  // const { token, update } = useUser();
+  const dispatch_redux = useDispatch();
   const token = useSelector((state) => state.user.token);
   const [categories, setCategories] = useState([]);
   const [checkedState, setCheckedState] = useState([]);
@@ -277,7 +260,6 @@ const Header = () => {
     getAllCategories();
   }, []);
 
-
   const [username, setUsername] = useState("Tài khoản");
 
   useEffect(() => {
@@ -291,7 +273,7 @@ const Header = () => {
         })
         .then((res) => {
           localToken = res.data.token;
-          dispatch(
+          dispatch_redux(
             login({
               token: localToken,
               refreshToken: Cookies.get("refreshToken"),

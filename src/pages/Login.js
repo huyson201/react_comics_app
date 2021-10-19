@@ -25,11 +25,7 @@ const Login = () => {
   const [user_password, setPassword] = useState();
   const [checked, setChecked] = useState(false);
   const { dispatch, show, error, message } = useData();
-  // const [message, setMessage] = useState(null);
-  // const [error, setError] = useState(null);
-  // const { dispatch } = useUser();
-  const dispatch = useDispatch();
-  // const [show, setShow] = useState(false);
+  const dispatch_redux = useDispatch();
 
   function storageData(res) {
     Cookies.set("refreshToken", res.data.data.refreshToken, {
@@ -49,9 +45,6 @@ const Login = () => {
             error: VALIDATE_PW,
           },
         });
-
-        // setError(VALIDATE_PW);
-        // setShow(true);
       } else {
         //POST data to login
         const res = await axiosClient.post("/login", {
@@ -82,34 +75,25 @@ const Login = () => {
               error: null,
             },
           });
-          // setShow(true);
-          // setMessage("Đăng nhập thành công ! ");
-          // setError(null);
-          //dispatch token data
-          dispatch({
-            type: ACTIONS.TOKEN,
-            payload: {
+
+          dispatch_redux(
+            login({
               token: res.data.data.token,
               refreshToken: res.data.data.refreshToken,
-            },
-          });
+            })
+          );
           //remember me
           if (checked === true) {
             storageData(res);
           }
-        //dispatch token data
-        // dispatch({
-        //   type: ACTIONS.TOKEN,
-        //   payload: {
-        //     token: res.data.data.token,
-        //     refreshToken: res.data.data.refreshToken,
-        //   },
-        // });
-        dispatch(login({
-          token: res.data.data.token,
-          refreshToken: res.data.data.refreshToken,
-        }));
-       
+
+          dispatch(
+            login({
+              token: res.data.data.token,
+              refreshToken: res.data.data.refreshToken,
+            })
+          );
+        }
       }
     } catch (error) {
       console.log(error);

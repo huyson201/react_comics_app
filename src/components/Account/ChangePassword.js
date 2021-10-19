@@ -5,14 +5,24 @@ import axiosClient from "../../api/axiosClient";
 import { useData } from "../../context/Provider";
 import { ACTIONS } from "../../context/Action";
 import ModalNotify from "../Modal/ModalNotify";
-import { CHECK_PW, LABEL_CF_NEW_PW, LABEL_NEW_PW, LABEL_OLD_PW, TITLE_CHANGE_PW, WARN_LOGIN } from "../../constants";
+import {
+  CHECK_PW,
+  LABEL_CF_NEW_PW,
+  LABEL_NEW_PW,
+  LABEL_OLD_PW,
+  TITLE_CHANGE_PW,
+  WARN_LOGIN,
+} from "../../constants";
+import { logout } from "../../features/auth/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const ChangePassword = () => {
   const [old_password, setUserPassword] = useState();
   const [new_password, setUserPasswordNew] = useState();
   const [cfnew_password, setUserPasswordCfNew] = useState();
-  const { dispatch, show, error, message, token } = useData();
-
+  const { dispatch, show, error, message } = useData();
+  const { token, refreshToken } = useSelector((state) => state.user);
+  const dispatch_redux = useDispatch();
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -59,10 +69,7 @@ const ChangePassword = () => {
           });
         }
       } else {
-        dispatch({
-          type: ACTIONS.TOKEN,
-          payload: null,
-        });
+        dispatch_redux(logout());
         dispatch({
           type: ACTIONS.MODAL_NOTIFY,
           payload: {

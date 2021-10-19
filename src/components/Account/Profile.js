@@ -13,12 +13,16 @@ import {
   TITLE_ACCOUNT,
   WARN_LOGIN,
 } from "../../constants";
+import { useDispatch, useSelector } from "react-redux";
+import { login, logout } from "../../features/auth/userSlice";
 
 const Profile = () => {
   const [user_name, setUserName] = useState();
   const [user_email, setEmail] = useState();
-  const { dispatch, show, error, message, token, refreshToken } = useData();
+  const { dispatch, show, error, message } = useData();
 
+  const { token, refreshToken } = useSelector((state) => state.user);
+  const dispatch_redux = useDispatch();
   useEffect(() => {
     const userToken = token ? jwt_decode(token) : null;
     if (userToken != null) {
@@ -31,20 +35,16 @@ const Profile = () => {
     const resUpdate = await axiosClient.post("/refresh-token", {
       refreshToken: refreshToken,
     });
-    dispatch({
-      type: ACTIONS.TOKEN,
-      payload: {
+    dispatch_redux(
+      login({
         token: resUpdate.data.token,
         refreshToken: refreshToken,
-      },
-    });
+      })
+    );
   };
 
   const resetDispatch = () => {
-    dispatch({
-      type: ACTIONS.TOKEN,
-      payload: null,
-    });
+    dispatch_redux(logout());
 
     dispatch({
       type: ACTIONS.MODAL_NOTIFY,

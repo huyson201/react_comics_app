@@ -25,6 +25,8 @@ import Star from "../components/Rate/Star";
 import { useData } from "../context/Provider";
 import ModalNotify from "../components/Modal/ModalNotify";
 import { ACTIONS } from "../context/Action";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../features/auth/userSlice";
 
 const DetailComic = () => {
   const history = useHistory();
@@ -34,7 +36,9 @@ const DetailComic = () => {
   const [data, setData] = useState();
   const [checked, setChecked] = useState(false);
 
-  const { dispatch, show, error, message, token } = useData();
+  const { dispatch, show, error, message} = useData();
+  const { token, refreshToken } = useSelector((state) => state.user);
+  const dispatch_redux = useDispatch();
   // const [show, setShow] = useState(false);
   // const [message, setMessage] = useState(null);
   // const [error, setError] = useState(null);
@@ -56,6 +60,7 @@ const DetailComic = () => {
           error: WARN_LOGIN,
         },
       });
+      dispatch_redux(logout());
 
       // setError(WARN_LOGIN);
       // setShow(true);
