@@ -17,6 +17,8 @@ import {
   TITLE_LOGIN,
   VALIDATE_PW,
 } from "../constants";
+import { login } from "../features/auth/userSlice";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
   const [user_email, setEmail] = useState();
@@ -25,6 +27,8 @@ const Login = () => {
   const { dispatch, show, error, message } = useData();
   // const [message, setMessage] = useState(null);
   // const [error, setError] = useState(null);
+  // const { dispatch } = useUser();
+  const dispatch = useDispatch();
   // const [show, setShow] = useState(false);
 
   function storageData(res) {
@@ -93,7 +97,19 @@ const Login = () => {
           if (checked === true) {
             storageData(res);
           }
-        }
+        //dispatch token data
+        // dispatch({
+        //   type: ACTIONS.TOKEN,
+        //   payload: {
+        //     token: res.data.data.token,
+        //     refreshToken: res.data.data.refreshToken,
+        //   },
+        // });
+        dispatch(login({
+          token: res.data.data.token,
+          refreshToken: res.data.data.refreshToken,
+        }));
+       
       }
     } catch (error) {
       console.log(error);

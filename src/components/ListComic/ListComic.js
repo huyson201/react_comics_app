@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import { xoaDau } from "../../utilFunction";
 import comicApi from "../../api/comicApi";
 import axios from "axios";
+import { useSelector } from "react-redux";
+import { getAllComics } from "../../features/comics/comicSlice";
 const ListItem = ({ other, item }) => {
   const name = xoaDau(item["comic_name"]);
   const ourRequest = axios.CancelToken.source();
@@ -52,6 +54,8 @@ const ListItem = ({ other, item }) => {
   );
 };
 const ListComic = ({ other, title, data }) => {
+  // const comics = useSelector(getAllComics);
+  // console.log(comics)
   return (
     <>
       <div className="list-title">

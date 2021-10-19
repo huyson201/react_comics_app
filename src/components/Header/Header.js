@@ -17,10 +17,28 @@ import { xoaDau } from "../../utilFunction";
 import { ACTIONS } from "../../context/Action";
 import Cookies from "js-cookie";
 import axiosClient from "../../api/axiosClient";
+import { useDispatch, useSelector } from "react-redux";
+import { login, logout } from "../../features/auth/userSlice";
 import ModalNotify from "../Modal/ModalNotify";
 import { LOGOUT_SUCCESS } from "../../constants";
-
 const Navbar = (props) => {
+  const [open, setOpen] = useState(false);
+  const history = useHistory();
+  // const { dispatch } = useUser();
+  const dispatch = useDispatch();
+  const handleLogout = () => {
+    Cookies.remove("token");
+    Cookies.remove("refreshToken");
+    dispatch(logout());
+    // dispatch({ type: ACTIONS.TOKEN, payload: null });
+    // dispatch({
+    //   type: ACTIONS.UPDATE,
+    //   payload: false,
+    // });
+    alert("logout thanh cong");
+}
+
+//const Navbar = (props) => {
   const [open, setOpen] = useState(false);
   const { dispatch, show, error, message } = useData();
   const handleLogout = () => {
@@ -155,8 +173,6 @@ const SearchForm = ({}) => {
         arr.push(item["category_id"]);
       }
     });
-    console.log(status);
-    console.log(arr);
     history.push({
       pathname: "/tim-kiem-nang-cao",
       search: `the-loai=${arr}&tinh-trang=${status}`,
@@ -242,6 +258,8 @@ const SearchForm = ({}) => {
 
 const Header = () => {
   const { token, dispatch } = useData();
+  // const { token, update } = useUser();
+  const token = useSelector((state) => state.user.token);
   const [categories, setCategories] = useState([]);
   const [checkedState, setCheckedState] = useState([]);
   useEffect(() => {
@@ -258,7 +276,7 @@ const Header = () => {
     };
     getAllCategories();
   }, []);
-  console.log(checkedState);
+
 
   const [username, setUsername] = useState("Tài khoản");
 
@@ -273,13 +291,19 @@ const Header = () => {
         })
         .then((res) => {
           localToken = res.data.token;
-          dispatch({
-            type: ACTIONS.TOKEN,
-            payload: {
+          dispatch(
+            login({
               token: localToken,
               refreshToken: Cookies.get("refreshToken"),
-            },
-          });
+            })
+          );
+          // dispatch({
+          //   type: ACTIONS.TOKEN,
+          //   payload: {
+          //     token: localToken,
+          //     refreshToken: Cookies.get("refreshToken"),
+          //   },
+          // });
         });
     }
 

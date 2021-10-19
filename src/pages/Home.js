@@ -4,9 +4,17 @@ import comicApi from "../api/comicApi";
 import ListComic from "../components/ListComic/ListComic";
 import { useHistory, matchPath } from "react-router-dom";
 import queryString from "query-string";
+import { useDispatch, useSelector } from "react-redux";
+import { getComics } from "../features/comics/comicSlice";
+import { unwrapResult } from "@reduxjs/toolkit";
 const Home = () => {
   const history = useHistory();
   console.log(history.location);
+  const dispatch = useDispatch();
+  
+  // setcomicData(comics["rows"]);
+  // console.log(comics);
+
   // const ourRequest = axios.CancelToken.source();
   const params = queryString.parse(history.location.search);
   const key = history.location.keyword;
@@ -61,6 +69,7 @@ const Home = () => {
       const data = res.data.data;
       setTotal(data["count"]);
       setcomicData(data["rows"]);
+      //  setTotal(data["count"]);
       setTitle("Truyện mới cập nhật");
     } catch (error) {
       setcomicData([]);
@@ -119,10 +128,14 @@ const Home = () => {
       }
     };
   }, [filters, pathName, key, filtersSearch,params["the-loai"],params["tinh-trang"]]);
+
+  // useEffect(() => {
+  //   dispatch(getComics(filters));
+  // }, []);
   return (
     <div>
       <ListComic title={title} other={other} data={comicData} />
-      {!idCate && Object.keys(params).length == 0? (
+      {!idCate && Object.keys(params).length == 0 ? (
         <Pagination
           activePage={key ? activePageSearch : activePage}
           itemClass="paginate-item"
