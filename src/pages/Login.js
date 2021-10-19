@@ -62,10 +62,6 @@ const Login = () => {
               error: res.data.error ? res.data.error : res.data.message,
             },
           });
-          // setShow(true);
-          // res.data.error
-          //   ? setError(res.data.error)
-          //   : setError(res.data.message);
         } else {
           dispatch({
             type: ACTIONS.MODAL_NOTIFY,
@@ -86,13 +82,6 @@ const Login = () => {
           if (checked === true) {
             storageData(res);
           }
-
-          dispatch(
-            login({
-              token: res.data.data.token,
-              refreshToken: res.data.data.refreshToken,
-            })
-          );
         }
       }
     } catch (error) {

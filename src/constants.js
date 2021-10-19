@@ -40,3 +40,6 @@ export const FOLLOW = "Theo dõi";
 export const READ_FIRST = "Đọc từ đầu";
 export const READ_LAST = "Đọc chap mới nhất";
 export const COMMENT = "Bình luận";
+
+export const PRE_CHAPTER = "Chap trước";
+export const NEXT_CHAPTER = "Chap tiếp";

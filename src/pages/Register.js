@@ -28,9 +28,6 @@ const Register = () => {
   const [user, setUser] = useState();
   const [validated, setValidated] = useState(false);
   const { dispatch, show, error, message } = useData();
-  // const [message, setMessage] = useState(null);
-  // const [error, setError] = useState(null);
-  // const [show, setShow] = useState(false);
 
   useEffect(() => {
     setUser({
@@ -59,9 +56,6 @@ const Register = () => {
             error: VALIDATE_PW,
           },
         });
-
-        // setError(VALIDATE_PW);
-        // setShow(true);
       } else if (checkCfPw(user_password, confirm_password) === false) {
         dispatch({
           type: ACTIONS.MODAL_NOTIFY,
@@ -71,8 +65,6 @@ const Register = () => {
             error: CHECK_PW,
           },
         });
-        // setError(CHECK_PW);
-        // setShow(true);
       } else {
         const res = await axiosClient.post("/users", user);
         console.log(res.data);
@@ -85,10 +77,6 @@ const Register = () => {
               error: res.data.error ? res.data.error : res.data.message,
             },
           });
-          // setShow(true);
-          // res.data.error
-          //   ? setError(res.data.error)
-          //   : setError(res.data.message);
         } else {
           dispatch({
             type: ACTIONS.MODAL_NOTIFY,
@@ -98,10 +86,6 @@ const Register = () => {
               error: null,
             },
           });
-
-          // setError(null);
-          // setMessage("");
-          // setShow(true);
         }
       }
     }

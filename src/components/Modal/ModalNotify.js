@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { Modal, Button } from "react-bootstrap";
-import { Link, useHistory } from "react-router-dom";
+import React from "react";
+import { Modal} from "react-bootstrap";
+import { useHistory } from "react-router-dom";
 import { FiX, FiXCircle } from "react-icons/fi";
 import { WARN_LOGIN } from "../../constants";
 import { useData } from "../../context/Provider";
@@ -8,23 +8,9 @@ import { ACTIONS } from "../../context/Action";
 
 const ModalNotify = (props) => {
   const { dispatch, show, error, message } = useData();
-  // const [show, setShow] = useState();
-  // const [message, setMessage] = useState();
-  // const [error, setError] = useState();
-  // const [idComic, setIdComic] = useState();
   const history = useHistory();
   let path = history.location.pathname;
-  console.log(path);
-
-  // useEffect(() => {
-  //   setMessage(props.message);
-  //   setShow(props.show);
-  //   setError(props.error);
-  //   // setIdComic(props.idComic);
-  // }, [props.message, props.error, props.show]);
-  console.log(message);
   const handleClose = () => {
-    console.log(error);
     dispatch({
       type: ACTIONS.MODAL_NOTIFY,
       payload: {
@@ -33,9 +19,7 @@ const ModalNotify = (props) => {
         error: null,
       },
     });
-    // setShow(false);
-    // setError(null);
-    // setMessage(null);
+
     switch (path) {
       case "/login":
         if (error) {

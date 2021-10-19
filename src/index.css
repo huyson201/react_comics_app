@@ -217,17 +217,17 @@ li:hover {
   color: #ffffff;
 }
 
-.button {
+.content .button {
   display: flex;
   align-items: center;
 }
 
-.button .head_left {
+.content .button .head_left {
   flex: 1;
   display: flex;
 }
 
-.button .head_left a {
+.content .button .head_left a {
   background: #45965e;
   padding: 14px;
   display: inline-block;
@@ -237,11 +237,11 @@ li:hover {
   margin: 2px;
 }
 
-.button .head_left a:first-child {
+.content .button .head_left a:first-child {
   background: #b96060;
 }
 
-.button .head_left a:hover {
+.content .button .head_left a:hover {
   opacity: 0.5;
 }
 
@@ -390,4 +390,21 @@ li:hover {
   width: 1px;
   height: 1px;
   clip: rect(1px, 1px, 1px, 1px);
+}
+
+/* ================================CHAPTER================================ */
+
+.chapter_content .button {
+  display: flex;
+  justify-content: center;
+}
+
+.chapter_content .button .btn-nav {
+  background-color: #926060;
+  margin: 5px;
+  border-radius: 0;
+}
+
+.chapter_content .button .btn-nav:hover {
+  opacity: 0.7;
 }

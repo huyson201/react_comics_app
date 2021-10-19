@@ -9,12 +9,9 @@ import { getComics } from "../features/comics/comicSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
 const Home = () => {
   const history = useHistory();
-  console.log(history.location);
+  //console.log(history.location);
   const dispatch = useDispatch();
   
-  // setcomicData(comics["rows"]);
-  // console.log(comics);
-
   // const ourRequest = axios.CancelToken.source();
   const params = queryString.parse(history.location.search);
   const key = history.location.keyword;

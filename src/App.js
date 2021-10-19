@@ -26,7 +26,7 @@ function App() {
             <Route path="/the-loai/:name" component={Home}></Route>
             <Route path="/truyen-tranh/:name" component={DetailComic}></Route>
             <Route
-              path="/truyen-tranh/:name/:chapter/:id"
+              path="/:chapter/:id/truyen-tranh/:name"
               component={DetailChapter}
             ></Route>
             <Route path="/login" component={Login}></Route>

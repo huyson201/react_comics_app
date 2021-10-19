@@ -27,6 +27,8 @@ import ModalNotify from "../components/Modal/ModalNotify";
 import { ACTIONS } from "../context/Action";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/auth/userSlice";
+import { xoaDau } from "../utilFunction";
+import comicApi from "../api/comicApi";
 
 const DetailComic = () => {
   const history = useHistory();
@@ -39,10 +41,6 @@ const DetailComic = () => {
   const { dispatch, show, error, message} = useData();
   const { token, refreshToken } = useSelector((state) => state.user);
   const dispatch_redux = useDispatch();
-  // const [show, setShow] = useState(false);
-  // const [message, setMessage] = useState(null);
-  // const [error, setError] = useState(null);
-
   // rating
   let arrStar = [1, 2, 3, 4, 5];
   arrStar.length = 5;
@@ -61,14 +59,11 @@ const DetailComic = () => {
         },
       });
       dispatch_redux(logout());
-
-      // setError(WARN_LOGIN);
-      // setShow(true);
     }
   };
   //func get comic
   const getComic = async () => {
-    const res = await axiosClient.get("/comics/" + id);
+    const res = await comicApi.getComicByID(id);
     if (res.data.error) {
       console.log(res.data.error);
     } else {
@@ -99,9 +94,6 @@ const DetailComic = () => {
           error: WARN_LOGIN,
         },
       });
-
-      // setError(WARN_LOGIN);
-      // setShow(true);
     } else {
       dispatch({
         type: ACTIONS.MODAL_NOTIFY,
@@ -111,9 +103,6 @@ const DetailComic = () => {
           error: null,
         },
       });
-
-      // setMessage("Cảm ơn bạn đã đánh giá !");
-      // setShow(true);
     }
   };
 
@@ -241,9 +230,10 @@ const DetailComic = () => {
                       .map((e, i) => {
                         return (
                           <Link
-                            to={`/truyen-tranh/${name}-${e.chapter_id}/${id}`}
+                            to={`/${xoaDau(e.chapter_name)}/${
+                              e.chapter_id
+                            }/truyen-tranh/${name}`}
                             key={i}
-                            title={e.chapter_name}
                           >
                             <span>{e.chapter_name}</span>
                             <span>{updateDate(e.updatedAt)}</span>
