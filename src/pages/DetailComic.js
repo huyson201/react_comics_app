@@ -38,7 +38,7 @@ const DetailComic = () => {
   const [data, setData] = useState();
   const [checked, setChecked] = useState(false);
 
-  const { dispatch, show, error, message} = useData();
+  const { dispatch, show, error, message } = useData();
   const { token, refreshToken } = useSelector((state) => state.user);
   const dispatch_redux = useDispatch();
   // rating
@@ -75,7 +75,7 @@ const DetailComic = () => {
     const res = await axiosClient.post(
       "/rates",
       {
-        rate_star: starIndex + 1,
+        rate_star: +starIndex + 1,
         comic_id: id,
       },
       {
@@ -84,7 +84,7 @@ const DetailComic = () => {
         },
       }
     );
-
+    console.log(+starIndex + 1);
     if (res.data.error) {
       dispatch({
         type: ACTIONS.MODAL_NOTIFY,
@@ -115,6 +115,7 @@ const DetailComic = () => {
         rate();
       }
     }
+    window.scrollTo(0, 0);
   }, [id, starIndex]);
 
   //func read first chapter
