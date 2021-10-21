@@ -105,8 +105,6 @@ const Profile = () => {
 
   return (
     <>
-      {" "}
-      <ModalNotify show={show} error={error} message={message} />
       <Form className="form-profile" onSubmit={handleSubmit}>
         <h3>{TITLE_ACCOUNT}</h3>
         <FormGroup className="form-group">
@@ -119,7 +117,6 @@ const Profile = () => {
             onChange={(e) => setUserName(e.target.value)}
           />
         </FormGroup>
-
         <FormGroup className="form-group">
           <FormLabel>{LABEL_EMAIL} </FormLabel>
           <Form.Control

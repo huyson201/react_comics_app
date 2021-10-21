@@ -93,7 +93,6 @@ const Register = () => {
 
   return (
     <>
-      <ModalNotify show={show} error={error} message={message} />
       <Form
         className="form"
         onSubmit={handleSubmit}

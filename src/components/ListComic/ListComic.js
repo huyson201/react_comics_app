@@ -5,12 +5,7 @@ import { Link } from "react-router-dom";
 import { xoaDau } from "../../utilFunction";
 import comicApi from "../../api/comicApi";
 import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  getAllComics,
-  getComicsByCategory,
-} from "../../features/comics/comicSlice";
-import Pagination from "react-js-pagination";
+import { useSelector } from "react-redux";
 const ListItem = ({ other, item }) => {
   const name = xoaDau(item["comic_name"]);
   const ourRequest = axios.CancelToken.source();
@@ -31,7 +26,7 @@ const ListItem = ({ other, item }) => {
     if (other) {
       getChaptersByID();
     } else {
-      // setNewChapter(item["chapters"][0]["chapter_name"]);
+      setNewChapter(item["chapters"][0]["chapter_name"]);
     }
     return () => {
       ourRequest.cancel();

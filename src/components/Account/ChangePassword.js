@@ -86,8 +86,6 @@ const ChangePassword = () => {
 
   return (
     <>
-      {" "}
-      <ModalNotify show={show} error={error} message={message} />
       <Form className="form-profile" onSubmit={handleSubmit}>
         <h3>{TITLE_CHANGE_PW}</h3>
         <FormGroup className="form-group">

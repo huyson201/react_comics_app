@@ -12,12 +12,14 @@ import DetailComic from "./pages/DetailComic";
 import DetailChapter from "./pages/DetailChapter";
 import "moment/min/locales";
 import Provider from "./context/Provider";
+import ModalNotify from "./components/Modal/ModalNotify";
 
 function App() {
   return (
     <div className="wrapper">
       <Provider>
         <Router>
+          <ModalNotify />
           <Header />
           <Switch>
             <Route exact path="/" component={Home}></Route>

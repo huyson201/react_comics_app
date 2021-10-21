@@ -91,7 +91,6 @@ const Login = () => {
 
   return (
     <>
-      <ModalNotify show={show} error={error} message={message} />
 
       <Form className="form" onSubmit={handleSubmit}>
         <h3>{TITLE_LOGIN}</h3>

@@ -14,7 +14,7 @@ export const getComicsByCategory = createAsyncThunk(
   "comics/getComicsByCategory",
   async (id, thunkAPI) => {
     const index = thunkAPI.getState().comics.offset;
-    // thunkAPI.dispatch(getCategoryById(id));
+    thunkAPI.dispatch(getCategoryById(id));
     const comics = await comicApi.getComicsByCategory(id, index);
     console.log(comics.data.data);
     return comics.data.data;
