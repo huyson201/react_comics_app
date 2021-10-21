@@ -204,15 +204,15 @@ const DetailComic = () => {
             </div>
             <div className="head_right">
               <div className="rating">
-                {arrStar.map((e, index) => (
-                  <>
+                {arrStar.map((e, i) => (
+                  <span  key={i}> 
                     <Star
-                      key={e}
-                      index={index}
+                      key={i}
+                      index={i}
                       changeStarIndex={changeStarIndex}
-                      style={starIndex >= index ? true : false}
+                      style={starIndex >= i ? true : false}
                     />
-                  </>
+                  </span>
                 ))}
               </div>
             </div>

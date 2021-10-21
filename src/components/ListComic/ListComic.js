@@ -5,8 +5,12 @@ import { Link } from "react-router-dom";
 import { xoaDau } from "../../utilFunction";
 import comicApi from "../../api/comicApi";
 import axios from "axios";
-import { useSelector } from "react-redux";
-import { getAllComics } from "../../features/comics/comicSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getAllComics,
+  getComicsByCategory,
+} from "../../features/comics/comicSlice";
+import Pagination from "react-js-pagination";
 const ListItem = ({ other, item }) => {
   const name = xoaDau(item["comic_name"]);
   const ourRequest = axios.CancelToken.source();
@@ -27,7 +31,7 @@ const ListItem = ({ other, item }) => {
     if (other) {
       getChaptersByID();
     } else {
-      setNewChapter(item["chapters"][0]["chapter_name"]);
+      // setNewChapter(item["chapters"][0]["chapter_name"]);
     }
     return () => {
       ourRequest.cancel();
@@ -53,19 +57,22 @@ const ListItem = ({ other, item }) => {
     </>
   );
 };
-const ListComic = ({ other, title, data }) => {
-  // const comics = useSelector(getAllComics);
-  // console.log(comics)
+const ListComic = ({ other, title }) => {
+  const comics = useSelector((state) => state.comics.comics);
+  const category = useSelector((state) => state.comics.selectedCategory);
+  console.log(comics);
+  // console.log(other);
   return (
     <>
       <div className="list-title">
         <BsStars />
-        {title}
+        {category ? title +=category["category_name"] : title}
       </div>
       <div className="list-comic">
-        {data.map((e, i) => {
-          return <ListItem other={other} key={i} item={e}></ListItem>;
-        })}
+        {
+          comics.map((e, i) => {
+            return <ListItem other={other} key={i} item={e}></ListItem>;
+          })}
       </div>
     </>
   );

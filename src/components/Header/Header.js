@@ -21,6 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { login, logout } from "../../features/auth/userSlice";
 import ModalNotify from "../Modal/ModalNotify";
 import { LOGOUT_SUCCESS } from "../../constants";
+import { getCategories } from "../../features/comics/categorySlice";
 const Navbar = (props) => {
   const [open, setOpen] = useState(false);
   const dispatch_redux = useDispatch();
@@ -37,7 +38,7 @@ const Navbar = (props) => {
     dispatch_redux(logout());
   };
   const { dispatch, show, error, message } = useData();
-
+  const categories = useSelector((state) => state.categories.categories);
   return (
     <>
       <ModalNotify
@@ -99,7 +100,7 @@ const Navbar = (props) => {
       <Collapse in={open}>
         <div id="categories-collapse">
           <div className="list-category">
-            {props.categories.map((item, i) => {
+            {categories.map((item, i) => {
               const name = xoaDau(item["category_name"]);
               const linkTo = {
                 pathname: `/the-loai/${name}`,
@@ -119,11 +120,12 @@ const Navbar = (props) => {
   );
 };
 const SearchForm = ({}) => {
-  const [categories, setCategories] = useState([]);
+  // const [categories, setCategories] = useState([]);
   const history = useHistory();
   const [key, setKey] = useState("");
   const [open, setOpen] = useState(false);
   const [checkedState, setCheckedState] = useState([0]);
+  const categories = useSelector((state) => state.categories.categories);
   const handleSubmit = (e) => {
     const keyUrl = xoaDau(key);
     e.preventDefault();
@@ -134,20 +136,21 @@ const SearchForm = ({}) => {
     });
     setKey("");
   };
-  useEffect(() => {
-    const getAllCategories = () => {
-      comicApi
-        .getAllCategories()
-        .then((response) => {
-          setCategories(response.data.data);
-          setCheckedState(new Array(response.data.data.length).fill(false));
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
-    getAllCategories();
-  }, []);
+  
+  // useEffect(() => {
+  //   const getAllCategories = () => {
+  //     comicApi
+  //       .getAllCategories()
+  //       .then((response) => {
+  //         setCategories(response.data.data);
+  //         setCheckedState(new Array(response.data.data.length).fill(false));
+  //       })
+  //       .catch((err) => {
+  //         console.log(err);
+  //       });
+  //   };
+  //   getAllCategories();
+  // }, []);
   const [status, setStatus] = useState("");
   const handleSubmitFilter = (e) => {
     e.preventDefault();
@@ -205,8 +208,8 @@ const SearchForm = ({}) => {
                   return (
                     <label key={item["category_id"]} className="checkbox-item">
                       <input
-                        onChange={() => handleOnChange(i)}
-                        checked={!!checkedState[i]}
+                        // onChange={() => handleOnChange(i)}
+                        // checked={!!checkedState[i]}
                         id={item["category_id"]}
                         name={item["category_name"]}
                         type="checkbox"
@@ -246,19 +249,20 @@ const Header = () => {
   const [categories, setCategories] = useState([]);
   const [checkedState, setCheckedState] = useState([]);
   useEffect(() => {
-    const getAllCategories = () => {
-      comicApi
-        .getAllCategories()
-        .then((response) => {
-          setCategories(response.data.data);
-          setCheckedState(new Array(response.data.data.length).fill(false));
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
-    getAllCategories();
-  }, []);
+    dispatch_redux(getCategories());
+    // const getAllCategories = () => {
+    //   comicApi
+    //     .getAllCategories()
+    //     .then((response) => {
+    //       setCategories(response.data.data);
+    //       setCheckedState(new Array(response.data.data.length).fill(false));
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+    // };
+    // getAllCategories();
+  }, [dispatch_redux]);
 
   const [username, setUsername] = useState("Tài khoản");
 

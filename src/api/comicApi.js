@@ -1,20 +1,25 @@
+import { LIMIT } from '../constants';
 import axiosClient from './axiosClient'
 const comicApi={
-    getAll: (params)=>{
+    getAll: (offset)=>{
         const url = "/comics";
-        return axiosClient.get(url,{params})
+        return axiosClient.get(url,{params:{limit: LIMIT, offset:offset}})
     },
-    getAllCategories: (params)=>{
+    getAllCategories: ()=>{
         const url = "/categories";
-        return axiosClient.get(url,{params})
+        return axiosClient.get(url)
     },
-    getComicsByCategory: (id,params)=>{
+    getCategoryById: (id)=>{
+        const url = "/categories/"+id;
+        return axiosClient.get(url)
+    },
+    getComicsByCategory: (id,offset)=>{
         const url = `/categories/${id}/comics`;
-        return axiosClient.get(url,{params})
+        return axiosClient.get(url,{params:{limit: LIMIT, offset:offset}})
     },
-    getComicsByKeyword: (key,params)=>{
+    getComicsByKeyword: (key,offset)=>{
         const url = `/comics/search?q=${key}`;
-        return axiosClient.get(url,{params})
+        return axiosClient.get(url,{params:{limit: LIMIT, offset:offset}})
     },
     getComicByID: (id)=>{
         const url = `/comics/${id}`;
