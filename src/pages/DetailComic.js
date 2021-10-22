@@ -30,6 +30,7 @@ import { logout } from "../features/auth/userSlice";
 import { xoaDau } from "../utilFunction";
 import comicApi from "../api/comicApi";
 import Loading from "../components/Loading/Loading";
+import { followComic } from "../features/comics/followSlice";
 
 const DetailComic = () => {
   const history = useHistory();
@@ -38,7 +39,6 @@ const DetailComic = () => {
   const id = arrName[arrName.length - 1];
   const [data, setData] = useState();
   const [checked, setChecked] = useState(false);
-
   const { dispatch, show, error, message } = useData();
   const { token, refreshToken } = useSelector((state) => state.user);
   const dispatch_redux = useDispatch();
@@ -128,7 +128,11 @@ const DetailComic = () => {
   const handleReadLast = () => {
     history.push("/");
   };
-
+  useEffect(() => {
+    if (checked && token) {
+      dispatch_redux(followComic({id:id, userToken:token}));
+    }
+  }, [checked, token]);
   return (
     <>
       {data == null ? (

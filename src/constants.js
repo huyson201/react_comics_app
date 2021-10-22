@@ -33,6 +33,7 @@ export const NEW_COMIC_TITLE = "Truyện mới cập nhật";
 export const CATEGORY_COMIC_TITLE = "Truyện theo thể loại ";
 export const SEARCH_BY_KEY_COMIC_TITLE = "Tìm kiếm theo từ khoá ";
 export const FILTER_COMIC_TITLE = "Trang lọc truyện";
+export const FOLLOW_COMICS = "Truyện theo dõi";
 export const STATUS = "Trạng thái";
 export const SCORE = "Điểm";
 export const UPDATE = "Cập nhật";

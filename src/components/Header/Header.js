@@ -20,14 +20,15 @@ import axiosClient from "../../api/axiosClient";
 import { useDispatch, useSelector } from "react-redux";
 import { login, logout } from "../../features/auth/userSlice";
 import ModalNotify from "../Modal/ModalNotify";
-import { LOGOUT_SUCCESS } from "../../constants";
+import { LOGIN_SUCCESS, LOGOUT_SUCCESS, WARN_LOGIN } from "../../constants";
 import { getCategories } from "../../features/comics/categorySlice";
+import { isJwtExpired } from "jwt-check-expiration";
 const Navbar = (props) => {
   const [open, setOpen] = useState(false);
-  const status = useSelector(state=>state.comics.status)
+  const status = useSelector((state) => state.comics.status);
   useEffect(() => {
-    if(status =='loading'){
-    setOpen(false);
+    if (status == "loading") {
+      setOpen(false);
     }
   }, [status]);
   const dispatch_redux = useDispatch();
@@ -45,7 +46,22 @@ const Navbar = (props) => {
   };
   const { dispatch, show, error, message } = useData();
   const categories = useSelector((state) => state.categories.categories);
-  
+  const isLogged = useSelector((state) => state.user.isLogged);
+  console.log(isLogged);
+  const handleClick = () => {
+    if (!isLogged) {
+      console.log(isLogged);
+      dispatch({
+        type: ACTIONS.MODAL_NOTIFY,
+        payload: {
+          show: true,
+          message: null,
+          error: WARN_LOGIN,
+        },
+      });
+    }
+  };
+
   return (
     <>
       <ModalNotify
@@ -67,10 +83,10 @@ const Navbar = (props) => {
           <ImBooks />
           Thể loại
         </div>
-        <Link to="/history" className="nav-item">
+        <Link to="#"  className="nav-item">
           <ImHistory /> Lịch sử
         </Link>
-        <Link to="/truyen-theo-doi" className="nav-item">
+        <Link to={isLogged? "/truyen-theo-doi":"#"} onClick={handleClick} className="nav-item">
           <MdBookmark />
           Theo dõi
         </Link>
@@ -110,7 +126,11 @@ const Navbar = (props) => {
             {categories.map((item, i) => {
               const name = xoaDau(item["category_name"]);
               return (
-                <Link to={`/the-loai/${name}/${item["category_id"]}`} className="category-item" key={i}>
+                <Link
+                  to={`/the-loai/${name}/${item["category_id"]}`}
+                  className="category-item"
+                  key={i}
+                >
                   {item["category_name"]}
                 </Link>
               );
@@ -237,6 +257,7 @@ const Header = () => {
   const dispatch_redux = useDispatch();
   const token = useSelector((state) => state.user.token);
   const [categories, setCategories] = useState([]);
+  const isLogged = useSelector((state) => state.user.isLogged);
   useEffect(() => {
     dispatch_redux(getCategories());
   }, [dispatch_redux]);
@@ -260,7 +281,6 @@ const Header = () => {
               refreshToken: Cookies.get("refreshToken"),
             })
           );
-     
         });
     }
 

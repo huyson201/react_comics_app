@@ -1,44 +1,42 @@
 import React, { useEffect, useState } from "react";
 import Pagination from "react-js-pagination";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import ListComic from "../components/ListComic/ListComic";
-import { LIMIT } from "../constants";
-
+import { FOLLOW_COMICS, LIMIT } from "../constants";
+import jwt_decode from "jwt-decode";
+import { getComicsFollow } from "../features/comics/followSlice";
+import { removeComicList } from "../features/comics/comicSlice";
+import Loading from "../components/Loading/Loading";
 const Follow = () => {
-    const history = useHistory();
-    const dispatch = useDispatch();
-    const [activePage, setActivePage] = useState(1);
-    const [title, setTitle] = useState("");
-    const [other, setCheckOther] = useState(false);
-     
-  const handlePageChange = (pageNumber) => {
-    setActivePage(pageNumber);
-  };
-
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const [title, setTitle] = useState("");
+  const [other, setCheckOther] = useState(false);
+  const [isFollow, setIsFollow] = useState(false);
+  const { token } = useSelector((state) => state.user);
+  const status = useSelector((state) => state.follows.status);
+  console.log(status);
   useEffect(() => {
-    dispatch()
-  }, []);
-
-  useEffect(() => {
-    setActivePage(1);
-  }, []);
+    if (token) {
+      console.log(token);
+      setCheckOther(true);
+      setTitle(FOLLOW_COMICS);
+      setIsFollow(true);
+      const user_id = jwt_decode(token).user_uuid;
+      dispatch(getComicsFollow({ id: user_id, userToken: token }));
+    } else {
+      setIsFollow(false);
+    }
+    // return () => {
+    //   setIsFollow(false);
+    // };
+  }, [token]);
 
   return (
     <div>
-      <ListComic title={title} other={other} />
-        <Pagination
-          activePage={activePage}
-          itemClass="paginate-item"
-          linkClass="page-link"
-          itemsCountPerPage={LIMIT}
-        //   totalItemsCount={total >= 0 ? total : 0}
-          pageRangeDisplayed={3}
-          hideNavigation={true}
-          firstPageText={"Đầu"}
-          lastPageText={"Cuối"}
-          onChange={(val) => handlePageChange(val)}
-        />
+      {status == "loading" && <Loading />}
+      {status == "success" && <ListComic title={title} other={other} isFollow={isFollow} />}
     </div>
   );
 };

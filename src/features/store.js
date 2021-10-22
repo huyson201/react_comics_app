@@ -8,7 +8,7 @@ const store = configureStore({
     comics: comicsReducer,
     user: userReducer,
     categories : categorySlice,  
-    follow :followSlice,
+    follows :followSlice,
   },
 });
 export default store;

@@ -31,8 +31,7 @@ const ListItem = ({ other, item }) => {
       } else {
         setNewChapter(item["chapters"][0]["chapter_name"]);
       }
-    } catch (error) {
-    }
+    } catch (error) {}
     return () => {
       ourRequest.cancel();
     };
@@ -57,9 +56,10 @@ const ListItem = ({ other, item }) => {
     </>
   );
 };
-const ListComic = ({ other, title }) => {
+const ListComic = ({ other, title, isFollow }) => {
   const comics = useSelector((state) => state.comics.comics);
   const category = useSelector((state) => state.comics.selectedCategory);
+  const comics_follow = useSelector((state) => state.follows.comics);
   return (
     <>
       <div className="list-title">
@@ -67,10 +67,15 @@ const ListComic = ({ other, title }) => {
         {category ? CATEGORY_COMIC_TITLE + category["category_name"] : title}
       </div>
       <div className="list-comic">
-        {
+        {comics &&
+          !isFollow &&
           comics.map((e, i) => {
             return <ListItem other={other} key={i} item={e}></ListItem>;
           })}
+        {isFollow ?
+          comics_follow.map((e, i) => {
+            return <ListItem other={other} key={i} item={e}></ListItem>;
+          }):null}
       </div>
     </>
   );

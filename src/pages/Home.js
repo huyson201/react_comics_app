@@ -36,7 +36,7 @@ const Home = () => {
   };
 
   useEffect(() => {
-    dispatch(setOffSet((activePage - 1) * 6));
+    dispatch(setOffSet((activePage - 1) * LIMIT));
   }, [activePage]);
 
   useEffect(() => {
@@ -82,8 +82,8 @@ const Home = () => {
   return (
     <div>
       {status == "loading" && <Loading />}
-      <ListComic title={title} other={other} />
-      {total >= LIMIT && (
+      {status == "success" && <ListComic title={title} other={other} />}
+      {total >= LIMIT && status == "success" &&(
         <Pagination
           activePage={activePage}
           itemClass="paginate-item"
