@@ -31,6 +31,8 @@ import { xoaDau } from "../utilFunction";
 import comicApi from "../api/comicApi";
 import Loading from "../components/Loading/Loading";
 import { followComic } from "../features/comics/followSlice";
+import followApi from "../api/followApi";
+import jwtDecode from "jwt-decode";
 
 const DetailComic = () => {
   const history = useHistory();
@@ -40,13 +42,12 @@ const DetailComic = () => {
   const [data, setData] = useState();
   const [checked, setChecked] = useState(false);
   const { dispatch, show, error, message } = useData();
-  const { token, refreshToken } = useSelector((state) => state.user);
+  const { token, refreshToken,isLogged } = useSelector((state) => state.user);
   const dispatch_redux = useDispatch();
   // rating
   let arrStar = [1, 2, 3, 4, 5];
   arrStar.length = 5;
   const [starIndex, setStarIndex] = useState();
-
   const changeStarIndex = (index) => {
     if (token && isJwtExpired(token) === false) {
       setStarIndex(index);
@@ -129,8 +130,22 @@ const DetailComic = () => {
     history.push("/");
   };
   useEffect(() => {
+    if (isLogged) {
+      const user_id = jwtDecode(token).user_uuid;
+      const findFollow = async () => {
+        const res = await followApi.getFollow(user_id, id);
+        console.log(res.data.data.count);
+        if (res.data.data.count > 0) {
+          setChecked(true);
+        }
+      };
+      findFollow();
+    }
+  }, [isLogged]);
+
+  useEffect(() => {
     if (checked && token) {
-      dispatch_redux(followComic({id:id, userToken:token}));
+      dispatch_redux(followComic({ id: id, userToken: token }));
     }
   }, [checked, token]);
   return (

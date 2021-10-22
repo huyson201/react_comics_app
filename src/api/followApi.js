@@ -25,5 +25,11 @@ const followApi = {
       }
     );
   },
+  getFollow:(user_id,comic_id)=>{
+    const url = `follows?user_uuid=${user_id}&comic_id=${comic_id}`;
+    return axiosClient.get(
+      url,
+    );
+  }
 };
 export default followApi;
