@@ -29,6 +29,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/auth/userSlice";
 import { xoaDau } from "../utilFunction";
 import comicApi from "../api/comicApi";
+import Loading from "../components/Loading/Loading";
 
 const DetailComic = () => {
   const history = useHistory();
@@ -130,131 +131,148 @@ const DetailComic = () => {
 
   return (
     <>
-      <ModalNotify show={show} error={error} message={message} name={name} />
-      <div className="container-detail">
-        <div className="content">
-          <h1 className="title_comic">{data ? data.comic_name : ""}</h1>
-          <div className="head comic_bg">
-            <div className="head_left">
-              <img
-                src={data ? data.comic_img : "#"}
-                alt={data ? data.comic_name : ""}
-              />
-            </div>
-            <div className="head_right">
-              <div className="list_cate">
-                <div className="type">Thể loại</div>
-                <div className="item">
-                  {data
-                    ? data.categories.map((e, i) => {
-                        return (
-                          <Link key={i} to={`/categories/${e.category_id}`}>
-                            {e.category_name}
-                          </Link>
-                        );
-                      })
-                    : ""}
+      {data == null ? (
+        <Loading />
+      ) : (
+        <>
+          <ModalNotify
+            show={show}
+            error={error}
+            message={message}
+            name={name}
+          />
+          <div className="container-detail">
+            <div className="content">
+              <h1 className="title_comic">{data ? data.comic_name : ""}</h1>
+              <div className="head comic_bg">
+                <div className="head_left">
+                  <img
+                    src={data ? data.comic_img : "#"}
+                    alt={data ? data.comic_name : ""}
+                  />
+                </div>
+                <div className="head_right">
+                  <div className="list_cate">
+                    <div className="type">Thể loại</div>
+                    <div className="item">
+                      {data
+                        ? data.categories.map((e, i) => {
+                            return (
+                              <Link key={i} to={`/categories/${e.category_id}`}>
+                                {e.category_name}
+                              </Link>
+                            );
+                          })
+                        : ""}
+                    </div>
+                  </div>
+                  <div className="status">
+                    <div className="type">{STATUS}</div>
+                    <div className="item">{data ? data.comic_status : ""}</div>
+                  </div>
+                  <div className="score">
+                    <div className="type">{SCORE}</div>
+                    <div className="item">{RATE}</div>
+                  </div>
+                  <div className="update_time">
+                    <div className="type">{UPDATE}</div>
+                    <div className="item">
+                      {data
+                        ? updateDate(
+                            data.chapters.sort((a, b) =>
+                              b.chapter_id > a.chapter_id ? 1 : -1
+                            )[0].updatedAt
+                          )
+                        : ""}
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="status">
-                <div className="type">{STATUS}</div>
-                <div className="item">{data ? data.comic_status : ""}</div>
-              </div>
-              <div className="score">
-                <div className="type">{SCORE}</div>
-                <div className="item">{RATE}</div>
-              </div>
-              <div className="update_time">
-                <div className="type">{UPDATE}</div>
-                <div className="item">
-                  {data
-                    ? updateDate(
-                        data.chapters.sort((a, b) =>
-                          b.chapter_id > a.chapter_id ? 1 : -1
-                        )[0].updatedAt
-                      )
-                    : ""}
+
+              <div className="button comic_bg">
+                <div className="head_left">
+                  <Link
+                    to="#"
+                    type="button"
+                    onClick={() => setChecked(!checked)}
+                  >
+                    {checked === true ? (
+                      <>
+                        <MdBookmark className="icon" />
+                        {UNFOLLOW}
+                      </>
+                    ) : (
+                      <>
+                        <MdBookmarkBorder className="icon" />
+                        {FOLLOW}
+                      </>
+                    )}
+                  </Link>
+                  <Link to="#" type="button" onClick={handleReadFirst}>
+                    <BiBookReader className="icon" /> {READ_FIRST}
+                  </Link>
+
+                  <Link to="#" type="button" onClick={handleReadLast}>
+                    <BiBookReader className="icon" /> {READ_LAST}
+                  </Link>
+                </div>
+                <div className="head_right">
+                  <div className="rating">
+                    {arrStar.map((e, i) => (
+                      <span key={i}>
+                        <Star
+                          key={i}
+                          index={i}
+                          changeStarIndex={changeStarIndex}
+                          style={starIndex >= i ? true : false}
+                        />
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div className="button comic_bg">
-            <div className="head_left">
-              <Link to="#" type="button" onClick={() => setChecked(!checked)}>
-                {checked === true ? (
-                  <>
-                    <MdBookmark className="icon" />
-                    {UNFOLLOW}
-                  </>
-                ) : (
-                  <>
-                    <MdBookmarkBorder className="icon" />
-                    {FOLLOW}
-                  </>
-                )}
-              </Link>
-              <Link to="#" type="button" onClick={handleReadFirst}>
-                <BiBookReader className="icon" /> {READ_FIRST}
-              </Link>
+              <div className="body">
+                <div className="list_chap comic_bg">
+                  <div className="flex">
+                    <h2 className="heading">{LABEL_LIST_CHAPTER}</h2>
+                  </div>
+                  <div className="list_item_chap">
+                    {/* Truyền id chapter và list chapter */}
+                    {data
+                      ? data.chapters
+                          .sort((a, b) =>
+                            b.chapter_id > a.chapter_id ? 1 : -1
+                          )
+                          .map((e, i) => {
+                            return (
+                              <Link
+                                to={`/${xoaDau(e.chapter_name)}/${
+                                  e.chapter_id
+                                }/truyen-tranh/${name}`}
+                                key={i}
+                              >
+                                <span>{e.chapter_name}</span>
+                                <span>{updateDate(e.updatedAt)}</span>
+                              </Link>
+                            );
+                          })
+                      : ""}
+                  </div>
+                </div>
+                <div className="desc comic_bg">
+                  <h2 className="heading">{LABEL_CONTENT}</h2>
+                  {data ? data.comic_desc : ""}
+                </div>
+              </div>
 
-              <Link to="#" type="button" onClick={handleReadLast}>
-                <BiBookReader className="icon" /> {READ_LAST}
-              </Link>
-            </div>
-            <div className="head_right">
-              <div className="rating">
-                {arrStar.map((e, i) => (
-                  <span  key={i}> 
-                    <Star
-                      key={i}
-                      index={i}
-                      changeStarIndex={changeStarIndex}
-                      style={starIndex >= i ? true : false}
-                    />
-                  </span>
-                ))}
+              <div className="footer">
+                <div className="comment_fb comic_bg">{COMMENT}</div>
               </div>
             </div>
           </div>
-
-          <div className="body">
-            <div className="list_chap comic_bg">
-              <div className="flex">
-                <h2 className="heading">{LABEL_LIST_CHAPTER}</h2>
-              </div>
-              <div className="list_item_chap">
-                {/* Truyền id chapter và list chapter */}
-                {data
-                  ? data.chapters
-                      .sort((a, b) => (b.chapter_id > a.chapter_id ? 1 : -1))
-                      .map((e, i) => {
-                        return (
-                          <Link
-                            to={`/${xoaDau(e.chapter_name)}/${
-                              e.chapter_id
-                            }/truyen-tranh/${name}`}
-                            key={i}
-                          >
-                            <span>{e.chapter_name}</span>
-                            <span>{updateDate(e.updatedAt)}</span>
-                          </Link>
-                        );
-                      })
-                  : ""}
-              </div>
-            </div>
-            <div className="desc comic_bg">
-              <h2 className="heading">{LABEL_CONTENT}</h2>
-              {data ? data.comic_desc : ""}
-            </div>
-          </div>
-
-          <div className="footer">
-            <div className="comment_fb comic_bg">{COMMENT}</div>
-          </div>
-        </div>
-      </div>
+        </>
+      )}
     </>
   );
 };

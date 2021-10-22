@@ -16,18 +16,26 @@ export const getComicsByCategory = createAsyncThunk(
     const index = thunkAPI.getState().comics.offset;
     thunkAPI.dispatch(getCategoryById(id));
     const comics = await comicApi.getComicsByCategory(id, index);
-    console.log(comics.data.data);
     return comics.data.data;
   }
 );
-console.log(getComicsByCategory());
 
 export const getComicsByKey = createAsyncThunk(
   "comics/searchByKey",
   async (key, thunkAPI) => {
+    thunkAPI.dispatch(removeSelectedCategory());
     const index = thunkAPI.getState().comics.offset;
     const comics = await comicApi.getComicsByKeyword(key, index);
     return comics.data.data;
+  }
+);
+export const getComicsByFilters = createAsyncThunk(
+  "comics/searchByFilters",
+  async ({ categories, status }, thunkAPI) => {
+    thunkAPI.dispatch(removeSelectedCategory());
+    const index = thunkAPI.getState().comics.offset;
+    const comics = await comicApi.getComicByFilters(categories, status, index);
+    return comics.data;
   }
 );
 export const getCategoryById = createAsyncThunk(
@@ -35,6 +43,13 @@ export const getCategoryById = createAsyncThunk(
   async (id) => {
     const categories = await comicApi.getCategoryById(id);
     return categories.data.data;
+  }
+);
+export const getComicByID = createAsyncThunk(
+  "comics/selectedComic",
+  async (id) => {
+    const comic = await comicApi.getComicByID(id);
+    return comic.data.data;
   }
 );
 const comicSlice = createSlice({
@@ -56,6 +71,9 @@ const comicSlice = createSlice({
     setOffSet(state, action) {
       state.offset = action.payload;
     },
+    removeSelectedComic(state){
+      state.selectedComic = null;
+    }
   },
   extraReducers: {
     [getComics.pending]: (state) => {
@@ -97,6 +115,17 @@ const comicSlice = createSlice({
       state.status = "rejected";
     },
     [getComicsByKey.fulfilled]: (state, action) => {
+      state.status = "success";
+      state.comics = action.payload.rows;
+      state.count = action.payload.count;
+    },
+    [getComicsByFilters.pending]: (state) => {
+      state.status = "loading";
+    },
+    [getComicsByFilters.rejected]: (state) => {
+      state.status = "rejected";
+    },
+    [getComicsByFilters.fulfilled]: (state, action) => {
       state.status = "success";
       state.comics = action.payload.rows;
       state.count = action.payload.count;

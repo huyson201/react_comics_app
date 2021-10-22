@@ -55,7 +55,7 @@
   opacity: 1;
 }
 .category-item {
-  padding: 10px 0px;
+  padding: 6px 0px;
   width: 20%;
 }
 .category-item:hover > a,

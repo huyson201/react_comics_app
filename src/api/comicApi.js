@@ -25,9 +25,9 @@ const comicApi={
         const url = `/comics/${id}`;
         return axiosClient.get(url);
     },
-    getComicByFilters: (categories,status)=>{
+    getComicByFilters: (categories,status,offset)=>{
         const url = `/comics/filter?categories=[${categories}]&status=${status}`;
-        return axiosClient.get(url);
+        return axiosClient.get(url,{params:{limit: LIMIT, offset:offset}});
     },
     getChapterByID: (id)=>{
         const url = `/chapters/${id}`;

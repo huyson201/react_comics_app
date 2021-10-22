@@ -13,6 +13,7 @@ import DetailChapter from "./pages/DetailChapter";
 import "moment/min/locales";
 import Provider from "./context/Provider";
 import ModalNotify from "./components/Modal/ModalNotify";
+import Follow from "./pages/Follow";
 
 function App() {
   return (
@@ -25,7 +26,8 @@ function App() {
             <Route exact path="/" component={Home}></Route>
             <Route path="/tim-kiem" component={Home}></Route>
             <Route path="/tim-kiem-nang-cao" component={Home}></Route>
-            <Route exact path="/the-loai/:name" component={Home}></Route>
+            <Route path="/the-loai/:name/:id" component={Home}></Route>
+            <Route path="/truyen-theo-doi" component={Follow}></Route>
             <Route path="/truyen-tranh/:name" component={DetailComic}></Route>
             <Route
               path="/:chapter/:id/truyen-tranh/:name"

@@ -24,6 +24,12 @@ import { LOGOUT_SUCCESS } from "../../constants";
 import { getCategories } from "../../features/comics/categorySlice";
 const Navbar = (props) => {
   const [open, setOpen] = useState(false);
+  const status = useSelector(state=>state.comics.status)
+  useEffect(() => {
+    if(status =='loading'){
+    setOpen(false);
+    }
+  }, [status]);
   const dispatch_redux = useDispatch();
   const handleLogout = () => {
     dispatch({
@@ -39,6 +45,7 @@ const Navbar = (props) => {
   };
   const { dispatch, show, error, message } = useData();
   const categories = useSelector((state) => state.categories.categories);
+  
   return (
     <>
       <ModalNotify
@@ -63,7 +70,7 @@ const Navbar = (props) => {
         <Link to="/history" className="nav-item">
           <ImHistory /> Lịch sử
         </Link>
-        <Link to="/follow" className="nav-item">
+        <Link to="/truyen-theo-doi" className="nav-item">
           <MdBookmark />
           Theo dõi
         </Link>
@@ -102,13 +109,8 @@ const Navbar = (props) => {
           <div className="list-category">
             {categories.map((item, i) => {
               const name = xoaDau(item["category_name"]);
-              const linkTo = {
-                pathname: `/the-loai/${name}`,
-                id: item["category_id"],
-                category_name: item["category_name"],
-              };
               return (
-                <Link to={linkTo} className="category-item" key={i}>
+                <Link to={`/the-loai/${name}/${item["category_id"]}`} className="category-item" key={i}>
                   {item["category_name"]}
                 </Link>
               );
@@ -120,12 +122,14 @@ const Navbar = (props) => {
   );
 };
 const SearchForm = ({}) => {
-  // const [categories, setCategories] = useState([]);
   const history = useHistory();
   const [key, setKey] = useState("");
   const [open, setOpen] = useState(false);
-  const [checkedState, setCheckedState] = useState([0]);
   const categories = useSelector((state) => state.categories.categories);
+  const [checkedState, setCheckedState] = useState([0]);
+  useEffect(() => {
+    setCheckedState(new Array(categories.length).fill(false));
+  }, [categories.length]);
   const handleSubmit = (e) => {
     const keyUrl = xoaDau(key);
     e.preventDefault();
@@ -136,21 +140,7 @@ const SearchForm = ({}) => {
     });
     setKey("");
   };
-  
-  // useEffect(() => {
-  //   const getAllCategories = () => {
-  //     comicApi
-  //       .getAllCategories()
-  //       .then((response) => {
-  //         setCategories(response.data.data);
-  //         setCheckedState(new Array(response.data.data.length).fill(false));
-  //       })
-  //       .catch((err) => {
-  //         console.log(err);
-  //       });
-  //   };
-  //   getAllCategories();
-  // }, []);
+
   const [status, setStatus] = useState("");
   const handleSubmitFilter = (e) => {
     e.preventDefault();
@@ -208,8 +198,8 @@ const SearchForm = ({}) => {
                   return (
                     <label key={item["category_id"]} className="checkbox-item">
                       <input
-                        // onChange={() => handleOnChange(i)}
-                        // checked={!!checkedState[i]}
+                        onChange={() => handleOnChange(i)}
+                        checked={!!checkedState[i]}
                         id={item["category_id"]}
                         name={item["category_name"]}
                         type="checkbox"
@@ -247,21 +237,8 @@ const Header = () => {
   const dispatch_redux = useDispatch();
   const token = useSelector((state) => state.user.token);
   const [categories, setCategories] = useState([]);
-  const [checkedState, setCheckedState] = useState([]);
   useEffect(() => {
     dispatch_redux(getCategories());
-    // const getAllCategories = () => {
-    //   comicApi
-    //     .getAllCategories()
-    //     .then((response) => {
-    //       setCategories(response.data.data);
-    //       setCheckedState(new Array(response.data.data.length).fill(false));
-    //     })
-    //     .catch((err) => {
-    //       console.log(err);
-    //     });
-    // };
-    // getAllCategories();
   }, [dispatch_redux]);
 
   const [username, setUsername] = useState("Tài khoản");
@@ -283,13 +260,7 @@ const Header = () => {
               refreshToken: Cookies.get("refreshToken"),
             })
           );
-          // dispatch({
-          //   type: ACTIONS.TOKEN,
-          //   payload: {
-          //     token: localToken,
-          //     refreshToken: Cookies.get("refreshToken"),
-          //   },
-          // });
+     
         });
     }
 
@@ -306,7 +277,7 @@ const Header = () => {
     <>
       <header>
         <Navbar username={username} categories={categories} />
-        <SearchForm checkedState={checkedState} categories={categories} />
+        <SearchForm categories={categories} />
       </header>
     </>
   );

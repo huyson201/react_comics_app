@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "./ListComic.css";
+import { useHistory } from "react-router-dom";
 import { BsStars } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { xoaDau } from "../../utilFunction";
 import comicApi from "../../api/comicApi";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { CATEGORY_COMIC_TITLE } from "../../constants";
 const ListItem = ({ other, item }) => {
   const name = xoaDau(item["comic_name"]);
   const ourRequest = axios.CancelToken.source();
@@ -23,15 +25,18 @@ const ListItem = ({ other, item }) => {
     }
   };
   useEffect(() => {
-    if (other) {
-      getChaptersByID();
-    } else {
-      setNewChapter(item["chapters"][0]["chapter_name"]);
+    try {
+      if (other) {
+        getChaptersByID();
+      } else {
+        setNewChapter(item["chapters"][0]["chapter_name"]);
+      }
+    } catch (error) {
     }
     return () => {
       ourRequest.cancel();
     };
-  }, []);
+  }, [other]);
 
   return (
     <>
@@ -55,13 +60,11 @@ const ListItem = ({ other, item }) => {
 const ListComic = ({ other, title }) => {
   const comics = useSelector((state) => state.comics.comics);
   const category = useSelector((state) => state.comics.selectedCategory);
-  console.log(comics);
-  // console.log(other);
   return (
     <>
       <div className="list-title">
         <BsStars />
-        {category ? title +=category["category_name"] : title}
+        {category ? CATEGORY_COMIC_TITLE + category["category_name"] : title}
       </div>
       <div className="list-comic">
         {
