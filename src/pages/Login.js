@@ -129,7 +129,9 @@ const Login = () => {
           />
 
           <p className="forgot-password text-right">
-            <a href="#">{LABEL_FORGOT}</a>
+            <Link to="/forgot-password" className="here">
+              {LABEL_FORGOT}
+            </Link>
           </p>
         </div>
 

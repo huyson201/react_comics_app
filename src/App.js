@@ -14,6 +14,8 @@ import "moment/min/locales";
 import Provider from "./context/Provider";
 import ModalNotify from "./components/Modal/ModalNotify";
 import Follow from "./pages/Follow";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   return (
@@ -38,6 +40,8 @@ function App() {
             <Route path="/account" component={Account}></Route>
             <Route path="/profile" component={Account}></Route>
             <Route path="/changePassword" component={Account}></Route>
+            <Route path="/forgot-password" component={ForgotPassword}></Route>
+            <Route path="/reset-password/:token" component={ResetPassword}></Route>
             <Route path="*" component={() => "404 NOT FOUND"}></Route>
           </Switch>
           <Footer />

@@ -47,3 +47,5 @@ export const COMMENT = "Bình luận";
 
 export const PRE_CHAPTER = "Chap trước";
 export const NEXT_CHAPTER = "Chap tiếp";
+
+export const RESET_PW_TITLE = 'Vui lòng nhập Email'

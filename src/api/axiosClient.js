@@ -1,8 +1,8 @@
 import axios from 'axios'
 const axiosClient = axios.create({
-    baseURL: "https://love-comic-api.herokuapp.com/api/",
+    baseURL: "http://localhost:3001/api/",
     headers: {
-        "Content-Type":"application/json"
+        "Content-Type": "application/json"
     },
 })
 export default axiosClient
