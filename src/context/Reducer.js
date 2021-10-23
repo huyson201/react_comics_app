@@ -15,7 +15,7 @@ const reducers = (state, action) => {
         token: null,
         refreshToken: null,
       };
-    case ACTIONS.UPDATE:
+    case ACTIONS.CHECK:
       return {
         ...state,
         update: action.payload,

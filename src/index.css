@@ -412,6 +412,8 @@ li:hover {
   opacity: 0.7;
 }
 
+.chapter_img{
+  padding: 20px;
 /* reset password css */
 .reset-pw-wrapper {
   background-color: #1D1C1C;

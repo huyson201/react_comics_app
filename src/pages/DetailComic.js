@@ -29,6 +29,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/auth/userSlice";
 import { xoaDau } from "../utilFunction";
 import comicApi from "../api/comicApi";
+import rateApi from "../api/rateApi";
 import Loading from "../components/Loading/Loading";
 import { followComic } from "../features/comics/followSlice";
 import followApi from "../api/followApi";
@@ -41,13 +42,16 @@ const DetailComic = () => {
   const id = arrName[arrName.length - 1];
   const [data, setData] = useState();
   const [checked, setChecked] = useState(false);
-  const { dispatch, show, error, message } = useData();
-  const { token, refreshToken,isLogged } = useSelector((state) => state.user);
+
+  const { dispatch, show, error, message, check } = useData();
+  const { token, refreshToken, isLogged } = useSelector((state) => state.user);
   const dispatch_redux = useDispatch();
   // rating
   let arrStar = [1, 2, 3, 4, 5];
   arrStar.length = 5;
   const [starIndex, setStarIndex] = useState();
+  const [rateState, setRateState] = useState();
+
   const changeStarIndex = (index) => {
     if (token && isJwtExpired(token) === false) {
       setStarIndex(index);
@@ -63,6 +67,7 @@ const DetailComic = () => {
       dispatch_redux(logout());
     }
   };
+
   //func get comic
   const getComic = async () => {
     const res = await comicApi.getComicByID(id);
@@ -73,20 +78,8 @@ const DetailComic = () => {
     }
   };
   // func rate
-  const rate = async () => {
-    const res = await axiosClient.post(
-      "/rates",
-      {
-        rate_star: +starIndex + 1,
-        comic_id: id,
-      },
-      {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      }
-    );
-    console.log(+starIndex + 1);
+  const rate = async (id, token, starIndex) => {
+    const res = await rateApi.rateComic(id, token, starIndex);
     if (res.data.error) {
       dispatch({
         type: ACTIONS.MODAL_NOTIFY,
@@ -108,26 +101,52 @@ const DetailComic = () => {
     }
   };
 
+  const getRate = async (userId) => {
+    const res = await rateApi.getRateComic(userId, id);
+    if (res.data.error != null || res.data.data.length === 0) {
+      console.log("Ban chua danh gia");
+    } else {
+      setStarIndex(null);
+      setRateState(res.data.data[0].rate_star);
+    }
+  };
+
   useEffect(() => {
     //get comic
     getComic();
     //rating
-    if (starIndex) {
-      if (token && isJwtExpired(token) === false) {
-        rate();
+    if (token && isJwtExpired(token) === false) {
+      const user = jwtDecode(token);
+
+      if (check === false && !rateState) {
+        getRate(user.user_uuid);
+      }
+
+      if (starIndex) {
+        setRateState(null);
+        rate(id, token, starIndex);
       }
     }
     window.scrollTo(0, 0);
-  }, [id, starIndex]);
-
+  }, [id, starIndex, check]);
   //func read first chapter
-  const handleReadFirst = () => {
-    history.push("/");
+  const handleReadLast = () => {
+    const chapter = data.chapters[0];
+    history.push(
+      `/${xoaDau(chapter.chapter_name)}/${
+        chapter.chapter_id
+      }/truyen-tranh/${name}`
+    );
   };
 
   //func read last chapter
-  const handleReadLast = () => {
-    history.push("/");
+  const handleReadFirst = () => {
+    const chapter = data.chapters[data.chapters.length - 1];
+    history.push(
+      `/${xoaDau(chapter.chapter_name)}/${
+        chapter.chapter_id
+      }/truyen-tranh/${name}`
+    );
   };
   useEffect(() => {
     if (isLogged) {
@@ -243,7 +262,7 @@ const DetailComic = () => {
                           key={i}
                           index={i}
                           changeStarIndex={changeStarIndex}
-                          style={starIndex >= i ? true : false}
+                          style={starIndex >= i || rateState > i ? true : false}
                         />
                       </span>
                     ))}

@@ -5,7 +5,6 @@ import axiosClient from "../api/axiosClient";
 import { ACTIONS } from "../context/Action";
 import { useData } from "../context/Provider";
 import Cookies from "js-cookie";
-import ModalNotify from "../components/Modal/ModalNotify";
 import {
   FB_EMAIL,
   FB_PW,
@@ -24,13 +23,75 @@ const Login = () => {
   const [user_email, setEmail] = useState();
   const [user_password, setPassword] = useState();
   const [checked, setChecked] = useState(false);
-  const { dispatch, show, error, message } = useData();
+  const { dispatch } = useData();
   const dispatch_redux = useDispatch();
 
   function storageData(res) {
     Cookies.set("refreshToken", res.data.data.refreshToken, {
       expires: 7,
     });
+  }
+
+  function dispatchData(res, checked) {
+    //set show modal
+    if (res.data.error || res.data.message) {
+      dispatch({
+        type: ACTIONS.MODAL_NOTIFY,
+        payload: {
+          show: true,
+          message: null,
+          error: res.data.error ? res.data.error : res.data.message,
+        },
+      });
+    } else {
+      dispatch({
+        type: ACTIONS.MODAL_NOTIFY,
+        payload: {
+          show: true,
+          message: LOGIN_SUCCESS,
+          error: null,
+        },
+      });
+
+      dispatch_redux(
+        login({
+          token: res.data.data.token,
+          refreshToken: res.data.data.refreshToken,
+        })
+      );
+
+      if (checked === true) {
+        storageData(res);
+      }
+    }
+  }
+
+  async function flogin(cookie) {
+    if (checked == false) {
+      if (cookie) {
+        refreshCookie(cookie);
+      } else {
+        loginNormal();
+      }
+    } else {
+      loginNormal();
+    }
+  }
+
+  async function loginNormal() {
+    //POST data to login
+    const res = await axiosClient.post("/login", {
+      user_email: user_email,
+      user_password: user_password,
+    });
+    dispatchData(res, checked);
+  }
+
+  async function refreshCookie(cookie) {
+    const res = await axiosClient.post("/refresh-token", {
+      refreshToken: cookie,
+    });
+    dispatchData(res, checked);
   }
 
   const handleSubmit = async (event) => {
@@ -46,43 +107,7 @@ const Login = () => {
           },
         });
       } else {
-        //POST data to login
-        const res = await axiosClient.post("/login", {
-          user_email: user_email,
-          user_password: user_password,
-        });
-
-        //set show modal
-        if (res.data.error || res.data.message) {
-          dispatch({
-            type: ACTIONS.MODAL_NOTIFY,
-            payload: {
-              show: true,
-              message: null,
-              error: res.data.error ? res.data.error : res.data.message,
-            },
-          });
-        } else {
-          dispatch({
-            type: ACTIONS.MODAL_NOTIFY,
-            payload: {
-              show: true,
-              message: LOGIN_SUCCESS,
-              error: null,
-            },
-          });
-
-          dispatch_redux(
-            login({
-              token: res.data.data.token,
-              refreshToken: res.data.data.refreshToken,
-            })
-          );
-          //remember me
-          if (checked === true) {
-            storageData(res);
-          }
-        }
+        flogin(Cookies.get("refreshToken"));
       }
     } catch (error) {
       console.log(error);
@@ -91,7 +116,6 @@ const Login = () => {
 
   return (
     <>
-
       <Form className="form" onSubmit={handleSubmit}>
         <h3>{TITLE_LOGIN}</h3>
 

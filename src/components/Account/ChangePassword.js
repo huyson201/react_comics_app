@@ -13,7 +13,7 @@ import {
   TITLE_CHANGE_PW,
   WARN_LOGIN,
 } from "../../constants";
-import { logout } from "../../features/auth/userSlice";
+import { isCheck, logout } from "../../features/auth/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 const ChangePassword = () => {
@@ -69,7 +69,7 @@ const ChangePassword = () => {
           });
         }
       } else {
-        dispatch_redux(logout());
+        dispatch_redux(isCheck(true));
         dispatch({
           type: ACTIONS.MODAL_NOTIFY,
           payload: {

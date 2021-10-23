@@ -25,26 +25,18 @@ const DetailChapter = () => {
 
   return (
     <div className="chapter_content">
-      {imgs
-        ? imgs.map((e, i) => {
-            return (
-              <img key={i} src={e} alt={"Error image"} className="img-fluid" />
-            );
-          })
-        : ""}
+      <div className="chapter_img">
+        {imgs
+          ? imgs.map((e, i) => {
+              return <img key={i} src={e} alt={"Error image"} />;
+            })
+          : ""}
+      </div>
       <div className="button">
-        <a
-          type="submit"
-          className="btn btn-nav"
-          //   variant="dark"
-        >
+        <a type="submit" className="btn btn-nav">
           {PRE_CHAPTER}
         </a>
-        <a
-          type="submit"
-          className="btn btn-nav"
-          //   variant="dark"
-        >
+        <a type="submit" className="btn btn-nav">
           {NEXT_CHAPTER}
         </a>
       </div>

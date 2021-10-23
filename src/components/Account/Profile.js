@@ -14,7 +14,7 @@ import {
   WARN_LOGIN,
 } from "../../constants";
 import { useDispatch, useSelector } from "react-redux";
-import { login, logout } from "../../features/auth/userSlice";
+import { isCheck, login, logout } from "../../features/auth/userSlice";
 
 const Profile = () => {
   const [user_name, setUserName] = useState();
@@ -44,8 +44,7 @@ const Profile = () => {
   };
 
   const resetDispatch = () => {
-    dispatch_redux(logout());
-
+    dispatch_redux(isCheck(true));
     dispatch({
       type: ACTIONS.MODAL_NOTIFY,
       payload: {
@@ -72,7 +71,7 @@ const Profile = () => {
             },
           }
         );
-
+        console.log(res.data);
         if (res.data.error || res.data.message) {
           dispatch({
             type: ACTIONS.MODAL_NOTIFY,

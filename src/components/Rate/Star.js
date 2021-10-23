@@ -1,13 +1,19 @@
 import React from "react";
 import { BsStar, BsStarFill } from "react-icons/bs";
-import axiosClient from "../../api/axiosClient";
+import { useData } from "../../context/Provider";
 
 const Star = (props) => {
-  const changeStar = async (e) => {
-    props.changeStarIndex(e.target.value);
-    console.log(e.target.value);
-  };
+  const { dispatch } = useData();
 
+  const changeStar = (e) => {
+    props.changeStarIndex(e.target.value);
+    dispatch({
+      type: "CHECK",
+      payload: {
+        check: true,
+      },
+    });
+  };
   return (
     <label className="star">
       <input

@@ -255,7 +255,7 @@ const SearchForm = ({}) => {
 
 const Header = () => {
   const dispatch_redux = useDispatch();
-  const token = useSelector((state) => state.user.token);
+  const { token, isCheck } = useSelector((state) => state.user);
   const [categories, setCategories] = useState([]);
   const isLogged = useSelector((state) => state.user.isLogged);
   useEffect(() => {
@@ -268,20 +268,24 @@ const Header = () => {
     let localToken = null;
     let userToken = null;
 
-    if (Cookies.get("refreshToken")) {
-      axiosClient
-        .post("/refresh-token", {
-          refreshToken: Cookies.get("refreshToken"),
-        })
-        .then((res) => {
-          localToken = res.data.token;
-          dispatch_redux(
-            login({
-              token: localToken,
-              refreshToken: Cookies.get("refreshToken"),
-            })
-          );
-        });
+    if (isCheck == true) {
+      dispatch_redux(login({ token: null }));
+    } else {
+      if (Cookies.get("refreshToken")) {
+        axiosClient
+          .post("/refresh-token", {
+            refreshToken: Cookies.get("refreshToken"),
+          })
+          .then((res) => {
+            localToken = res.data.token;
+            dispatch_redux(
+              login({
+                token: localToken,
+                refreshToken: Cookies.get("refreshToken"),
+              })
+            );
+          });
+      }
     }
 
     if (localToken) {
@@ -291,7 +295,7 @@ const Header = () => {
     }
     userToken ? setUsername(userToken.user_name) : setUsername("Tài khoản");
     // console.log(userToken);
-  }, [token]);
+  }, [token, isCheck]);
 
   return (
     <>

@@ -10,14 +10,14 @@ export const useData = () => {
 const Provider = ({ children }) => {
   const initialState = {
     token: null,
-    update: false,
     refreshToken: null,
     show: false,
     error: null,
     message: null,
+    check: false,
   };
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { token, refreshToken, update, show, error, message } = state;
+  const { token, refreshToken, update, show, error, message, check } = state;
 
   const value = {
     dispatch,
@@ -27,6 +27,7 @@ const Provider = ({ children }) => {
     show,
     error,
     message,
+    check,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
