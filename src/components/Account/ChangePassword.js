@@ -49,24 +49,26 @@ const ChangePassword = () => {
               },
             }
           );
-          if (res.data.error) {
+          if (res.data.error || res.data.err) {
+            console.log(res.data.err);
             dispatch({
               type: ACTIONS.MODAL_NOTIFY,
               payload: {
                 show: true,
                 message: null,
-                error: res.data.error,
+                error: res.data.error ? res.data.error : res.data.err,
+              },
+            });
+          } else {
+            dispatch({
+              type: ACTIONS.MODAL_NOTIFY,
+              payload: {
+                show: true,
+                message: res.data.msg,
+                error: null,
               },
             });
           }
-          dispatch({
-            type: ACTIONS.MODAL_NOTIFY,
-            payload: {
-              show: true,
-              message: res.data.msg,
-              error: null,
-            },
-          });
         }
       } else {
         dispatch_redux(isCheck(true));

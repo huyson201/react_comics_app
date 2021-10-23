@@ -66,10 +66,10 @@ const Login = () => {
     }
   }
 
-  async function flogin(cookie) {
+  async function flogin() {
     if (checked == false) {
-      if (cookie) {
-        refreshCookie(cookie);
+      if (Cookies.get("refreshToken")) {
+        refreshCookie(Cookies.get("refreshToken"));
       } else {
         loginNormal();
       }
@@ -107,7 +107,7 @@ const Login = () => {
           },
         });
       } else {
-        flogin(Cookies.get("refreshToken"));
+        flogin();
       }
     } catch (error) {
       console.log(error);

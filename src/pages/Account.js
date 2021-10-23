@@ -7,16 +7,16 @@ import ModalNotify from "../components/Modal/ModalNotify";
 import { LOGOUT_SUCCESS } from "../constants";
 import Profile from "../components/Account/Profile";
 import ChangePassword from "../components/Account/ChangePassword";
+import { useDispatch } from "react-redux";
+import { logout } from "../features/auth/userSlice";
 
 const Account = () => {
   const history = useHistory();
   const { dispatch, show, error, message } = useData();
-
+  const dispatch_redux = useDispatch();
   const handleLogout = () => {
-    Cookies.remove("token");
     Cookies.remove("refreshToken");
-    Cookies.remove("token_refreshToken");
-    dispatch({ type: ACTIONS.TOKEN, payload: null });
+    dispatch_redux(logout());
     dispatch({
       type: ACTIONS.MODAL_NOTIFY,
       payload: {

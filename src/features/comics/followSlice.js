@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import followApi from "../../api/followApi";
-import { removeComicList } from "./comicSlice";
+import { removeComicList, removeSelectedCategory } from "./comicSlice";
 export const followComic = createAsyncThunk(
   "follow/create",
   async ({id,userToken},thunkAPI) => {
@@ -13,6 +13,7 @@ export const getComicsFollow = createAsyncThunk(
   "follow/getComicsFollow",
   async ({id,userToken},thunkAPI) => {
     thunkAPI.dispatch(removeComicList())
+    thunkAPI.dispatch(removeSelectedCategory())
     const res = await followApi.getFollowUser(id,userToken);
     console.log(res.data.data)
     return res.data.data;
