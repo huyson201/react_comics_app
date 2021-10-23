@@ -47,10 +47,8 @@ const Navbar = (props) => {
   const { dispatch, show, error, message } = useData();
   const categories = useSelector((state) => state.categories.categories);
   const isLogged = useSelector((state) => state.user.isLogged);
-  console.log(isLogged);
   const handleClick = () => {
     if (!isLogged) {
-      console.log(isLogged);
       dispatch({
         type: ACTIONS.MODAL_NOTIFY,
         payload: {
