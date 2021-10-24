@@ -16,7 +16,7 @@ import ModalNotify from "./components/Modal/ModalNotify";
 import Follow from "./pages/Follow";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-
+import 'moment/locale/vi'
 function App() {
   return (
     <div className="wrapper">

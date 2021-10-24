@@ -67,6 +67,7 @@ const comicSlice = createSlice({
     },
     removeComicList(state) {
       state.comics = [];
+      state.status = 'loading'
     },
     setOffSet(state, action) {
       state.offset = action.payload;

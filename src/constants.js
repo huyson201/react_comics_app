@@ -42,6 +42,7 @@ export const LABEL_LIST_CHAPTER = "Danh sách chap";
 export const LABEL_CONTENT = "Nội dung";
 export const UNFOLLOW = "Bỏ theo dõi";
 export const FOLLOW = "Theo dõi";
+export const LOADING = "Loading...";
 export const READ_FIRST = "Đọc từ đầu";
 export const READ_LAST = "Đọc chap mới nhất";
 export const COMMENT = "Bình luận";

@@ -11,6 +11,7 @@ import {
   FOLLOW,
   LABEL_CONTENT,
   LABEL_LIST_CHAPTER,
+  LOADING,
   RATE,
   RATE_SUCCESS,
   READ_FIRST,
@@ -31,9 +32,10 @@ import { xoaDau } from "../utilFunction";
 import comicApi from "../api/comicApi";
 import rateApi from "../api/rateApi";
 import Loading from "../components/Loading/Loading";
-import { followComic } from "../features/comics/followSlice";
+import { deleteComicFollow, followComic } from "../features/comics/followSlice";
 import followApi from "../api/followApi";
 import jwtDecode from "jwt-decode";
+import { Spinner } from "react-bootstrap";
 
 const DetailComic = () => {
   const history = useHistory();
@@ -42,9 +44,9 @@ const DetailComic = () => {
   const id = arrName[arrName.length - 1];
   const [data, setData] = useState();
   const [checked, setChecked] = useState(false);
-
   const { dispatch, show, error, message, check } = useData();
   const { token, refreshToken, isLogged } = useSelector((state) => state.user);
+  const { status } = useSelector((state) => state.follows);
   const dispatch_redux = useDispatch();
   // rating
   let arrStar = [1, 2, 3, 4, 5];
@@ -149,24 +151,49 @@ const DetailComic = () => {
     );
   };
   useEffect(() => {
-    if (isLogged) {
-      const user_id = jwtDecode(token).user_uuid;
+    //check status follow
+    if (isLogged && token) {
       const findFollow = async () => {
+        const user_id = jwtDecode(token).user_uuid;
         const res = await followApi.getFollow(user_id, id);
-        console.log(res.data.data.count);
         if (res.data.data.count > 0) {
           setChecked(true);
         }
       };
       findFollow();
+    } else {
     }
   }, [isLogged]);
 
-  useEffect(() => {
-    if (checked && token) {
-      dispatch_redux(followComic({ id: id, userToken: token }));
+  const handleFollow = () => {
+    if (!isLogged) {
+      dispatch({
+        type: ACTIONS.MODAL_NOTIFY,
+        payload: {
+          show: true,
+          message: null,
+          error: WARN_LOGIN,
+        },
+      });
+    } else {
+      if (checked && token) {
+        // delete follow comic
+        const user_id = jwtDecode(token).user_uuid;
+        dispatch_redux(
+          deleteComicFollow({
+            user_id: user_id,
+            comic_id: id,
+            userToken: token,
+          })
+        );
+        setChecked(!checked);
+      } else if (!checked && token) {
+        // follow comic
+        dispatch_redux(followComic({ id: id, userToken: token }));
+        setChecked(!checked);
+      }
     }
-  }, [checked, token]);
+  };
   return (
     <>
       {data == null ? (
@@ -229,17 +256,26 @@ const DetailComic = () => {
 
               <div className="button comic_bg">
                 <div className="head_left">
-                  <Link
-                    to="#"
-                    type="button"
-                    onClick={() => setChecked(!checked)}
-                  >
-                    {checked === true ? (
+                  <Link to="#" type="button" onClick={handleFollow}>
+                    {status == "loading" && (
+                      <>
+                      <Spinner
+                        as="span"
+                        animation="border"
+                        size="sm"
+                        role="status"
+                        aria-hidden="true"
+                      />
+                      {" "+LOADING}
+                      </>
+                    )}
+                    {status != "loading" && checked === true && (
                       <>
                         <MdBookmark className="icon" />
                         {UNFOLLOW}
                       </>
-                    ) : (
+                    )}
+                    {status != "loading" && checked === false && (
                       <>
                         <MdBookmarkBorder className="icon" />
                         {FOLLOW}
@@ -317,7 +353,6 @@ const DetailComic = () => {
 
 //func calculate update date
 function updateDate(date) {
-  moment.locale("vi");
   return moment(date).fromNow();
 }
 

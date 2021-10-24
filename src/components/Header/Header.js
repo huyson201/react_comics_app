@@ -26,11 +26,12 @@ import { isJwtExpired } from "jwt-check-expiration";
 const Navbar = (props) => {
   const [open, setOpen] = useState(false);
   const status = useSelector((state) => state.comics.status);
+  const statusFollows = useSelector((state) => state.follows.status);
   useEffect(() => {
-    if (status == "loading") {
+    if (status == "loading" || statusFollows == "loading") {
       setOpen(false);
     }
-  }, [status]);
+  }, [status,statusFollows]);
   const dispatch_redux = useDispatch();
   const handleLogout = () => {
     dispatch({
@@ -81,10 +82,14 @@ const Navbar = (props) => {
           <ImBooks />
           Thể loại
         </div>
-        <Link to="#"  className="nav-item">
+        <Link to="#" className="nav-item">
           <ImHistory /> Lịch sử
         </Link>
-        <Link to={isLogged? "/truyen-theo-doi":"#"} onClick={handleClick} className="nav-item">
+        <Link
+          to={isLogged ? "/truyen-theo-doi" : "#"}
+          onClick={handleClick}
+          className="nav-item"
+        >
           <MdBookmark />
           Theo dõi
         </Link>

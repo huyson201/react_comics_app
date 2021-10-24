@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Pagination from "react-js-pagination";
 import ListComic from "../components/ListComic/ListComic";
-import { useHistory,useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import queryString from "query-string";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -9,6 +9,7 @@ import {
   getComicsByCategory,
   getComicsByFilters,
   getComicsByKey,
+  removeComicList,
   setOffSet,
 } from "../features/comics/comicSlice";
 import {
@@ -24,13 +25,13 @@ const Home = () => {
   const total = useSelector((state) => state.comics.count);
   const status = useSelector((state) => state.comics.status);
   const params = queryString.parse(history.location.search);
-  const {id} = useParams();
+  const { id } = useParams();
   const key = history.location.keyword;
   const pathName = history.location.pathname;
   const [activePage, setActivePage] = useState(1);
   const [title, setTitle] = useState("");
   const [other, setCheckOther] = useState(false);
-  
+
   const handlePageChange = (pageNumber) => {
     setActivePage(pageNumber);
   };
@@ -41,7 +42,7 @@ const Home = () => {
 
   useEffect(() => {
     setActivePage(1);
-  }, [pathName]);
+  }, [pathName, key, params["the-loai"], params["tinh-trang"]]);
 
   const doAction = async (action) => {
     try {
@@ -77,13 +78,16 @@ const Home = () => {
       setCheckOther(false);
       setTitle(NEW_COMIC_TITLE);
       doAction(dispatch(getComics()));
+      return () =>{
+        dispatch(removeComicList())
+      }
     }
   }, [activePage, id, key, params["the-loai"], params["tinh-trang"]]);
   return (
     <div>
       {status == "loading" && <Loading />}
       {status == "success" && <ListComic title={title} other={other} />}
-      {total >= LIMIT && status == "success" &&(
+      {total >= LIMIT && status == "success" && (
         <Pagination
           activePage={activePage}
           itemClass="paginate-item"

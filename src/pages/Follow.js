@@ -16,21 +16,17 @@ const Follow = () => {
   const [isFollow, setIsFollow] = useState(false);
   const { token } = useSelector((state) => state.user);
   const status = useSelector((state) => state.follows.status);
-  console.log(status);
   useEffect(() => {
     if (token) {
-      console.log(token);
       setCheckOther(true);
       setTitle(FOLLOW_COMICS);
       setIsFollow(true);
       const user_id = jwt_decode(token).user_uuid;
       dispatch(getComicsFollow({ id: user_id, userToken: token }));
-    } else {
-      setIsFollow(false);
     }
-    // return () => {
-    //   setIsFollow(false);
-    // };
+    return () => {
+      setIsFollow(false);
+    };
   }, [token]);
 
   return (

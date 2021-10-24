@@ -1,7 +1,6 @@
 import axiosClient from "./axiosClient";
 const followApi = {
   followComics: (comicId, userToken) => {
-    console.log(userToken)
     const url = "/follows";
     return axiosClient.post(
       url,
@@ -25,11 +24,20 @@ const followApi = {
       }
     );
   },
-  getFollow:(user_id,comic_id)=>{
+  getFollow: (user_id, comic_id) => {
     const url = `follows?user_uuid=${user_id}&comic_id=${comic_id}`;
-    return axiosClient.get(
-      url,
-    );
-  }
+    return axiosClient.get(url);
+  },
+  deleteFollow: (id, token) => {
+    const url = `/follows`;
+    return axiosClient.delete(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: {
+        follow_id: id,
+      },
+    });
+  },
 };
 export default followApi;
