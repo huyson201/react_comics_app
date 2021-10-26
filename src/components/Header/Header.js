@@ -4,25 +4,20 @@ import {
   MdBookmark,
   MdPerson,
   MdFilterAlt,
-  MdTrendingUp,
 } from "react-icons/md";
 import { ImBooks, ImHistory, ImSearch } from "react-icons/im";
 import { Collapse } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
 import "./header.css";
 import jwt_decode from "jwt-decode";
-import { useData } from "../../context/Provider";
-import comicApi from "../../api/comicApi";
 import { xoaDau } from "../../utilFunction";
-import { ACTIONS } from "../../context/Action";
 import Cookies from "js-cookie";
 import axiosClient from "../../api/axiosClient";
 import { useDispatch, useSelector } from "react-redux";
 import { login, logout } from "../../features/auth/userSlice";
-import ModalNotify from "../Modal/ModalNotify";
-import { LOGIN_SUCCESS, LOGOUT_SUCCESS, WARN_LOGIN } from "../../constants";
+import {LOGOUT_SUCCESS, WARN_LOGIN } from "../../constants";
 import { getCategories } from "../../features/comics/categorySlice";
-import { isJwtExpired } from "jwt-check-expiration";
+import { modalNotify } from "../../features/modal/modalSlice";
 const Navbar = (props) => {
   const [open, setOpen] = useState(false);
   const status = useSelector((state) => state.comics.status);
@@ -34,40 +29,32 @@ const Navbar = (props) => {
   }, [status,statusFollows]);
   const dispatch_redux = useDispatch();
   const handleLogout = () => {
-    dispatch({
-      type: ACTIONS.MODAL_NOTIFY,
-      payload: {
+    dispatch_redux(
+      modalNotify({
         show: true,
         message: LOGOUT_SUCCESS,
         error: null,
-      },
-    });
+      })
+    );
     Cookies.remove("refreshToken");
     dispatch_redux(logout());
   };
-  const { dispatch, show, error, message } = useData();
   const categories = useSelector((state) => state.categories.categories);
   const isLogged = useSelector((state) => state.user.isLogged);
   const handleClick = () => {
     if (!isLogged) {
-      dispatch({
-        type: ACTIONS.MODAL_NOTIFY,
-        payload: {
+      dispatch_redux(
+        modalNotify({
           show: true,
           message: null,
           error: WARN_LOGIN,
-        },
-      });
+        })
+      );
     }
   };
 
   return (
     <>
-      <ModalNotify
-        show={show}
-        error={error}
-        message={message ? message : null}
-      />
       <nav className="nav-bar">
         <Link to="/" className="nav-item">
           <MdHome />
@@ -260,7 +247,7 @@ const Header = () => {
   const dispatch_redux = useDispatch();
   const { token, isCheck } = useSelector((state) => state.user);
   const [categories, setCategories] = useState([]);
-  const isLogged = useSelector((state) => state.user.isLogged);
+  // const isLogged = useSelector((state) => state.user.isLogged);
   useEffect(() => {
     dispatch_redux(getCategories());
   }, [dispatch_redux]);

@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { Form, FormLabel, FormGroup, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import axiosClient from "../api/axiosClient";
-import { ACTIONS } from "../context/Action";
-import { useData } from "../context/Provider";
 import Cookies from "js-cookie";
 import {
   FB_EMAIL,
@@ -18,12 +16,12 @@ import {
 } from "../constants";
 import { login } from "../features/auth/userSlice";
 import { useDispatch } from "react-redux";
+import { modalNotify } from "../features/modal/modalSlice";
 
 const Login = () => {
   const [user_email, setEmail] = useState();
   const [user_password, setPassword] = useState();
   const [checked, setChecked] = useState(false);
-  const { dispatch } = useData();
   const dispatch_redux = useDispatch();
 
   function storageData(res) {
@@ -35,23 +33,21 @@ const Login = () => {
   function dispatchData(res, checked) {
     //set show modal
     if (res.data.error || res.data.message) {
-      dispatch({
-        type: ACTIONS.MODAL_NOTIFY,
-        payload: {
+      dispatch_redux(
+        modalNotify({
           show: true,
           message: null,
           error: res.data.error ? res.data.error : res.data.message,
-        },
-      });
+        })
+      );
     } else {
-      dispatch({
-        type: ACTIONS.MODAL_NOTIFY,
-        payload: {
+      dispatch_redux(
+        modalNotify({
           show: true,
           message: LOGIN_SUCCESS,
           error: null,
-        },
-      });
+        })
+      );
 
       dispatch_redux(
         login({
@@ -98,14 +94,13 @@ const Login = () => {
     try {
       event.preventDefault();
       if (user_password.length < 6) {
-        dispatch({
-          type: ACTIONS.MODAL_NOTIFY,
-          payload: {
+        dispatch_redux(
+          modalNotify({
             show: true,
             message: null,
             error: VALIDATE_PW,
-          },
-        });
+          })
+        );
       } else {
         flogin();
       }

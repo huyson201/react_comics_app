@@ -1,25 +1,24 @@
 import React from "react";
-import { Modal} from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 import { FiX, FiXCircle } from "react-icons/fi";
 import { WARN_LOGIN } from "../../constants";
-import { useData } from "../../context/Provider";
-import { ACTIONS } from "../../context/Action";
+import { useDispatch, useSelector } from "react-redux";
+import { modalNotify } from "../../features/modal/modalSlice";
 
 const ModalNotify = (props) => {
-  const { dispatch, show, error, message } = useData();
+  const { show, error, message } = useSelector((state) => state.modal);
+  const dispatch_redux = useDispatch();
   const history = useHistory();
   let path = history.location.pathname;
   const handleClose = () => {
-    dispatch({
-      type: ACTIONS.MODAL_NOTIFY,
-      payload: {
+    dispatch_redux(
+      modalNotify({
         show: false,
         message: null,
         error: null,
-      },
-    });
-
+      })
+    );
     switch (path) {
       case "/login":
         if (error) {

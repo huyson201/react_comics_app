@@ -9,27 +9,25 @@ import Profile from "../components/Account/Profile";
 import ChangePassword from "../components/Account/ChangePassword";
 import { useDispatch } from "react-redux";
 import { logout } from "../features/auth/userSlice";
+import { modalNotify } from "../features/modal/modalSlice";
 
 const Account = () => {
   const history = useHistory();
-  const { dispatch, show, error, message } = useData();
   const dispatch_redux = useDispatch();
   const handleLogout = () => {
     Cookies.remove("refreshToken");
     dispatch_redux(logout());
-    dispatch({
-      type: ACTIONS.MODAL_NOTIFY,
-      payload: {
+    dispatch_redux(
+      modalNotify({
         show: true,
         message: LOGOUT_SUCCESS,
         error: null,
-      },
-    });
+      })
+    );
   };
 
   return (
     <>
-      <ModalNotify show={show} error={error} message={message} />
       <div className="custom-row">
         <div className="container">
           <div className="row ">

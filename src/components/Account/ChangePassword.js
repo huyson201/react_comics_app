@@ -2,9 +2,6 @@ import React, { useState } from "react";
 import { Form, FormLabel, FormGroup, Button } from "react-bootstrap";
 import { isJwtExpired } from "jwt-check-expiration";
 import axiosClient from "../../api/axiosClient";
-import { useData } from "../../context/Provider";
-import { ACTIONS } from "../../context/Action";
-import ModalNotify from "../Modal/ModalNotify";
 import {
   CHECK_PW,
   LABEL_CF_NEW_PW,
@@ -15,12 +12,12 @@ import {
 } from "../../constants";
 import { isCheck, logout } from "../../features/auth/userSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { modalNotify } from "../../features/modal/modalSlice";
 
 const ChangePassword = () => {
   const [old_password, setUserPassword] = useState();
   const [new_password, setUserPasswordNew] = useState();
   const [cfnew_password, setUserPasswordCfNew] = useState();
-  const { dispatch, show, error, message } = useData();
   const { token, refreshToken } = useSelector((state) => state.user);
   const dispatch_redux = useDispatch();
   const handleSubmit = async (e) => {
@@ -28,14 +25,13 @@ const ChangePassword = () => {
     try {
       if (token && isJwtExpired(token) === false) {
         if (checkCfPw(new_password, cfnew_password) === false) {
-          dispatch({
-            type: ACTIONS.MODAL_NOTIFY,
-            payload: {
+          dispatch_redux(
+            modalNotify({
               show: true,
               message: null,
               error: CHECK_PW,
-            },
-          });
+            })
+          );
         } else {
           const res = await axiosClient.patch(
             "/users/change-password",
@@ -51,35 +47,32 @@ const ChangePassword = () => {
           );
           if (res.data.error || res.data.err) {
             console.log(res.data.err);
-            dispatch({
-              type: ACTIONS.MODAL_NOTIFY,
-              payload: {
+            dispatch_redux(
+              modalNotify({
                 show: true,
                 message: null,
                 error: res.data.error ? res.data.error : res.data.err,
-              },
-            });
+              })
+            );
           } else {
-            dispatch({
-              type: ACTIONS.MODAL_NOTIFY,
-              payload: {
+            dispatch_redux(
+              modalNotify({
                 show: true,
                 message: res.data.msg,
                 error: null,
-              },
-            });
+              })
+            );
           }
         }
       } else {
         dispatch_redux(isCheck(true));
-        dispatch({
-          type: ACTIONS.MODAL_NOTIFY,
-          payload: {
+        dispatch_redux(
+          modalNotify({
             show: true,
             message: null,
             error: WARN_LOGIN,
-          },
-        });
+          })
+        );
       }
     } catch (error) {
       console.log(error);

@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Pridi:wght@200&display=swap");
 
 body {
   margin: 0;
@@ -188,7 +189,7 @@ li:hover {
   font-size: 13px;
 }
 
-.head .head_right>div {
+.head .head_right > div {
   margin-bottom: 10px;
   display: flex;
   text-align: center;
@@ -208,7 +209,7 @@ li:hover {
   flex: 0.8;
 }
 
-.item>a {
+.item > a {
   background: #4e4949;
   border-radius: 5px;
   padding: 5px;
@@ -344,9 +345,9 @@ li:hover {
 }
 
 /* Track */
-/* .list_item_chap::-webkit-scrollbar-track {
+.list_item_chap::-webkit-scrollbar-track {
   box-shadow: inset 0 0 6px rgb(214 212 212 / 30%);
-} */
+}
 /* Handle */
 .list_item_chap::-webkit-scrollbar-thumb {
   background: #794b4b;
@@ -395,29 +396,9 @@ li:hover {
   clip: rect(1px, 1px, 1px, 1px);
 }
 
-/* ================================CHAPTER================================ */
-
-.chapter_content .button {
-  display: flex;
-  justify-content: center;
-}
-
-.chapter_content .button .btn-nav {
-  background-color: #926060;
-  margin: 5px;
-  border-radius: 0;
-}
-
-.chapter_content .button .btn-nav:hover {
-  opacity: 0.7;
-}
-
-.chapter_img{
-  padding: 20px;
 /* reset password css */
-}
 .reset-pw-wrapper {
-  background-color: #1D1C1C;
+  background-color: #1d1c1c;
   padding: 15% 0;
   display: flex;
   justify-content: center;
@@ -435,8 +416,6 @@ li:hover {
   justify-content: space-between;
 }
 
-
-
 #btn-confirm {
   float: left;
   margin-top: 8px;
@@ -451,6 +430,156 @@ li:hover {
 
 .feedback {
   text-align: left;
-  color: #DC3545;
+  color: #dc3545;
   font-weight: 100;
+}
+/* ================================CHAPTER================================ */
+.chapter_content {
+  background-color: #323131 !important;
+}
+
+.chapter_content .button {
+  display: flex;
+  justify-content: center;
+}
+
+.chapter_content .button .btn-nav {
+  background-color: #926060;
+  margin: 5px;
+  border-radius: 0;
+  border-color: #926060;
+  padding: 10px;
+  box-shadow: none;
+  color: #fff;
+}
+
+.chapter_content .button .btn-nav:hover {
+  opacity: 0.7;
+}
+
+.chapter_img {
+  padding: 20px;
+}
+
+.chapter_content .nav_top {
+  margin: 10px 10px;
+  padding: 5px 10px;
+  background-color: #000;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.chapter_content .nav_fixed {
+  position: sticky;
+  top: 0;
+  border-radius: 0;
+  margin: 0;
+}
+
+.chapter_content .nav_top > div:first-child {
+  padding: 7px;
+  font-size: 18px;
+  font-weight: 100;
+  font-family: "pridi", serif;
+  color: #ccc;
+  display: flex;
+  justify-content: space-between;
+}
+
+.chapter_content .nav_top > div > div {
+  margin-right: 5px;
+}
+
+.chapter_content .nav_top .icon_content {
+  padding-top: 5px;
+  /* margin-right: 10px; */
+}
+
+.chapter_content .nav_top .icon_content .icon {
+  color: #ffff;
+  margin-left: 10px;
+  font-size: 30px;
+}
+
+.chapter_content .nav_top .icon_content .icon:hover {
+  opacity: 0.7;
+}
+
+.icon_scroll_to_top {
+  margin-top: 2px;
+}
+
+/* ========modal chapter========== */
+
+.modal_chapters {
+  top: 25% !important;
+}
+
+.modal_chapters.fade {
+  transition: top 0.3s ease 0s !important;
+}
+
+.modal_chapters .modal-content {
+  background: linear-gradient(to right, #434343, #000000);
+  color: #fff;
+  border-width: 0;
+}
+.modal_chapters .modal-body {
+  display: inline-block;
+  padding: 10px;
+  padding-right: 0 !important;
+}
+.modal_chapters .modal-header {
+  font-size: 20px;
+  padding-bottom: 0;
+  border-width: 0;
+}
+.modal_chapters .modal-header .btn_close {
+  background-color: firebrick;
+  color: #fff;
+  padding: 0 8px 3px 8px;
+}
+
+.modal_chapters .modal-header .btn_close svg {
+  stroke-width: 7;
+  font-size: 25px;
+}
+
+.modal_chapters .list_item_chap {
+  padding: 0;
+  padding-right: 10px;
+  margin-right: 10px;
+}
+
+.modal_chapters .list_item_chap a span:last-child {
+  font-size: 13px;
+  color: #ffff;
+}
+
+.list_item_chap a.active {
+  background-color: #ce6464 !important;
+}
+
+.list_item_chap a.readChap {
+  background-color: #000 !important;
+}
+
+.comic_title {
+  color: #f88383;
+  text-align: start;
+  font-size: 19px;
+  padding: 5px 0;
+  font-weight: 600;
+  margin-left: 10px;
+}
+
+.comic_title svg{
+  margin-right: 10px;
+}
+
+@media (min-width: 576px) {
+  .modal_chapters .modal-dialog {
+    max-width: 600px;
+  }
 }

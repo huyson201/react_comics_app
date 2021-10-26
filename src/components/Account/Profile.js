@@ -15,12 +15,12 @@ import {
 } from "../../constants";
 import { useDispatch, useSelector } from "react-redux";
 import { isCheck, login, logout } from "../../features/auth/userSlice";
+import { modalNotify } from "../../features/modal/modalSlice";
 
 const Profile = () => {
   const [user_name, setUserName] = useState();
   const [user_email, setEmail] = useState();
   const { dispatch, show, error, message } = useData();
-
   const { token, refreshToken } = useSelector((state) => state.user);
   const dispatch_redux = useDispatch();
   useEffect(() => {
@@ -45,14 +45,13 @@ const Profile = () => {
 
   const resetDispatch = () => {
     dispatch_redux(isCheck(true));
-    dispatch({
-      type: ACTIONS.MODAL_NOTIFY,
-      payload: {
+    dispatch_redux(
+      modalNotify({
         show: true,
         message: null,
         error: WARN_LOGIN,
-      },
-    });
+      })
+    );
   };
 
   const handleSubmit = async (e) => {
@@ -71,27 +70,25 @@ const Profile = () => {
             },
           }
         );
-        console.log(res.data);
         if (res.data.error || res.data.message) {
-          dispatch({
-            type: ACTIONS.MODAL_NOTIFY,
-            payload: {
+          dispatch_redux(
+            modalNotify({
               show: true,
               message: null,
               error: res.data.error ? res.data.error : res.data.message,
-            },
-          });
+            })
+          );
         } else if (refreshToken && isJwtExpired(refreshToken) === false) {
           updateToken();
-          dispatch({
-            type: ACTIONS.MODAL_NOTIFY,
-            payload: {
+          dispatch_redux(
+            modalNotify({
               show: true,
               message: res.data.msg,
               error: null,
-            },
-          });
+            })
+          );
         } else {
+          dispatch_redux(logout());
           resetDispatch();
         }
       } else {

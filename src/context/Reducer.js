@@ -35,6 +35,17 @@ const reducers = (state, action) => {
         error: null,
         message: null,
       };
+    case ACTIONS.MODAL_CHAP:
+      if (action.payload) {
+        return {
+          ...state,
+          showChapter: action.payload.showChapter,
+        };
+      }
+      return {
+        ...state,
+        showChapter: false,
+      };
 
     default:
       return state;

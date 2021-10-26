@@ -1,18 +1,13 @@
 import React from "react";
 import { BsStar, BsStarFill } from "react-icons/bs";
-import { useData } from "../../context/Provider";
+import { useDispatch } from "react-redux";
+import { checkRate } from "../../features/modal/modalSlice";
 
 const Star = (props) => {
-  const { dispatch } = useData();
-
+const dispatch_redux=useDispatch()
   const changeStar = (e) => {
     props.changeStarIndex(e.target.value);
-    dispatch({
-      type: "CHECK",
-      payload: {
-        check: true,
-      },
-    });
+    dispatch_redux(checkRate(true))
   };
   return (
     <label className="star">

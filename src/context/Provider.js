@@ -12,12 +12,22 @@ const Provider = ({ children }) => {
     token: null,
     refreshToken: null,
     show: false,
+    showChapter: false,
     error: null,
     message: null,
     check: false,
   };
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { token, refreshToken, update, show, error, message, check } = state;
+  const {
+    token,
+    refreshToken,
+    update,
+    show,
+    error,
+    message,
+    check,
+    showChapter,
+  } = state;
 
   const value = {
     dispatch,
@@ -28,6 +38,7 @@ const Provider = ({ children }) => {
     error,
     message,
     check,
+    showChapter,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

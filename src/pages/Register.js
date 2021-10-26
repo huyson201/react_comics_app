@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Form, FormLabel, FormGroup, Button } from "react-bootstrap";
 import axiosClient from "../api/axiosClient";
-import ModalNotify from "../components/Modal/ModalNotify";
 import {
   CHECK_PW,
   FB_CF_PW,
@@ -17,8 +16,8 @@ import {
   TITLE_REGISTER,
   VALIDATE_PW,
 } from "../constants";
-import { useData } from "../context/Provider";
-import { ACTIONS } from "../context/Action";
+import { useDispatch } from "react-redux";
+import { modalNotify } from "../features/modal/modalSlice";
 
 const Register = () => {
   const [user_name, setUserName] = useState();
@@ -27,7 +26,7 @@ const Register = () => {
   const [confirm_password, setCfPassword] = useState();
   const [user, setUser] = useState();
   const [validated, setValidated] = useState(false);
-  const { dispatch, show, error, message } = useData();
+  const dispatch_redux = useDispatch();
 
   useEffect(() => {
     setUser({
@@ -48,44 +47,40 @@ const Register = () => {
     setValidated(true);
     if (form.checkValidity() === true) {
       if (user_password.length < 6) {
-        dispatch({
-          type: ACTIONS.MODAL_NOTIFY,
-          payload: {
+        dispatch_redux(
+          modalNotify({
             show: true,
             message: null,
             error: VALIDATE_PW,
-          },
-        });
+          })
+        );
       } else if (checkCfPw(user_password, confirm_password) === false) {
-        dispatch({
-          type: ACTIONS.MODAL_NOTIFY,
-          payload: {
+        dispatch_redux(
+          modalNotify({
             show: true,
             message: null,
             error: CHECK_PW,
-          },
-        });
+          })
+        );
       } else {
         const res = await axiosClient.post("/users", user);
         console.log(res.data);
         if (res.data.error || res.data.message) {
-          dispatch({
-            type: ACTIONS.MODAL_NOTIFY,
-            payload: {
+          dispatch_redux(
+            modalNotify({
               show: true,
               message: null,
               error: res.data.error ? res.data.error : res.data.message,
-            },
-          });
+            })
+          );
         } else {
-          dispatch({
-            type: ACTIONS.MODAL_NOTIFY,
-            payload: {
+          dispatch_redux(
+            modalNotify({
               show: true,
               message: REGISTER_SUCCESS,
               error: null,
-            },
-          });
+            })
+          );
         }
       }
     }

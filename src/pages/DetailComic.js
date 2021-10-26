@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router";
 import { BiBookReader } from "react-icons/bi";
 import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
-import axiosClient from "../api/axiosClient";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import { isJwtExpired } from "jwt-check-expiration";
@@ -25,7 +24,6 @@ import {
 import Star from "../components/Rate/Star";
 import { useData } from "../context/Provider";
 import ModalNotify from "../components/Modal/ModalNotify";
-import { ACTIONS } from "../context/Action";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/auth/userSlice";
 import { xoaDau } from "../utilFunction";
@@ -36,6 +34,7 @@ import { deleteComicFollow, followComic } from "../features/comics/followSlice";
 import followApi from "../api/followApi";
 import jwtDecode from "jwt-decode";
 import { Spinner } from "react-bootstrap";
+import { modalNotify } from "../features/modal/modalSlice";
 
 const DetailComic = () => {
   const history = useHistory();
@@ -44,9 +43,9 @@ const DetailComic = () => {
   const id = arrName[arrName.length - 1];
   const [data, setData] = useState();
   const [checked, setChecked] = useState(false);
-  const { dispatch, show, error, message, check } = useData();
-  const { token, refreshToken, isLogged } = useSelector((state) => state.user);
   const { status } = useSelector((state) => state.follows);
+  const { token, refreshToken, isLogged } = useSelector((state) => state.user);
+  const { show, error, message, check } = useSelector((state) => state.modal);
   const dispatch_redux = useDispatch();
   // rating
   let arrStar = [1, 2, 3, 4, 5];
@@ -58,14 +57,13 @@ const DetailComic = () => {
     if (token && isJwtExpired(token) === false) {
       setStarIndex(index);
     } else {
-      dispatch({
-        type: ACTIONS.MODAL_NOTIFY,
-        payload: {
+      dispatch_redux(
+        modalNotify({
           show: true,
           message: null,
           error: WARN_LOGIN,
-        },
-      });
+        })
+      );
       dispatch_redux(logout());
     }
   };
@@ -83,23 +81,21 @@ const DetailComic = () => {
   const rate = async (id, token, starIndex) => {
     const res = await rateApi.rateComic(id, token, starIndex);
     if (res.data.error) {
-      dispatch({
-        type: ACTIONS.MODAL_NOTIFY,
-        payload: {
+      dispatch_redux(
+        modalNotify({
           show: true,
           message: null,
           error: WARN_LOGIN,
-        },
-      });
+        })
+      );
     } else {
-      dispatch({
-        type: ACTIONS.MODAL_NOTIFY,
-        payload: {
+      dispatch_redux(
+        modalNotify({
           show: true,
           message: RATE_SUCCESS,
           error: null,
-        },
-      });
+        })
+      );
     }
   };
 
