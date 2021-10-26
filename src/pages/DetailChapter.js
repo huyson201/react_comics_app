@@ -10,7 +10,7 @@ import {
 } from "react-icons/io";
 import { FaAngleRight, FaAngleLeft } from "react-icons/fa";
 import { xoaDau } from "../utilFunction";
-import ModalChapters from "../components/Modal/ModalChapaters";
+import ModalChapters from "../components/Modal/ModalChapters";
 import { BsStars } from "react-icons/bs";
 import { modalChapter } from "../features/modal/modalSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,6 +33,7 @@ const DetailChapter = () => {
   const { showChapter } = useSelector((state) => state.modal);
 
   useEffect(() => {
+    setImgs(null);
     getComic();
     window.addEventListener("scroll", handleScroll);
     window.scrollTo(0, 0);
@@ -99,7 +100,6 @@ const DetailChapter = () => {
     if (checkChapter(id, nId) === 0) {
       alert("Khong con chuong tiep theo");
     } else {
-      setImgs(null);
       const resChapter = await comicApi.getChapterByID(nId);
       history.push(
         `/${xoaDau(resChapter.data.data.chapter_name)}/${
@@ -114,7 +114,6 @@ const DetailChapter = () => {
     if (checkChapter(id, pId) === 0) {
       alert("khong co chuong truoc");
     } else {
-      setImgs(null);
       const resChapter = await comicApi.getChapterByID(pId);
       history.push(
         `/${xoaDau(resChapter.data.data.chapter_name)}/${

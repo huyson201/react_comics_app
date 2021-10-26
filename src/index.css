@@ -574,10 +574,44 @@ li:hover {
   margin-left: 10px;
 }
 
-.comic_title svg{
+.comic_title svg {
   margin-right: 10px;
 }
 
+.slider_comic {
+  width: 100% !important;
+  color: #fff;
+  margin-bottom: 20px;
+  margin-top: 10px;
+}
+
+.slider_comic .slick-arrow {
+  display: none !important;
+}
+
+.slider_comic .list-comic-item {
+  width: 100%;
+}
+
+.slick-list {
+  margin: 10px !important;
+}
+
+.slick-dots {
+  z-index: 999;
+  margin: -5px 0 !important;
+}
+.slick-dots li.slick-active button:before {
+  opacity: 0.75;
+  color: #ffff !important;
+}
+.slick-dots li button:before {
+  color: #fff !important;
+  font-size: 10px !important;
+}
+.slick-dots li {
+  margin: 0 !important;
+}
 @media (min-width: 576px) {
   .modal_chapters .modal-dialog {
     max-width: 600px;

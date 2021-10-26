@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Modal } from "react-bootstrap";
-import { useHistory, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { FiX, FiXCircle } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { modalChapter } from "../../features/modal/modalSlice";
+import { xoaDau } from "../../utilFunction";
 
 const ModalChapters = (props) => {
   const { showChapter } = useSelector((state) => state.modal);
@@ -44,6 +45,7 @@ const ModalChapters = (props) => {
                       className={`${
                         +props.id === +e.chapter_id ? "active" : ""
                       }`}
+                      onClick={handleClose}
                     >
                       {splitString(e.chapter_name)}
                     </Link>

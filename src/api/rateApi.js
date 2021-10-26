@@ -16,7 +16,7 @@ const rateApi = {
     );
   },
   getRateComic: (userId, comicId) => {
-    const url = `/rates?user_uud=${userId}&comic_id=${comicId}`;
+    const url = `/rates?user_uuid=${userId}&comic_id=${comicId}`;
     return axiosClient.get(url);
   },
 };

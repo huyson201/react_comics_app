@@ -22,7 +22,6 @@ import {
   WARN_LOGIN,
 } from "../constants";
 import Star from "../components/Rate/Star";
-import { useData } from "../context/Provider";
 import ModalNotify from "../components/Modal/ModalNotify";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/auth/userSlice";
@@ -45,7 +44,7 @@ const DetailComic = () => {
   const [checked, setChecked] = useState(false);
   const { status } = useSelector((state) => state.follows);
   const { token, refreshToken, isLogged } = useSelector((state) => state.user);
-  const { show, error, message, check } = useSelector((state) => state.modal);
+  const { show, error, message} = useSelector((state) => state.modal);
   const dispatch_redux = useDispatch();
   // rating
   let arrStar = [1, 2, 3, 4, 5];
@@ -106,17 +105,17 @@ const DetailComic = () => {
     } else {
       setStarIndex(null);
       setRateState(res.data.data[0].rate_star);
+      console.log(res.data.data[0].rate_star);
+
     }
   };
-
   useEffect(() => {
     //get comic
     getComic();
     //rating
     if (token && isJwtExpired(token) === false) {
       const user = jwtDecode(token);
-
-      if (check === false && !rateState) {
+      if (!rateState) {
         getRate(user.user_uuid);
       }
 
@@ -126,7 +125,7 @@ const DetailComic = () => {
       }
     }
     window.scrollTo(0, 0);
-  }, [id, starIndex, check]);
+  }, [id, starIndex]);
   //func read first chapter
   const handleReadLast = () => {
     const chapter = data.chapters[0];
@@ -163,14 +162,11 @@ const DetailComic = () => {
 
   const handleFollow = () => {
     if (!isLogged) {
-      dispatch({
-        type: ACTIONS.MODAL_NOTIFY,
-        payload: {
-          show: true,
-          message: null,
-          error: WARN_LOGIN,
-        },
-      });
+      dispatch_redux(modalNotify({
+        show: true,
+        message: null,
+        error: WARN_LOGIN,
+      }))
     } else {
       if (checked && token) {
         // delete follow comic
@@ -219,7 +215,7 @@ const DetailComic = () => {
                       {data
                         ? data.categories.map((e, i) => {
                             return (
-                              <Link key={i} to={`/categories/${e.category_id}`}>
+                              <Link key={i} to={`/the-loai/${xoaDau(e.category_name)}/${e.category_id}`}>
                                 {e.category_name}
                               </Link>
                             );

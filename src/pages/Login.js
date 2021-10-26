@@ -55,7 +55,7 @@ const Login = () => {
           refreshToken: res.data.data.refreshToken,
         })
       );
-
+      console.log(res.data.data.token);
       if (checked === true) {
         storageData(res);
       }

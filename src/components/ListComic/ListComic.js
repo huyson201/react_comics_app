@@ -13,6 +13,10 @@ import {
   deleteComicFollow,
 } from "../../features/comics/followSlice";
 import jwtDecode from "jwt-decode";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 const ListItem = ({ other, index, item, isFollow }) => {
   const name = xoaDau(item["comic_name"]);
   const ourRequest = axios.CancelToken.source();
@@ -38,7 +42,6 @@ const ListItem = ({ other, index, item, isFollow }) => {
     //set New chapter
     try {
       if (other) {
-       
         getChaptersByID();
       } else {
         setNewChapter(item["chapters"][0]["chapter_name"]);
@@ -89,11 +92,40 @@ const ListItem = ({ other, index, item, isFollow }) => {
   );
 };
 const ListComic = ({ other, title, isFollow }) => {
+  let settings = {
+    dots: true,
+    infinite: true,
+    speed: 200,
+    slidesToShow: 5,
+    slidesToScroll: 1,
+    autoplay: true,
+  };
   const comics = useSelector((state) => state.comics.comics);
   const category = useSelector((state) => state.comics.selectedCategory);
   const comics_follow = useSelector((state) => state.follows.comics);
   return (
     <>
+      <div className="list-title">
+        <BsStars />
+        {category ? CATEGORY_COMIC_TITLE + category["category_name"] : title}
+      </div>
+      <div className="slider_comic">
+        <Slider {...settings}>
+          {comics &&
+            !isFollow &&
+            comics.map((e, i) => {
+              return (
+                <ListItem
+                  index={i}
+                  other={other}
+                  key={i}
+                  isFollow={isFollow}
+                  item={e}
+                ></ListItem>
+              );
+            })}
+        </Slider>
+      </div>
       <div className="list-title">
         <BsStars />
         {category ? CATEGORY_COMIC_TITLE + category["category_name"] : title}
