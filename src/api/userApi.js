@@ -1,8 +1,7 @@
 import axiosClient from "./axiosClient";
-import axios from "axios";
 const userApi = {
     register: (user) => {
-        const url = "/users";
+        const url = "/register";
         return axiosClient.post(url, user);
     },
     login: (user_email, user_password) => {
@@ -37,19 +36,34 @@ const userApi = {
         );
     },
     updateUserImage: (token, data) => {
-        const url = "https://love-comic-api.herokuapp.com/api/users/";
-        return axios.patch(
+        const url = "/users/";
+        return axiosClient.patch(
             url,
+            data,
             {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
+                    'Content-Type': `multipart/form-data; boundary=${data._boundary}`,
                     'Accept': 'application/json',
                     Authorization: `Bearer ${token}`
                 },
-                data: data
             }
         );
     },
+    changePassword: (old_password, new_password, token) => {
+        const url = "/users/change-password"
+        return axiosClient.patch(
+            url,
+            {
+                old_password: old_password,
+                new_password: new_password,
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+            }
+        );
+    }
 
 };
 export default userApi;

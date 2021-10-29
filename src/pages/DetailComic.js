@@ -53,60 +53,58 @@ const DetailComic = () => {
   const [starIndex, setStarIndex] = useState();
   const [rateState, setRateState] = useState();
 
+  const notify = (error, message) => {
+    dispatch_redux(
+      modalNotify({
+        show: true,
+        message: message,
+        error: error,
+      })
+    );
+  };
+
   const changeStarIndex = (index) => {
     if (token && isJwtExpired(token) === false) {
       setStarIndex(index);
     } else {
-      dispatch_redux(
-        modalNotify({
-          show: true,
-          message: null,
-          error: WARN_LOGIN,
-        })
-      );
+      notify(WARN_LOGIN, null)
       dispatch_redux(logout());
     }
   };
 
   //func get comic
   const getComic = async () => {
-    const res = await comicApi.getComicByID(id);
-    if (res.data.error) {
-      console.log(res.data.error);
-    } else {
-      setData(res.data.data);
+    try {
+      const res = await comicApi.getComicByID(id);
+      if (res.data.data) {
+        setData(res.data.data);
+      }
+    } catch (error) {
+      notify(error.response.data, null)
     }
+
   };
   // func rate
   const rate = async (id, token, starIndex) => {
-    const res = await rateApi.rateComic(id, token, starIndex);
-    if (res.data.error) {
-      dispatch_redux(
-        modalNotify({
-          show: true,
-          message: null,
-          error: WARN_LOGIN,
-        })
-      );
-    } else {
-      dispatch_redux(
-        modalNotify({
-          show: true,
-          message: RATE_SUCCESS,
-          error: null,
-        })
-      );
+    try {
+      const res = await rateApi.rateComic(id, token, starIndex);
+      if (res.data.data) {
+        notify(null, RATE_SUCCESS)
+      }
+    } catch (error) {
+      notify(error.response.data, null)
     }
   };
 
   const getRate = async (userId) => {
-    const res = await rateApi.getRateComic(userId, id);
-    if (res.data.error != null || res.data.data.length === 0) {
-      console.log("Ban chua danh gia");
-    } else {
-      setStarIndex(null);
-      setRateState(res.data.data[0].rate_star);
-      console.log(res.data.data[0].rate_star);
+    try {
+      const res = await rateApi.getRateComic(userId, id);
+      if (res.data.data) {
+        setStarIndex(null);
+        setRateState(res.data.data[0].rate_star);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
   useEffect(() => {
@@ -118,7 +116,6 @@ const DetailComic = () => {
       if (!rateState) {
         getRate(user.user_uuid);
       }
-
       if (starIndex) {
         setRateState(null);
         rate(id, token, starIndex);
@@ -130,8 +127,7 @@ const DetailComic = () => {
   const handleReadLast = () => {
     const chapter = data.chapters[0];
     history.push(
-      `/${xoaDau(chapter.chapter_name)}/${
-        chapter.chapter_id
+      `/${xoaDau(chapter.chapter_name)}/${chapter.chapter_id
       }/truyen-tranh/${name}`
     );
   };
@@ -140,8 +136,7 @@ const DetailComic = () => {
   const handleReadFirst = () => {
     const chapter = data.chapters[data.chapters.length - 1];
     history.push(
-      `/${xoaDau(chapter.chapter_name)}/${
-        chapter.chapter_id
+      `/${xoaDau(chapter.chapter_name)}/${chapter.chapter_id
       }/truyen-tranh/${name}`
     );
   };
@@ -216,17 +211,16 @@ const DetailComic = () => {
                     <div className="item">
                       {data
                         ? data.categories.map((e, i) => {
-                            return (
-                              <Link
-                                key={i}
-                                to={`/the-loai/${xoaDau(e.category_name)}/${
-                                  e.category_id
+                          return (
+                            <Link
+                              key={i}
+                              to={`/the-loai/${xoaDau(e.category_name)}/${e.category_id
                                 }`}
-                              >
-                                {e.category_name}
-                              </Link>
-                            );
-                          })
+                            >
+                              {e.category_name}
+                            </Link>
+                          );
+                        })
                         : ""}
                     </div>
                   </div>
@@ -243,10 +237,10 @@ const DetailComic = () => {
                     <div className="item">
                       {data
                         ? updateDate(
-                            data.chapters.sort((a, b) =>
-                              b.chapter_id > a.chapter_id ? 1 : -1
-                            )[0].updatedAt
-                          )
+                          data.chapters.sort((a, b) =>
+                            b.chapter_id > a.chapter_id ? 1 : -1
+                          )[0].updatedAt
+                        )
                         : ""}
                     </div>
                   </div>
@@ -314,22 +308,21 @@ const DetailComic = () => {
                     {/* Truyền id chapter và list chapter */}
                     {data
                       ? data.chapters
-                          .sort((a, b) =>
-                            b.chapter_id > a.chapter_id ? 1 : -1
-                          )
-                          .map((e, i) => {
-                            return (
-                              <Link
-                                to={`/${xoaDau(e.chapter_name)}/${
-                                  e.chapter_id
+                        .sort((a, b) =>
+                          b.chapter_id > a.chapter_id ? 1 : -1
+                        )
+                        .map((e, i) => {
+                          return (
+                            <Link
+                              to={`/${xoaDau(e.chapter_name)}/${e.chapter_id
                                 }/truyen-tranh/${name}`}
-                                key={i}
-                              >
-                                <span>{e.chapter_name}</span>
-                                <span>{updateDate(e.updatedAt)}</span>
-                              </Link>
-                            );
-                          })
+                              key={i}
+                            >
+                              <span>{e.chapter_name}</span>
+                              <span>{updateDate(e.updatedAt)}</span>
+                            </Link>
+                          );
+                        })
                       : ""}
                   </div>
                 </div>

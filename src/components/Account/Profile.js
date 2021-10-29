@@ -2,10 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Form, FormLabel, FormGroup, Button } from "react-bootstrap";
 import jwt_decode from "jwt-decode";
 import { isJwtExpired } from "jwt-check-expiration";
-import axiosClient from "../../api/axiosClient";
-import { useData } from "../../context/Provider";
-import { ACTIONS } from "../../context/Action";
-import ModalNotify from "../Modal/ModalNotify";
 import {
   BUTTON_UPDATE,
   LABEL_EMAIL,
@@ -19,11 +15,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { isCheck, login, logout } from "../../features/auth/userSlice";
 import { modalNotify } from "../../features/modal/modalSlice";
 import userApi from "../../api/userApi";
+// import { decode as base64_decode, encode as base64_encode } from 'base-64';
 
 const Profile = () => {
   const [user_name, setUserName] = useState();
   const [user_email, setEmail] = useState();
-  const { dispatch, show, error, message } = useData();
+  const [user_image, setImage] = useState();
   const { token, refreshToken } = useSelector((state) => state.user);
   const dispatch_redux = useDispatch();
 
@@ -42,11 +39,10 @@ const Profile = () => {
     if (userToken != null) {
       setUserName(userToken.user_name);
       setEmail(userToken.user_email);
+      setImage(userToken.user_image)
     }
-
-
-
   }, [token, refreshToken]);
+
 
   const updateToken = async () => {
     try {
@@ -68,15 +64,30 @@ const Profile = () => {
     notify(WARN_LOGIN, null)
   };
 
+  const convertBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        resolve(reader.result)
+      }
+      reader.onerror = (error) => {
+        reject(error)
+      }
+    })
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append('user_name', e.target[0].value)
-    formData.append('user_image', e.target[2].value)
-    console.log(formData.get('image'));
-
+    let formData = new FormData();
+    formData.append("user_name", user_name)
+    const file = e.target[2].files[0]
+    const base64 = await convertBase64(file)
+    setImage(base64);
+    formData.append('user_image', base64)
     try {
       if (token && isJwtExpired(token) === false) {
+        console.log(1234);
         const res = await userApi.updateUserImage(token, formData)
         if (res.data.data || res.data.message) {
           if (refreshToken && isJwtExpired(refreshToken) === false) {
@@ -88,7 +99,7 @@ const Profile = () => {
         resetDispatch();
       }
     } catch (error) {
-      console.log(error.response);
+      console.log(error);
       notify(error.response.data, null)
       // dispatch_redux(logout());
       // resetDispatch()
@@ -100,7 +111,7 @@ const Profile = () => {
       <h3>{TITLE_ACCOUNT}</h3>
       <div className="profile">
         <div>
-          <img src={"https://mpng.subpng.com/20180420/sdw/kisspng-computer-icons-user-profile-login-avatar-description-5ada41a3affa18.5037201115242530917208.jpg"}
+          <img src={user_image}
             alt="account" />
         </div>
         <div>
@@ -131,7 +142,6 @@ const Profile = () => {
               <FormLabel>{LABEL_IMAGE} </FormLabel>
               <Form.Control
                 type="file"
-              // onChange={(e) => setEmail(e.target.value)}
               />
             </FormGroup>
 

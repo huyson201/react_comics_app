@@ -13,6 +13,7 @@ import {
 import { isCheck, logout } from "../../features/auth/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { modalNotify } from "../../features/modal/modalSlice";
+import userApi from "../../api/userApi";
 
 const ChangePassword = () => {
   const [old_password, setUserPassword] = useState();
@@ -20,62 +21,35 @@ const ChangePassword = () => {
   const [cfnew_password, setUserPasswordCfNew] = useState();
   const { token, refreshToken } = useSelector((state) => state.user);
   const dispatch_redux = useDispatch();
+
+  const notify = (error, message) => {
+    dispatch_redux(
+      modalNotify({
+        show: true,
+        message: message,
+        error: error,
+      })
+    );
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      if (token && isJwtExpired(token) === false) {
-        if (checkCfPw(new_password, cfnew_password) === false) {
-          dispatch_redux(
-            modalNotify({
-              show: true,
-              message: null,
-              error: CHECK_PW,
-            })
-          );
-        } else {
-          const res = await axiosClient.patch(
-            "/users/change-password",
-            {
-              old_password: old_password,
-              new_password: new_password,
-            },
-            {
-              headers: {
-                Authorization: "Bearer " + token,
-              },
-            }
-          );
-          if (res.data.error || res.data.err) {
-            console.log(res.data.err);
-            dispatch_redux(
-              modalNotify({
-                show: true,
-                message: null,
-                error: res.data.error ? res.data.error : res.data.err,
-              })
-            );
-          } else {
-            dispatch_redux(
-              modalNotify({
-                show: true,
-                message: res.data.msg,
-                error: null,
-              })
-            );
-          }
-        }
+    if (token && isJwtExpired(token) === false) {
+      if (checkCfPw(new_password, cfnew_password) === false) {
+        notify(CHECK_PW, null)
       } else {
-        dispatch_redux(isCheck(true));
-        dispatch_redux(
-          modalNotify({
-            show: true,
-            message: null,
-            error: WARN_LOGIN,
-          })
-        );
+        try {
+          const res = await userApi.changePassword(old_password, new_password, token);
+          if (res.data.data) {
+            notify(null, res.data.message)
+          }
+        } catch (error) {
+          notify(error.response.data, null)
+        }
       }
-    } catch (error) {
-      console.log(error);
+    } else {
+      dispatch_redux(isCheck(true));
+      notify(WARN_LOGIN, null)
     }
   };
 
