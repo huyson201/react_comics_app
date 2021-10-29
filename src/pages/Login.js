@@ -30,25 +30,23 @@ const Login = () => {
     });
   }
 
+  const notify = (error, message) => {
+    dispatch_redux(
+      modalNotify({
+        show: true,
+        message: message,
+        error: error,
+      })
+    );
+  };
+
+
   function dispatchData(res, checked) {
     //set show modal
     if (res.data.error || res.data.message) {
-      dispatch_redux(
-        modalNotify({
-          show: true,
-          message: null,
-          error: res.data.error ? res.data.error : res.data.message,
-        })
-      );
+      notify(res.data.error ? res.data.error : res.data.message, null)
     } else {
-      dispatch_redux(
-        modalNotify({
-          show: true,
-          message: LOGIN_SUCCESS,
-          error: null,
-        })
-      );
-
+      notify(null, LOGIN_SUCCESS)
       dispatch_redux(
         login({
           token: res.data.data.token,
@@ -75,12 +73,17 @@ const Login = () => {
   }
 
   async function loginNormal() {
-    //POST data to login
-    const res = await axiosClient.post("/login", {
-      user_email: user_email,
-      user_password: user_password,
-    });
-    dispatchData(res, checked);
+    try {
+      //POST data to login
+      const res = await axiosClient.post("/login", {
+        user_email: user_email,
+        user_password: user_password,
+      });
+      dispatchData(res, checked);
+    } catch (error) {
+      console.log(error);
+    }
+
   }
 
   async function refreshCookie(cookie) {
@@ -94,13 +97,7 @@ const Login = () => {
     try {
       event.preventDefault();
       if (user_password.length < 6) {
-        dispatch_redux(
-          modalNotify({
-            show: true,
-            message: null,
-            error: VALIDATE_PW,
-          })
-        );
+        notify(VALIDATE_PW, null)
       } else {
         flogin();
       }

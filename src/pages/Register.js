@@ -37,6 +37,16 @@ const Register = () => {
     });
   }, [user_name, user_email, user_password, confirm_password]);
 
+  const notify = (error, message) => {
+    dispatch_redux(
+      modalNotify({
+        show: true,
+        message: message,
+        error: error,
+      })
+    );
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -47,40 +57,20 @@ const Register = () => {
     setValidated(true);
     if (form.checkValidity() === true) {
       if (user_password.length < 6) {
-        dispatch_redux(
-          modalNotify({
-            show: true,
-            message: null,
-            error: VALIDATE_PW,
-          })
-        );
+        notify(VALIDATE_PW, null);
       } else if (checkCfPw(user_password, confirm_password) === false) {
-        dispatch_redux(
-          modalNotify({
-            show: true,
-            message: null,
-            error: CHECK_PW,
-          })
-        );
+        notify(CHECK_PW, null);
       } else {
-        const res = await axiosClient.post("/users", user);
-        console.log(res.data);
-        if (res.data.error || res.data.message) {
-          dispatch_redux(
-            modalNotify({
-              show: true,
-              message: null,
-              error: res.data.error ? res.data.error : res.data.message,
-            })
-          );
-        } else {
-          dispatch_redux(
-            modalNotify({
-              show: true,
-              message: REGISTER_SUCCESS,
-              error: null,
-            })
-          );
+        try {
+          const res = await axiosClient.post("/users", user);
+          if (res.data.error || res.data.message) {
+            notify(res.data.error ? res.data.error : res.data.message, null);
+          } else {
+            notify(null, REGISTER_SUCCESS);
+          }
+        } catch (error) {
+          console.log(error);
+          alert("error");
         }
       }
     }
