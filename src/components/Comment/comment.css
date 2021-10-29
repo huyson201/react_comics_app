@@ -1,0 +1,122 @@
+.content-comments {
+  color: white;
+ 
+}
+.ul-content-comment {
+  padding: 0;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.ul-content-comment li {
+  display: block;
+}
+
+.image-li-content-comment {
+  width: 60px;
+  height: 60px;
+  float: left;
+  border-radius: 50%;
+  padding: 4px;
+}
+
+.img-comment {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+.bg-user-type-1 {
+  background: #5aadbe;
+}
+.role-user-comment {
+  display: block;
+  text-align: center;
+  font-size: 9px;
+  padding: 1px 2px;
+  line-height: 13px;
+  background: #34b158;
+  color: #fff;
+  border-radius: 2px;
+  margin: 2px 0;
+}
+
+.ul-content-comment li .content-li-content-commnet {
+  float: left;
+  width: calc(100% - 60px);
+  padding: 5px;
+  border: 1px solid #9b9b9b;
+  margin: 5px 0;
+  border-radius: 2px;
+  position: relative;
+}
+
+.ul-content-comment li .content-li-content-commnet h3 {
+  font-size: 13px;
+  float: left;
+  line-height: 18px;
+}
+
+.ul-content-comment li .content-li-content-commnet span {
+  font-size: 13px;
+  padding-bottom: 2px;
+  clear: both;
+  display: block;
+  overflow: hidden;
+  text-align: left;
+}
+.item-comment {
+  display: flex;
+  flex-direction: row;
+}
+.ul-content-comment
+  li
+  .content-li-content-commnet
+  .h3-span-content-li-content-commnet
+  span {
+  color: #a1a1a1;
+  font-size: 11px;
+  line-height: 18px;
+  padding-left: 2em;
+  padding-bottom: 0;
+  float: left;
+  clear: unset;
+  display: unset;
+}
+.reply-btn {
+  float: left;
+}
+.sub-comment {
+  padding-left: 3%;
+}
+.comment-form {
+  text-align: right;
+  margin-bottom: 10px;
+}
+.comment-form-textarea {
+  width: 100%;
+  padding: 5px 0 0 5px;
+  color: white;
+  height: 80px;
+  margin-bottom: 8px;
+  margin-top: 8px;
+  border: 1px solid rgb(139 139 139);
+  background: #5a5454;
+}
+
+.comment-form-button {
+  font-size: 16px;
+  padding: 8px 16px;
+  background: rgb(59, 130, 246);
+  border-radius: 2px;
+  color: white;
+}
+
+.comment-form-button:hover:enabled {
+  cursor: pointer;
+  background: rgb(37, 99, 235);
+}
+
+.comment-form-button:disabled {
+  opacity: 0.7;
+  cursor: default;
+}

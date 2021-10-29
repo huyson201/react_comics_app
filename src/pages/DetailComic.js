@@ -34,6 +34,7 @@ import followApi from "../api/followApi";
 import jwtDecode from "jwt-decode";
 import { Spinner } from "react-bootstrap";
 import { modalNotify } from "../features/modal/modalSlice";
+import Comment from "../components/Comment/Comment";
 
 const DetailComic = () => {
   const history = useHistory();
@@ -44,7 +45,7 @@ const DetailComic = () => {
   const [checked, setChecked] = useState(false);
   const { status } = useSelector((state) => state.follows);
   const { token, refreshToken, isLogged } = useSelector((state) => state.user);
-  const { show, error, message} = useSelector((state) => state.modal);
+  const { show, error, message } = useSelector((state) => state.modal);
   const dispatch_redux = useDispatch();
   // rating
   let arrStar = [1, 2, 3, 4, 5];
@@ -106,7 +107,6 @@ const DetailComic = () => {
       setStarIndex(null);
       setRateState(res.data.data[0].rate_star);
       console.log(res.data.data[0].rate_star);
-
     }
   };
   useEffect(() => {
@@ -162,11 +162,13 @@ const DetailComic = () => {
 
   const handleFollow = () => {
     if (!isLogged) {
-      dispatch_redux(modalNotify({
-        show: true,
-        message: null,
-        error: WARN_LOGIN,
-      }))
+      dispatch_redux(
+        modalNotify({
+          show: true,
+          message: null,
+          error: WARN_LOGIN,
+        })
+      );
     } else {
       if (checked && token) {
         // delete follow comic
@@ -215,7 +217,12 @@ const DetailComic = () => {
                       {data
                         ? data.categories.map((e, i) => {
                             return (
-                              <Link key={i} to={`/the-loai/${xoaDau(e.category_name)}/${e.category_id}`}>
+                              <Link
+                                key={i}
+                                to={`/the-loai/${xoaDau(e.category_name)}/${
+                                  e.category_id
+                                }`}
+                              >
                                 {e.category_name}
                               </Link>
                             );
@@ -251,14 +258,14 @@ const DetailComic = () => {
                   <Link to="#" type="button" onClick={handleFollow}>
                     {status == "loading" && (
                       <>
-                      <Spinner
-                        as="span"
-                        animation="border"
-                        size="sm"
-                        role="status"
-                        aria-hidden="true"
-                      />
-                      {" "+LOADING}
+                        <Spinner
+                          as="span"
+                          animation="border"
+                          size="sm"
+                          role="status"
+                          aria-hidden="true"
+                        />
+                        {" " + LOADING}
                       </>
                     )}
                     {status != "loading" && checked === true && (
@@ -333,7 +340,8 @@ const DetailComic = () => {
               </div>
 
               <div className="footer">
-                <div className="comment_fb comic_bg">{COMMENT}</div>
+                <div className="comment-box-title">{COMMENT}</div>
+                <Comment comicId={id}></Comment>
               </div>
             </div>
           </div>

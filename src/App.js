@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Account from "./pages/Account";
 import Home from "./pages/Home";
+import Comment from "./components/Comment/Comment"
 import Footer from "./components/Footer/Footer";
 import DetailComic from "./pages/DetailComic";
 import DetailChapter from "./pages/DetailChapter";
@@ -25,6 +26,7 @@ function App() {
           <ModalNotify />
           <Header />
           <Switch>
+          <Route exact path="/comments" component={Comment}></Route>
             <Route exact path="/" component={Home}></Route>
             <Route path="/tim-kiem" component={Home}></Route>
             <Route path="/tim-kiem-nang-cao" component={Home}></Route>
