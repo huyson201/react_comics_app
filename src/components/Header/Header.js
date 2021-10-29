@@ -133,7 +133,7 @@ const Navbar = (props) => {
               const name = xoaDau(item["category_name"]);
               return (
                 <Link
-                  to={`/the-loai/${name}/${item["category_id"]}`}
+                  to={`/the-loai/${name}/${item["category_id"]}/page/1`}
                   className="category-item"
                   key={i}
                 >
@@ -160,9 +160,8 @@ const SearchForm = ({ }) => {
     const keyUrl = xoaDau(key);
     e.preventDefault();
     history.push({
-      pathname: "/tim-kiem",
-      search: `keyword=${keyUrl}`,
-      keyword: key,
+      pathname: "/tim-kiem/"+key+"/page/1",
+     
     });
     setKey("");
   };
@@ -178,7 +177,7 @@ const SearchForm = ({ }) => {
     });
     history.push({
       pathname: "/tim-kiem-nang-cao",
-      search: `the-loai=${arr}&tinh-trang=${status}`,
+      search: `the-loai=${arr}&tinh-trang=${status}&page=1`,
     });
   };
 

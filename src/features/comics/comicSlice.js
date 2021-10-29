@@ -67,14 +67,18 @@ const comicSlice = createSlice({
     },
     removeComicList(state) {
       state.comics = [];
-      state.status = 'loading'
+      state.status = "loading";
     },
     setOffSet(state, action) {
       state.offset = action.payload;
     },
-    removeSelectedComic(state){
+    removeSelectedComic(state) {
       state.selectedComic = null;
-    }
+      state.status = "loading";
+    },
+    setStatus(state, action) {
+      state.status = action.payload;
+    },
   },
   extraReducers: {
     [getComics.pending]: (state) => {
@@ -133,7 +137,7 @@ const comicSlice = createSlice({
     },
   },
 });
-export const { removeSelectedCategory, removeComicList, setOffSet } =
+export const { removeSelectedCategory, removeComicList, setOffSet, setStatus } =
   comicSlice.actions;
 export const getAllComics = (state) => state.comics.comics;
 export default comicSlice.reducer;

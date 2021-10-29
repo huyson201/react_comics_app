@@ -16,16 +16,17 @@ import jwtDecode from "jwt-decode";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
+import { useHistory } from "react-router";
 const ListItem = ({ other, index, item, isFollow }) => {
   const name = xoaDau(item["comic_name"]);
   const ourRequest = axios.CancelToken.source();
-  const [newChapter, setNewChapter] = useState();
+  const [newChapter, setNewChapter] = useState({});
+  const [chapterName, setChapterName] = useState('');
   const { token } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const status = useSelector((state) => state.follows.status);
+  const history = useHistory();
   //get chapters by id
-  console.log(item);
   const getChaptersByID = async () => {
     try {
       const res = await comicApi.getComicByID(item["comic_id"], {
@@ -33,7 +34,8 @@ const ListItem = ({ other, index, item, isFollow }) => {
       });
       const data = res.data.data;
       const chapters = data["chapters"];
-      setNewChapter(chapters[chapters.length - 1]["chapter_name"]);
+      setNewChapter(chapters[chapters.length - 1]);
+      setChapterName(xoaDau(chapters[chapters.length - 1]['chapter_name']))
     } catch (error) {
       setNewChapter("NaN");
     }
@@ -44,11 +46,13 @@ const ListItem = ({ other, index, item, isFollow }) => {
       if (other) {
         getChaptersByID();
       } else {
-        setNewChapter(item["chapters"][0]["chapter_name"]);
+        setNewChapter(item["chapters"][0]);
+        setChapterName(xoaDau(item["chapters"][0]['chapter_name']))
       }
     } catch (error) {}
     return () => {
       setNewChapter(null);
+      setChapterName('')
       ourRequest.cancel();
     };
   }, [other]);
@@ -81,10 +85,19 @@ const ListItem = ({ other, index, item, isFollow }) => {
             src={item["comic_img"]}
             alt={item["comic_name"]}
           ></img>
-          <div className="item-row">
-            <div className="item-new-chapter">{newChapter}</div>
-            <div className="item-rate">5.0</div>
-          </div>
+        </Link>
+        <div className="item-row">
+          <Link
+            to={`/${chapterName}/${
+              newChapter['chapter_id']
+            }/truyen-tranh/${name}-${item["comic_id"]}`}
+            className="item-new-chapter"
+          >
+            {newChapter && newChapter["chapter_name"]}
+          </Link>
+          <div className="item-rate">5.0</div>
+        </div>
+        <Link to={`/truyen-tranh/${name}-${item["comic_id"]}`}>
           <div className="item-name">{item["comic_name"]}</div>
         </Link>
       </div>
@@ -105,11 +118,11 @@ const ListComic = ({ other, title, isFollow }) => {
   const comics_follow = useSelector((state) => state.follows.comics);
   return (
     <>
-      <div className="list-title">
+      {/* <div className="list-title">
         <BsStars />
         {category ? CATEGORY_COMIC_TITLE + category["category_name"] : title}
-      </div>
-      <div className="slider_comic">
+      </div> */}
+      {/* <div className="slider_comic">
         <Slider {...settings}>
           {comics &&
             !isFollow &&
@@ -125,7 +138,7 @@ const ListComic = ({ other, title, isFollow }) => {
               );
             })}
         </Slider>
-      </div>
+      </div> */}
       <div className="list-title">
         <BsStars />
         {category ? CATEGORY_COMIC_TITLE + category["category_name"] : title}

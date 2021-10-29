@@ -27,10 +27,11 @@ function App() {
           <Header />
           <Switch>
           <Route exact path="/comments" component={Comment}></Route>
+            <Route exact path="/truyen-moi-cap-nhat/page/:number" component={Home}></Route>
             <Route exact path="/" component={Home}></Route>
-            <Route path="/tim-kiem" component={Home}></Route>
+            <Route path="/tim-kiem/:keyword/page/:number" component={Home}></Route>
             <Route path="/tim-kiem-nang-cao" component={Home}></Route>
-            <Route path="/the-loai/:name/:id" component={Home}></Route>
+            <Route path="/the-loai/:name/:id/page/:number" component={Home}></Route>
             <Route path="/truyen-theo-doi" component={Follow}></Route>
             <Route path="/truyen-tranh/:name" component={DetailComic}></Route>
             <Route
