@@ -6,6 +6,7 @@ export const TITLE_ACCOUNT = "Thông tin tài khoản";
 export const LABEL_REMEMBER = " Nhớ phiên đăng nhập";
 export const LABEL_FORGOT = "Quên mật khẩu ?";
 export const LABEL_EMAIL = "Email";
+export const LABEL_IMAGE = "Tải ảnh lên";
 export const LABEL_FULLNAME = "Họ và tên";
 export const LABEL_PW = "Mật khẩu";
 export const LABEL_OLD_PW = "Nhập mật khẩu cũ";

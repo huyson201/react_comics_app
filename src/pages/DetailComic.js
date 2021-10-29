@@ -341,7 +341,7 @@ const DetailComic = () => {
 
               <div className="footer">
                 <div className="comment-box-title">{COMMENT}</div>
-                <Comment comicId={id}></Comment>
+                {/* <Comment comicId={id}></Comment> */}
               </div>
             </div>
           </div>

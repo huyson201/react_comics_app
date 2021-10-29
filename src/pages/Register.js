@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Form, FormLabel, FormGroup, Button } from "react-bootstrap";
-import axiosClient from "../api/axiosClient";
 import {
   CHECK_PW,
   FB_CF_PW,
@@ -18,6 +17,7 @@ import {
 } from "../constants";
 import { useDispatch } from "react-redux";
 import { modalNotify } from "../features/modal/modalSlice";
+import userApi from "../api/userApi";
 
 const Register = () => {
   const [user_name, setUserName] = useState();
@@ -62,15 +62,13 @@ const Register = () => {
         notify(CHECK_PW, null);
       } else {
         try {
-          const res = await axiosClient.post("/users", user);
-          if (res.data.error || res.data.message) {
-            notify(res.data.error ? res.data.error : res.data.message, null);
-          } else {
+          const res = await userApi.register(user);
+          if (res.data.data) {
             notify(null, REGISTER_SUCCESS);
           }
         } catch (error) {
-          console.log(error);
-          alert("error");
+          console.log(error.response.data);
+          notify(error.response.data, null)
         }
       }
     }
@@ -139,7 +137,7 @@ const Register = () => {
 
         <Button
           type="submit"
-          className="btn btn-primary btn-block "
+          className="btn-primary"
           variant="dark"
         >
           {TITLE_REGISTER}

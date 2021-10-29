@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Form, FormLabel, FormGroup, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import axiosClient from "../api/axiosClient";
 import Cookies from "js-cookie";
 import {
   FB_EMAIL,
@@ -17,6 +16,7 @@ import {
 import { login } from "../features/auth/userSlice";
 import { useDispatch } from "react-redux";
 import { modalNotify } from "../features/modal/modalSlice";
+import userApi from "../api/userApi";
 
 const Login = () => {
   const [user_email, setEmail] = useState();
@@ -40,12 +40,9 @@ const Login = () => {
     );
   };
 
-
   function dispatchData(res, checked) {
     //set show modal
-    if (res.data.error || res.data.message) {
-      notify(res.data.error ? res.data.error : res.data.message, null)
-    } else {
+    if (res.data.data) {
       notify(null, LOGIN_SUCCESS)
       dispatch_redux(
         login({
@@ -53,7 +50,7 @@ const Login = () => {
           refreshToken: res.data.data.refreshToken,
         })
       );
-      console.log(res.data.data.token);
+      console.log(res.data.data);
       if (checked === true) {
         storageData(res);
       }
@@ -61,7 +58,7 @@ const Login = () => {
   }
 
   async function flogin() {
-    if (checked == false) {
+    if (checked === false) {
       if (Cookies.get("refreshToken")) {
         refreshCookie(Cookies.get("refreshToken"));
       } else {
@@ -75,34 +72,30 @@ const Login = () => {
   async function loginNormal() {
     try {
       //POST data to login
-      const res = await axiosClient.post("/login", {
-        user_email: user_email,
-        user_password: user_password,
-      });
+      const res = await userApi.login(user_email, user_password);
       dispatchData(res, checked);
     } catch (error) {
-      console.log(error);
+      console.log(error.response.data);
+      notify(error.response.data, null)
     }
-
   }
 
   async function refreshCookie(cookie) {
-    const res = await axiosClient.post("/refresh-token", {
-      refreshToken: cookie,
-    });
-    dispatchData(res, checked);
+    try {
+      const res = await userApi.refreshToken(cookie)
+      dispatchData(res, checked);
+    } catch (error) {
+      console.log(error.response.data);
+      notify(error.response.data)
+    }
   }
 
   const handleSubmit = async (event) => {
-    try {
-      event.preventDefault();
-      if (user_password.length < 6) {
-        notify(VALIDATE_PW, null)
-      } else {
-        flogin();
-      }
-    } catch (error) {
-      console.log(error);
+    event.preventDefault();
+    if (user_password.length < 6) {
+      notify(VALIDATE_PW, null)
+    } else {
+      flogin();
     }
   };
 
@@ -153,7 +146,7 @@ const Login = () => {
 
         <Button
           type="submit"
-          className="btn btn-primary btn-block"
+          className="btn-primary"
           variant="dark"
         >
           {TITLE_LOGIN}

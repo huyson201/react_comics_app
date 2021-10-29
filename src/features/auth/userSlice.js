@@ -4,7 +4,7 @@ const userSlice = createSlice({
   initialState: {
     token: null,
     refreshToken: null,
-    isCheck: false,
+    isCheckUpdate: false,
     isLogged: false,
   },
   reducers: {
@@ -19,7 +19,7 @@ const userSlice = createSlice({
       state.isLogged = false;
     },
     isCheck(state, action) {
-      state.isCheck = action.payload;
+      state.isCheckUpdate = action.payload;
     },
   },
 });

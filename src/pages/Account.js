@@ -1,29 +1,41 @@
 import React from "react";
 import { useHistory, Link } from "react-router-dom";
-import { ACTIONS } from "../context/Action";
-import { useData } from "../context/Provider";
 import Cookies from "js-cookie";
-import ModalNotify from "../components/Modal/ModalNotify";
 import { LOGOUT_SUCCESS } from "../constants";
 import Profile from "../components/Account/Profile";
 import ChangePassword from "../components/Account/ChangePassword";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/auth/userSlice";
 import { modalNotify } from "../features/modal/modalSlice";
+import userApi from "../api/userApi";
 
 const Account = () => {
   const history = useHistory();
+  const token = useSelector(state => state.user.token)
   const dispatch_redux = useDispatch();
-  const handleLogout = () => {
-    Cookies.remove("refreshToken");
-    dispatch_redux(logout());
+
+  const notify = (error, message) => {
     dispatch_redux(
       modalNotify({
         show: true,
-        message: LOGOUT_SUCCESS,
-        error: null,
+        message: message,
+        error: error,
       })
     );
+  };
+
+  const handleLogout = async () => {
+    try {
+      const res = await userApi.logout(token)
+      console.log(res.data);
+      if (res.status === 204) {
+        notify(null, LOGOUT_SUCCESS)
+        Cookies.remove("refreshToken");
+        dispatch_redux(logout());
+      }
+    } catch (error) {
+      notify(error.response.data, null)
+    }
   };
 
   return (

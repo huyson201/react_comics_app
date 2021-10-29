@@ -19,6 +19,7 @@ const ModalNotify = (props) => {
         error: null,
       })
     );
+
     switch (path) {
       case "/login":
         if (error) {
@@ -35,7 +36,7 @@ const ModalNotify = (props) => {
         }
         break;
       case "/profile":
-        if (error) {
+        if (error === WARN_LOGIN) {
           history.push("/login");
         }
         break;
@@ -53,6 +54,7 @@ const ModalNotify = (props) => {
         history.push("/");
         break;
     }
+
   };
 
   return (

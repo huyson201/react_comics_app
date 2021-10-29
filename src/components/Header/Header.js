@@ -14,44 +14,60 @@ import { xoaDau } from "../../utilFunction";
 import Cookies from "js-cookie";
 import axiosClient from "../../api/axiosClient";
 import { useDispatch, useSelector } from "react-redux";
-import { login, logout } from "../../features/auth/userSlice";
-import {LOGOUT_SUCCESS, WARN_LOGIN } from "../../constants";
+import { login, logout, isCheck } from "../../features/auth/userSlice";
+import { LOGOUT_SUCCESS, WARN_LOGIN } from "../../constants";
 import { getCategories } from "../../features/comics/categorySlice";
 import { modalNotify } from "../../features/modal/modalSlice";
+import userApi from "../../api/userApi";
 const Navbar = (props) => {
   const [open, setOpen] = useState(false);
   const status = useSelector((state) => state.comics.status);
   const statusFollows = useSelector((state) => state.follows.status);
+  const token = useSelector((state) => state.user.token)
+  const [stateOption, setStateOption] = useState(false)
+  const dispatch_redux = useDispatch();
+
+  const notify = (error, message) => {
+    dispatch_redux(
+      modalNotify({
+        show: true,
+        message: message,
+        error: error,
+      })
+    );
+  };
+
   useEffect(() => {
     if (status == "loading" || statusFollows == "loading") {
       setOpen(false);
     }
-  }, [status,statusFollows]);
-  const dispatch_redux = useDispatch();
-  const handleLogout = () => {
-    dispatch_redux(
-      modalNotify({
-        show: true,
-        message: LOGOUT_SUCCESS,
-        error: null,
-      })
-    );
-    Cookies.remove("refreshToken");
-    dispatch_redux(logout());
+  }, [status, statusFollows]);
+
+  const handleLogout = async () => {
+    try {
+      const res = await userApi.logout(token)
+      console.log(res.data);
+      if (res.status === 204) {
+        notify(null, LOGOUT_SUCCESS)
+        Cookies.remove("refreshToken");
+        dispatch_redux(logout());
+      }
+    } catch (error) {
+      notify(error.response.data, null)
+    }
   };
+
   const categories = useSelector((state) => state.categories.categories);
   const isLogged = useSelector((state) => state.user.isLogged);
   const handleClick = () => {
     if (!isLogged) {
-      dispatch_redux(
-        modalNotify({
-          show: true,
-          message: null,
-          error: WARN_LOGIN,
-        })
-      );
+      notify(WARN_LOGIN, null)
     }
   };
+
+  const handleClickAccount = () => {
+    setStateOption(!stateOption)
+  }
 
   return (
     <>
@@ -81,12 +97,11 @@ const Navbar = (props) => {
           Theo dõi
         </Link>
 
-        <div className="nav-item account">
-          {/* <Link to="#"> */}
+        <div className="nav-item account" onClick={handleClickAccount}>
           <MdPerson />
           {props.username}
-          {/* </Link> */}
-          <div className="drop-down">
+          {console.log(props.username)}
+          {stateOption === true ? <div className="drop-down">
             {props.username === "Tài khoản" ? (
               <>
                 <Link to="/login" className="drop-down-item">
@@ -107,6 +122,7 @@ const Navbar = (props) => {
               </>
             )}
           </div>
+            : ""}
         </div>
       </nav>
 
@@ -131,7 +147,7 @@ const Navbar = (props) => {
     </>
   );
 };
-const SearchForm = ({}) => {
+const SearchForm = ({ }) => {
   const history = useHistory();
   const [key, setKey] = useState("");
   const [open, setOpen] = useState(false);
@@ -245,7 +261,7 @@ const SearchForm = ({}) => {
 
 const Header = () => {
   const dispatch_redux = useDispatch();
-  const { token, isCheck } = useSelector((state) => state.user);
+  const { token, isCheckUpdate } = useSelector((state) => state.user);
   const [categories, setCategories] = useState([]);
   // const isLogged = useSelector((state) => state.user.isLogged);
   useEffect(() => {
@@ -258,8 +274,9 @@ const Header = () => {
     let localToken = null;
     let userToken = null;
 
-    if (isCheck == true) {
+    if (isCheckUpdate == true) {
       dispatch_redux(login({ token: null }));
+      dispatch_redux(isCheck(false))
     } else {
       if (Cookies.get("refreshToken")) {
         axiosClient

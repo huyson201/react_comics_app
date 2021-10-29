@@ -1,0 +1,17 @@
+@media (min-width: 1050px) {
+  .form {
+    width: 50%;
+    margin: 0 auto;
+  }
+}
+@media (max-width: 1050px) {
+  .form {
+    width: 50%;
+    margin: 0 auto;
+  }
+}
+@media (max-width: 851px) {
+  .form {
+    width: 70%;
+  }
+}
