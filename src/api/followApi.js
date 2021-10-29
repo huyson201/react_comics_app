@@ -12,11 +12,10 @@ const followApi = {
       }
     );
   },
-  getFollowUser: (id, userToken, params) => {
+  getFollowUser: (id, userToken) => {
     const url = `/users/${id}/follows`;
     return axiosClient.get(
       url,
-      { params },
       {
         headers: {
           Authorization: `Bearer ${userToken}`,

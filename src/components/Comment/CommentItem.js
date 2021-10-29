@@ -19,7 +19,7 @@ const CommentItem = ({
 
   const date = new Date(item.createdAt).toDateString();
   const onReply = () => {
-    console.log(item.comment_id);
+    console.log(item.user_info.user_name);
     setActiveComment(item.comment_id);
   };
   const replyId = parentId ? parentId : item.comment_id;
@@ -31,18 +31,18 @@ const CommentItem = ({
         <div className="image-li-content-comment">
           <img
             className="img-comment"
-            src="https://ui-avatars.com/api/name=hi&background=random"
+            src={`https://ui-avatars.com/api/name=${item.user_info.user_name}&background=random`}
           ></img>
           <span className="role-user-comment bg-user-type-1">Thành viên</span>
         </div>
         <div className="content-li-content-commnet">
           <div className="h3-span-content-li-content-commnet">
-            <h3>Bảo Ngọc </h3>
+            <h3>{item.user_info.user_name}</h3>
             <span className="chapter-comment">Chapter 582</span>
             <span>{date}</span>
           </div>
           <span className="summary-content-li-content-commnet">
-            {item.comment_content}
+            {`${item.comment_content}`}
           </span>
           <a id={item.comment_id} onClick={onReply} className="reply-btn">
             Trả lời
@@ -52,9 +52,8 @@ const CommentItem = ({
       <div className="sub-comment">
         {isReplying && (
           <CommentForm
-            handleSubmit={(text) =>
-              addComment(text, replyId, parentIndex)
-            }
+            username={item.user_info.user_name}
+            handleSubmit={(text) => addComment(text, replyId, parentIndex)}
           ></CommentForm>
         )}
         {replies &&
