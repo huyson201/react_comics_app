@@ -44,6 +44,7 @@ const Login = () => {
     //set show modal
     if (res.data.data) {
       notify(null, LOGIN_SUCCESS)
+      console.log(res.data.data);
       dispatch_redux(
         login({
           token: res.data.data.token,

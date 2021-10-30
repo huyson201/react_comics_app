@@ -9,7 +9,7 @@ const Carousel = () => {
     infinite: true,
     speed: 200,
     slidesToShow: 5,
-    slidesToScroll: 1,
+    slidesToScroll: 3,
     autoplay: true,
   };
   const [comics, setComics] = useState();

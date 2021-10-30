@@ -1,6 +1,7 @@
 import axiosClient from "./axiosClient";
 const rateApi = {
   rateComic: (comicId, token, starIndex) => {
+    console.log(starIndex, "api rate");
     const url = "/rates";
     return axiosClient.post(
       url,

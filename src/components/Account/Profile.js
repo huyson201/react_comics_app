@@ -43,8 +43,7 @@ const Profile = () => {
       let image = userToken.user_image + `&t=${new Date().getTime()}`
       setImage(image)
     }
-    console.log(token);
-  }, [token, refreshToken]);
+  }, [token, refreshToken, user_image]);
 
   const updateToken = async () => {
     try {
