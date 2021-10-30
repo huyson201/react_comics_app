@@ -32,8 +32,8 @@ const Follow = () => {
 
   return (
     <div>
-      {status == "loading" && <Loading />}
-      {status == "success" && <ListComic title={title} other={other} isFollow={isFollow} />}
+      {status === "loading" && <Loading />}
+      {status === "success" && <ListComic title={title} other={other} isFollow={isFollow} />}
     </div>
   );
 };

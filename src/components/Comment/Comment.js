@@ -34,7 +34,7 @@ const Comment = ({ comicId }) => {
             user_image: userInfo.user_image,
             user_email: userInfo.user_email,
           };
-          if (parentId != 0) {
+          if (parentId !== 0) {
             const newArr = updateCommentList(parentIndex, data);
             setComments(newArr);
           } else {

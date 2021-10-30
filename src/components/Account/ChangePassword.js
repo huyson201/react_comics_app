@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Form, FormLabel, FormGroup, Button } from "react-bootstrap";
 import { isJwtExpired } from "jwt-check-expiration";
-import axiosClient from "../../api/axiosClient";
 import {
   CHECK_PW,
   LABEL_CF_NEW_PW,
@@ -10,7 +9,7 @@ import {
   TITLE_CHANGE_PW,
   WARN_LOGIN,
 } from "../../constants";
-import { isCheck, logout } from "../../features/auth/userSlice";
+import { isCheck } from "../../features/auth/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { modalNotify } from "../../features/modal/modalSlice";
 import userApi from "../../api/userApi";
@@ -19,7 +18,7 @@ const ChangePassword = () => {
   const [old_password, setUserPassword] = useState();
   const [new_password, setUserPasswordNew] = useState();
   const [cfnew_password, setUserPasswordCfNew] = useState();
-  const { token, refreshToken } = useSelector((state) => state.user);
+  const { token } = useSelector((state) => state.user);
   const dispatch_redux = useDispatch();
 
   const notify = (error, message) => {

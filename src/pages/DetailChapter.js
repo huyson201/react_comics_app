@@ -32,15 +32,7 @@ const DetailChapter = () => {
   const dispatch_redux = useDispatch();
   const { showChapter } = useSelector((state) => state.modal);
 
-  useEffect(() => {
-    setImgs(null);
-    getComic();
-    window.addEventListener("scroll", handleScroll);
-    window.scrollTo(0, 0);
-    return window.removeEventListener("scroll", () => handleScroll);
-  }, [id]);
-
-  function handleScroll() {
+  const handleScroll = () => {
     let cal =
       ((-1 * document.body.getBoundingClientRect().top) /
         document.body.getBoundingClientRect().height) *
@@ -52,7 +44,7 @@ const DetailChapter = () => {
     });
   }
 
-  async function getComic() {
+  const getComic = async () => {
     const resComic = await comicApi.getComicByID(idComic);
     setChapters(resComic.data.data.chapters);
     setComicName(resComic.data.data.comic_name);
@@ -60,7 +52,7 @@ const DetailChapter = () => {
     setImgs(resChapter.data.data.chapter_imgs.split(","));
   }
 
-  function nextId(id, arr) {
+  const nextId = (id, arr) => {
     let count = 0;
     arr.map((e) => {
       if (count < 1) {
@@ -73,7 +65,7 @@ const DetailChapter = () => {
     return id;
   }
 
-  function preId(id, arr) {
+  const preId = (id, arr) => {
     let count = 0;
     arr.map((e) => {
       if (count < 1) {
@@ -86,8 +78,8 @@ const DetailChapter = () => {
     return id;
   }
 
-  function checkChapter(idPre, idNext) {
-    if (idPre == idNext) {
+  const checkChapter = (idPre, idNext) => {
+    if (idPre === idNext) {
       return 0;
     } else if (idPre < idNext) {
       return 1;
@@ -102,8 +94,7 @@ const DetailChapter = () => {
     } else {
       const resChapter = await comicApi.getChapterByID(nId);
       history.push(
-        `/${xoaDau(resChapter.data.data.chapter_name)}/${
-          resChapter.data.data.chapter_id
+        `/${xoaDau(resChapter.data.data.chapter_name)}/${resChapter.data.data.chapter_id
         }/truyen-tranh/${name}`
       );
     }
@@ -116,8 +107,7 @@ const DetailChapter = () => {
     } else {
       const resChapter = await comicApi.getChapterByID(pId);
       history.push(
-        `/${xoaDau(resChapter.data.data.chapter_name)}/${
-          resChapter.data.data.chapter_id
+        `/${xoaDau(resChapter.data.data.chapter_name)}/${resChapter.data.data.chapter_id
         }/truyen-tranh/${name}`
       );
     }
@@ -134,6 +124,16 @@ const DetailChapter = () => {
       })
     );
   };
+
+  useEffect(() => {
+    setImgs(null);
+    getComic();
+    window.addEventListener("scroll", handleScroll);
+    window.scrollTo(0, 0);
+    return window.removeEventListener("scroll", () => handleScroll);
+  }, [id]);
+
+
   return (
     <>
       {imgs === null ? (
@@ -170,8 +170,8 @@ const DetailChapter = () => {
               <div className="chapter_img">
                 {imgs
                   ? imgs.map((e, i) => {
-                      return <img key={i} src={e} alt={"Error image"} />;
-                    })
+                    return <img key={i} src={e} alt={"Error image"} />;
+                  })
                   : ""}
               </div>
               <div className="button">

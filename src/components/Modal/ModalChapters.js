@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { FiX, FiXCircle } from "react-icons/fi";
+import { FiX } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { modalChapter } from "../../features/modal/modalSlice";
 import { xoaDau } from "../../utilFunction";

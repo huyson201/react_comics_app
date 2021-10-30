@@ -109,7 +109,7 @@ const DetailComic = () => {
     try {
       const res = await rateApi.getRateComic(userId, id);
       console.log(res.data.data, "userid comicid");
-      if (res.data.data && res.data.data.rows.length != 0) {
+      if (res.data.data && res.data.data.rows.length !== 0) {
         setStarIndex(null);
         dispatch_redux(starRateIndex(res.data.data.rows[0].rate_star - 1))
       }
@@ -214,7 +214,7 @@ const DetailComic = () => {
 
   return (
     <>
-      {data == null ? (
+      {data === null ? (
         <Loading />
       ) : (
         <>
@@ -279,7 +279,7 @@ const DetailComic = () => {
               <div className="button comic_bg">
                 <div className="head_left">
                   <Link to="#" type="button" onClick={handleFollow}>
-                    {status == "loading" && (
+                    {status === "loading" && (
                       <>
                         <Spinner
                           as="span"
@@ -291,13 +291,13 @@ const DetailComic = () => {
                         {" " + LOADING}
                       </>
                     )}
-                    {status != "loading" && checked === true && (
+                    {status !== "loading" && checked === true && (
                       <>
                         <MdBookmark className="icon" />
                         {UNFOLLOW}
                       </>
                     )}
-                    {status != "loading" && checked === false && (
+                    {status !== "loading" && checked === false && (
                       <>
                         <MdBookmarkBorder className="icon" />
                         {FOLLOW}
@@ -320,7 +320,7 @@ const DetailComic = () => {
                           key={i}
                           index={i}
                           changeStarIndex={changeStarIndex}
-                          style={star >= i && star != null ? true : false}
+                          style={star >= i && star !== null ? true : false}
                         />
                       </span>
                     ))}

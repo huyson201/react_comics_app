@@ -38,7 +38,7 @@ const Navbar = (props) => {
   };
 
   useEffect(() => {
-    if (status == "loading" || statusFollows == "loading") {
+    if (status === "loading" || statusFollows === "loading") {
       setOpen(false);
     }
   }, [status, statusFollows]);
@@ -171,7 +171,7 @@ const SearchForm = ({ }) => {
     e.preventDefault();
     let arr = [];
     categories.map((item, i) => {
-      if (checkedState[i] == true) {
+      if (checkedState[i] === true) {
         arr.push(item["category_id"]);
       }
     });
@@ -273,7 +273,7 @@ const Header = () => {
     let localToken = null;
     let userToken = null;
 
-    if (isCheckUpdate == true) {
+    if (isCheckUpdate === true) {
       dispatch_redux(login({ token: null }));
       dispatch_redux(isCheck(false))
     } else {

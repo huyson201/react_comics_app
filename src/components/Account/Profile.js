@@ -7,12 +7,11 @@ import {
   LABEL_EMAIL,
   LABEL_FULLNAME,
   LABEL_IMAGE,
-  LOGIN_SUCCESS,
   TITLE_ACCOUNT,
   WARN_LOGIN,
 } from "../../constants";
 import { useDispatch, useSelector } from "react-redux";
-import { isCheck, login, logout } from "../../features/auth/userSlice";
+import { isCheck, login } from "../../features/auth/userSlice";
 import { modalNotify } from "../../features/modal/modalSlice";
 import userApi from "../../api/userApi";
 // import { decode as base64_decode, encode as base64_encode } from 'base-64';
@@ -37,7 +36,7 @@ const Profile = () => {
   useEffect(() => {
     const userToken = token ? jwt_decode(token) : null;
     console.log(userToken);
-    if (userToken != null) {
+    if (userToken !== null) {
       console.log(userToken);
       setUserName(userToken.user_name);
       setEmail(userToken.user_email);

@@ -12,19 +12,19 @@ const CommentItem = ({
 }) => {
   const [replies, setReplies] = useState([]);
   useEffect(() => {
-    if (subComments != undefined) {
+    if (subComments !== undefined) {
       setReplies(subComments);
     }
   }, []);
   const date = moment(item.createdAt).format('L LTS')
   const onReply = () => {
-    console.log(item.user_info.user_name);
+    // console.log(item.user_info.user_name);
     setActiveComment(item.comment_id);
   };
   const replyId = parentId ? parentId : item.comment_id;
   const isReplying = activeComment === item.comment_id;
-  console.log(activeComment);
-  console.log(item.comment_id);
+  // console.log(activeComment);
+  // console.log(item.comment_id);
   return (
     <>
       <li className="item-comment">

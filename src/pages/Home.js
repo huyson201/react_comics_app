@@ -32,13 +32,13 @@ const Home = () => {
   const [title, setTitle] = useState("");
   const [other, setCheckOther] = useState(false);
   const handlePageChange = (pageNumber) => {
-    if (pathName == "/") {
+    if (pathName === "/") {
       history.push("/truyen-moi-cap-nhat/page/" + pageNumber);
     } else if (keyword) {
       history.push(`/tim-kiem/${keyword}/page/${pageNumber}`);
     } else if (id) {
       history.push(`/the-loai/${name}/${id}/page/` + pageNumber);
-    } else if (Object.keys(params).length != 0) {
+    } else if (Object.keys(params).length !== 0) {
       history.push(
         `/tim-kiem-nang-cao?the-loai=${params["the-loai"]}&tinh-trang=${params["tinh-trang"]}&page=` +
           pageNumber
@@ -51,12 +51,12 @@ const Home = () => {
   useEffect(() => {
     if (number) {
       dispatch(setOffSet((+number - 1) * LIMIT));
-    } else if (Object.keys(params).length != 0) {
+    } else if (Object.keys(params).length !== 0) {
       dispatch(setOffSet((+params.page - 1) * LIMIT));
     } else {
       dispatch(setOffSet(0));
     }
-  }, [number, params.page, Object.keys(params).length != 0]);
+  }, [number, params.page, Object.keys(params).length !== 0]);
 
   const doAction = async (action) => {
     try {
@@ -73,18 +73,18 @@ const Home = () => {
     } else if (keyword) {
       // searck by key
       setCheckOther(true);
-      status == "success" && setTitle(SEARCH_BY_KEY_COMIC_TITLE + keyword);
+      status === "success" && setTitle(SEARCH_BY_KEY_COMIC_TITLE + keyword);
       doAction(dispatch(getComicsByKey(keyword)));
-    } else if (Object.keys(params).length != 0) {
+    } else if (Object.keys(params).length !== 0) {
       // search by filter
       setCheckOther(true);
-      status == "success" && setTitle(FILTER_COMIC_TITLE);
+      status === "success" && setTitle(FILTER_COMIC_TITLE);
       doAction(
         dispatch(
           getComicsByFilters({
             categories: params["the-loai"],
             status:
-              params["tinh-trang"] == "Tất cả" ? "" : params["tinh-trang"],
+              params["tinh-trang"] === "Tất cả" ? "" : params["tinh-trang"],
           })
         )
       );
