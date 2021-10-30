@@ -40,10 +40,11 @@ const Profile = () => {
       console.log(userToken);
       setUserName(userToken.user_name);
       setEmail(userToken.user_email);
-      setImage(userToken.user_image)
+      let image = userToken.user_image + `&t=${new Date().getTime()}`
+      setImage(image)
     }
     console.log(token);
-  }, [token, refreshToken, user_image]);
+  }, [token, refreshToken]);
 
   const updateToken = async () => {
     try {
@@ -93,6 +94,8 @@ const Profile = () => {
             updateToken();
             notify(null, res.data.message)
           }
+          let newImg = user_image.split('&t=')[0] + `&t=${new Date().getTime()}`
+          setImage()
         }
       } else {
         resetDispatch();
