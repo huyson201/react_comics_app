@@ -75,8 +75,9 @@ const Login = () => {
       const res = await userApi.login(user_email, user_password);
       dispatchData(res, checked);
     } catch (error) {
-      console.log(error.response.data);
-      notify(error.response.data, null)
+      if (error.response) {
+        notify(error.response.data, null)
+      }
     }
   }
 
