@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CommentForm from "./CommentForm";
-
+import moment from 'moment'
 const CommentItem = ({
   parentIndex,
   addComment,
@@ -16,15 +16,15 @@ const CommentItem = ({
       setReplies(subComments);
     }
   }, []);
-
-  const date = new Date(item.createdAt).toDateString();
+  const date = moment(item.createdAt).format('L LTS')
   const onReply = () => {
     console.log(item.user_info.user_name);
     setActiveComment(item.comment_id);
   };
   const replyId = parentId ? parentId : item.comment_id;
   const isReplying = activeComment === item.comment_id;
-
+  console.log(activeComment);
+  console.log(item.comment_id);
   return (
     <>
       <li className="item-comment">
@@ -38,7 +38,6 @@ const CommentItem = ({
         <div className="content-li-content-commnet">
           <div className="h3-span-content-li-content-commnet">
             <h3>{item.user_info.user_name}</h3>
-            <span className="chapter-comment">Chapter 582</span>
             <span>{date}</span>
           </div>
           <span className="summary-content-li-content-commnet">

@@ -10,7 +10,7 @@ import { WARN_LOGIN } from "../../constants";
 const Comment = ({ comicId }) => {
   const dispatch = useDispatch();
   const [comments, setComments] = useState([]);
-  const [activeComment, setActiveComment] = useState(1);
+  const [activeComment, setActiveComment] = useState(0);
   const token = useSelector((state) => state.user.token);
   const getComments = async () => {
     const res = await comicApi.getCommentsByComicID(comicId);
