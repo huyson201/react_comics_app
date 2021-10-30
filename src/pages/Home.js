@@ -19,6 +19,8 @@ import {
   SEARCH_BY_KEY_COMIC_TITLE,
 } from "../constants";
 import Loading from "../components/Loading/Loading";
+import Carousel from "../components/Slider/Carousel";
+
 const Home = () => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -106,6 +108,7 @@ const Home = () => {
   return (
     <div>
       {status == "loading" && <Loading />}
+      {pathName == "/" && <Carousel></Carousel>}
       {status == "success" && <ListComic title={title} other={other} />}
       {total >= LIMIT && status == "success" && (
         <Pagination

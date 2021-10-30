@@ -35,6 +35,12 @@ const comicApi = {
     const url = `/chapters/${id}`;
     return axiosClient.get(url);
   },
+  getRecommend: (offset) => {
+    const url = "/comics";
+    return axiosClient.get(url, {
+      params: { limit: 10, offset: offset, sort: "updatedAt:desc" },
+    });
+  },
   getCommentsByComicID: (id) => {
     const url = `comics/${id}/comments?sort=updatedAt:asc`;
     return axiosClient.get(url);
