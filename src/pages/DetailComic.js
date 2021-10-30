@@ -52,6 +52,8 @@ const DetailComic = () => {
   arrStar.length = 5;
   const [starIndex, setStarIndex] = useState();
   const [rateState, setRateState] = useState();
+  const [perRate, setPerRate] = useState(0);
+  const [count, setCount] = useState(0);
 
   const notify = (error, message) => {
     dispatch_redux(
@@ -99,7 +101,7 @@ const DetailComic = () => {
   const getRate = async (userId) => {
     try {
       const res = await rateApi.getRateComic(userId, id);
-      if (res.data.data) {
+      if (res.data.data && res.data.data.length != 0) {
         setStarIndex(null);
         setRateState(res.data.data[0].rate_star);
       }
@@ -107,6 +109,21 @@ const DetailComic = () => {
       console.log(error);
     }
   };
+
+  const calculatePercentRate = async () => {
+    try {
+      const res = await rateApi.getSumRate(id)
+      if (res.data.data) {
+        console.log(res.data.data);
+        // let per = (res.data.data.sum_rate / (res.data.data.count * 5)) * 10;
+        // setPerRate(per)
+        // setCount(res.data.data.count);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
     //get comic
     getComic();
@@ -121,8 +138,13 @@ const DetailComic = () => {
         rate(id, token, starIndex);
       }
     }
+
+    calculatePercentRate()
     window.scrollTo(0, 0);
-  }, [id, starIndex]);
+  }, [starIndex]);
+
+  console.log(count);
+
   //func read first chapter
   const handleReadLast = () => {
     const chapter = data.chapters[0];
@@ -291,7 +313,7 @@ const DetailComic = () => {
                           key={i}
                           index={i}
                           changeStarIndex={changeStarIndex}
-                          style={starIndex >= i || rateState > i ? true : false}
+                          style={((starIndex >= i && starIndex != null) || rateState > i) ? true : false}
                         />
                       </span>
                     ))}

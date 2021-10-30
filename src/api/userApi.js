@@ -42,8 +42,7 @@ const userApi = {
             data,
             {
                 headers: {
-                    'Content-Type': `multipart/form-data; boundary=${data._boundary}`,
-                    'Accept': 'application/json',
+                    'Content-Type': `multipart/form-data`,
                     Authorization: `Bearer ${token}`
                 },
             }

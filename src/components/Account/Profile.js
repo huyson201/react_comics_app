@@ -43,7 +43,6 @@ const Profile = () => {
     }
   }, [token, refreshToken]);
 
-
   const updateToken = async () => {
     try {
       const resUpdate = await userApi.refreshToken(refreshToken)
@@ -80,14 +79,12 @@ const Profile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let formData = new FormData();
-    formData.append("user_name", user_name)
     const file = e.target[2].files[0]
-    const base64 = await convertBase64(file)
-    setImage(base64);
-    formData.append('user_image', base64)
+    formData.append("user_name", user_name)
+    formData.append('user_image', file)
+
     try {
       if (token && isJwtExpired(token) === false) {
-        console.log(1234);
         const res = await userApi.updateUserImage(token, formData)
         if (res.data.data || res.data.message) {
           if (refreshToken && isJwtExpired(refreshToken) === false) {
@@ -99,7 +96,7 @@ const Profile = () => {
         resetDispatch();
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error.resposne);
       notify(error.response.data, null)
       // dispatch_redux(logout());
       // resetDispatch()

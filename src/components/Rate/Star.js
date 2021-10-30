@@ -4,7 +4,9 @@ import { BsStar, BsStarFill } from "react-icons/bs";
 const Star = (props) => {
   const changeStar = (e) => {
     props.changeStarIndex(e.target.value);
+    // console.log(e.target.value);
   };
+
   return (
     <label className="star">
       <input

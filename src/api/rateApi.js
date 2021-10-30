@@ -19,5 +19,9 @@ const rateApi = {
     const url = `/rates?user_uuid=${userId}&comic_id=${comicId}`;
     return axiosClient.get(url);
   },
+  getSumRate: (comicId) => {
+    const url = `/rates/sum?comic_id=${comicId}`
+    return axiosClient.get(url)
+  }
 };
 export default rateApi;
