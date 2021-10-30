@@ -35,6 +35,8 @@ import jwtDecode from "jwt-decode";
 import { Spinner } from "react-bootstrap";
 import { modalNotify } from "../features/modal/modalSlice";
 import Comment from "../components/Comment/Comment";
+import userApi from "../api/userApi";
+import { calRate, starRateIndex } from "../features/comics/rateSlice";
 
 const DetailComic = () => {
   const history = useHistory();
@@ -46,14 +48,13 @@ const DetailComic = () => {
   const { status } = useSelector((state) => state.follows);
   const { token, refreshToken, isLogged } = useSelector((state) => state.user);
   const { show, error, message } = useSelector((state) => state.modal);
+  const { perRate, count, star } = useSelector((state) => state.rate);
   const dispatch_redux = useDispatch();
+
   // rating
   let arrStar = [1, 2, 3, 4, 5];
   arrStar.length = 5;
   const [starIndex, setStarIndex] = useState();
-  const [rateState, setRateState] = useState();
-  const [perRate, setPerRate] = useState(0);
-  const [count, setCount] = useState(0);
 
   const notify = (error, message) => {
     dispatch_redux(
@@ -68,6 +69,7 @@ const DetailComic = () => {
   const changeStarIndex = (index) => {
     if (token && isJwtExpired(token) === false) {
       setStarIndex(index);
+      dispatch_redux(starRateIndex(index))
     } else {
       notify(WARN_LOGIN, null)
       dispatch_redux(logout());
@@ -86,38 +88,46 @@ const DetailComic = () => {
     }
 
   };
+
   // func rate
   const rate = async (id, token, starIndex) => {
     try {
       const res = await rateApi.rateComic(id, token, starIndex);
       if (res.data.data) {
-        notify(null, RATE_SUCCESS)
+        const resUpdate = await userApi.refreshToken(refreshToken);
+        if (resUpdate.data.data) {
+          notify(null, RATE_SUCCESS)
+        }
       }
     } catch (error) {
       notify(error.response.data, null)
     }
   };
 
+  //lấy rate theo user id và commic id
   const getRate = async (userId) => {
     try {
       const res = await rateApi.getRateComic(userId, id);
-      if (res.data.data && res.data.data.length != 0) {
+      console.log(res.data.data, "userid comicid");
+      if (res.data.data && res.data.data.rows.length != 0) {
         setStarIndex(null);
-        setRateState(res.data.data[0].rate_star);
+        dispatch_redux(starRateIndex(res.data.data.rows[0].rate_star - 1))
       }
     } catch (error) {
       console.log(error);
     }
   };
 
+  //tính điểm đánh giá
   const calculatePercentRate = async () => {
     try {
       const res = await rateApi.getSumRate(id)
       if (res.data.data) {
-        console.log(res.data.data);
-        // let per = (res.data.data.sum_rate / (res.data.data.count * 5)) * 10;
-        // setPerRate(per)
-        // setCount(res.data.data.count);
+        let per = (res.data.data.sum_rate / (res.data.data.count * 5)) * 10;
+        dispatch_redux(calRate({
+          perRate: per,
+          count: res.data.data.count
+        }))
       }
     } catch (error) {
       console.log(error);
@@ -130,20 +140,14 @@ const DetailComic = () => {
     //rating
     if (token && isJwtExpired(token) === false) {
       const user = jwtDecode(token);
-      if (!rateState) {
-        getRate(user.user_uuid);
-      }
+      getRate(user.user_uuid);
       if (starIndex) {
-        setRateState(null);
         rate(id, token, starIndex);
       }
     }
-
     calculatePercentRate()
     window.scrollTo(0, 0);
-  }, [starIndex]);
-
-  console.log(count);
+  }, [starIndex, star, token]);
 
   //func read first chapter
   const handleReadLast = () => {
@@ -162,6 +166,7 @@ const DetailComic = () => {
       }/truyen-tranh/${name}`
     );
   };
+
   useEffect(() => {
     //check status follow
     if (isLogged && token) {
@@ -177,6 +182,7 @@ const DetailComic = () => {
     }
   }, [isLogged]);
 
+  //follow
   const handleFollow = () => {
     if (!isLogged) {
       dispatch_redux(
@@ -205,6 +211,7 @@ const DetailComic = () => {
       }
     }
   };
+
   return (
     <>
       {data == null ? (
@@ -252,7 +259,7 @@ const DetailComic = () => {
                   </div>
                   <div className="score">
                     <div className="type">{SCORE}</div>
-                    <div className="item">{RATE}</div>
+                    <div className="item">{`${perRate} - ${count} lượt đánh giá`}</div>
                   </div>
                   <div className="update_time">
                     <div className="type">{UPDATE}</div>
@@ -307,13 +314,13 @@ const DetailComic = () => {
                 </div>
                 <div className="head_right">
                   <div className="rating">
-                    {arrStar.map((e, i) => (
+                    {arrStar.map((i) => (
                       <span key={i}>
                         <Star
                           key={i}
                           index={i}
                           changeStarIndex={changeStarIndex}
-                          style={((starIndex >= i && starIndex != null) || rateState > i) ? true : false}
+                          style={star >= i && star != null ? true : false}
                         />
                       </span>
                     ))}

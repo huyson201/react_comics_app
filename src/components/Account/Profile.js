@@ -36,12 +36,15 @@ const Profile = () => {
 
   useEffect(() => {
     const userToken = token ? jwt_decode(token) : null;
+    console.log(userToken);
     if (userToken != null) {
+      console.log(userToken);
       setUserName(userToken.user_name);
       setEmail(userToken.user_email);
       setImage(userToken.user_image)
     }
-  }, [token, refreshToken]);
+    console.log(token);
+  }, [token, refreshToken, user_image]);
 
   const updateToken = async () => {
     try {
@@ -63,18 +66,18 @@ const Profile = () => {
     notify(WARN_LOGIN, null)
   };
 
-  const convertBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        resolve(reader.result)
-      }
-      reader.onerror = (error) => {
-        reject(error)
-      }
-    })
-  }
+  // const convertBase64 = (file) => {
+  //   return new Promise((resolve, reject) => {
+  //     const reader = new FileReader();
+  //     reader.readAsDataURL(file);
+  //     reader.onload = () => {
+  //       resolve(reader.result)
+  //     }
+  //     reader.onerror = (error) => {
+  //       reject(error)
+  //     }
+  //   })
+  // }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -108,7 +111,9 @@ const Profile = () => {
       <h3>{TITLE_ACCOUNT}</h3>
       <div className="profile">
         <div>
-          <img src={user_image}
+          <img
+            key={Date.now()}
+            src={user_image}
             alt="account" />
         </div>
         <div>

@@ -11,7 +11,7 @@ const userSlice = createSlice({
     login(state, action) {
       state.token = action.payload.token;
       state.refreshToken = action.payload.refreshToken;
-	  state.isLogged = true;
+      state.isLogged = true;
     },
     logout(state) {
       state.token = null;
