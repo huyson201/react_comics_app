@@ -14,7 +14,7 @@ import { xoaDau } from "../../utilFunction";
 import Cookies from "js-cookie";
 import axiosClient from "../../api/axiosClient";
 import { useDispatch, useSelector } from "react-redux";
-import { login, logout, isCheck } from "../../features/auth/userSlice";
+import { login, logout, isCheck, setUserInfo } from "../../features/auth/userSlice";
 import { LOGOUT_SUCCESS, WARN_LOGIN } from "../../constants";
 import { getCategories } from "../../features/comics/categorySlice";
 import { modalNotify } from "../../features/modal/modalSlice";
@@ -26,6 +26,8 @@ const Navbar = (props) => {
   const token = useSelector((state) => state.user.token)
   const [stateOption, setStateOption] = useState(false)
   const dispatch_redux = useDispatch();
+  const categories = useSelector((state) => state.categories.categories);
+  const isLogged = useSelector((state) => state.user.isLogged);
 
   const notify = (error, message) => {
     dispatch_redux(
@@ -36,13 +38,13 @@ const Navbar = (props) => {
       })
     );
   };
-
+  //effect follow
   useEffect(() => {
     if (status === "loading" || statusFollows === "loading") {
       setOpen(false);
     }
   }, [status, statusFollows]);
-
+  //xử lý data khi nhấn logout
   const handleLogout = async () => {
     try {
       const res = await userApi.logout(token)
@@ -56,15 +58,13 @@ const Navbar = (props) => {
       notify(error.response.data, null)
     }
   };
-
-  const categories = useSelector((state) => state.categories.categories);
-  const isLogged = useSelector((state) => state.user.isLogged);
+  //hiện thông báo khi không có user
   const handleClick = () => {
     if (!isLogged) {
       notify(WARN_LOGIN, null)
     }
   };
-
+  //set show option when click nav item account
   const handleClickAccount = () => {
     setStateOption(!stateOption)
   }
@@ -153,20 +153,21 @@ const SearchForm = ({ }) => {
   const [open, setOpen] = useState(false);
   const categories = useSelector((state) => state.categories.categories);
   const [checkedState, setCheckedState] = useState([0]);
+  const [status, setStatus] = useState("");
+
   useEffect(() => {
     setCheckedState(new Array(categories.length).fill(false));
   }, [categories.length]);
+  //xử lý dữ liệu khi nhấn tìm kiếm
   const handleSubmit = (e) => {
     const keyUrl = xoaDau(key);
     e.preventDefault();
     history.push({
-      pathname: "/tim-kiem/"+key+"/page/1",
-     
+      pathname: "/tim-kiem/" + key + "/page/1",
     });
     setKey("");
   };
-
-  const [status, setStatus] = useState("");
+  //xử lý dữ liệu khi nhấn filter
   const handleSubmitFilter = (e) => {
     e.preventDefault();
     let arr = [];
@@ -180,13 +181,14 @@ const SearchForm = ({ }) => {
       search: `the-loai=${arr}&tinh-trang=${status}&page=1`,
     });
   };
-
+  //set check for checkbox category
   const handleOnChange = (position) => {
     const updatedCheckedState = checkedState.map((item, index) =>
       index === position ? !item : item
     );
     setCheckedState(updatedCheckedState);
   };
+
   return (
     <>
       <div className="search">
@@ -260,49 +262,55 @@ const SearchForm = ({ }) => {
 
 const Header = () => {
   const dispatch_redux = useDispatch();
-  const { token, isCheckUpdate } = useSelector((state) => state.user);
+  const { token, isCheckUpdate, userInfo, isLogged } = useSelector((state) => state.user);
   const [categories, setCategories] = useState([]);
+  const [username, setUsername] = useState("Tài khoản");
+
   // const isLogged = useSelector((state) => state.user.isLogged);
   useEffect(() => {
     dispatch_redux(getCategories());
   }, [dispatch_redux]);
 
-  const [username, setUsername] = useState("Tài khoản");
+  //Lưu redux user info
+  const dispatchUser = async (id, token) => {
+    try {
+      const getInfo = await userApi.getUserById(id, token)
+      if (getInfo.data.data) {
+        dispatch_redux(setUserInfo(getInfo.data.data))
+      }
+    } catch (error) {
+      console.log(error.response.data);
+    }
+  }
+  //lấy thông tin user sau khi xử lý refresh token cookie
+  const refreshTokenCookie = async (cookie) => {
+    try {
+      const res = await userApi.refreshToken(cookie);
+      if (res.data.token) {
+        const userFromToken = jwt_decode(res.data.token)
+        dispatch_redux(
+          login({
+            token: res.data.token,
+            refreshToken: cookie,
+          })
+        );
+        dispatchUser(userFromToken.user_uuid, res.data.token)
+      }
+    } catch (error) {
+      console.log(error.response.data);
+
+    }
+  }
 
   useEffect(() => {
-    let localToken = null;
-    let userToken = null;
-
-    if (isCheckUpdate === true) {
-      dispatch_redux(login({ token: null }));
-      dispatch_redux(isCheck(false))
-    } else {
+    if (userInfo === null) {
       if (Cookies.get("refreshToken")) {
-        axiosClient
-          .post("/refresh-token", {
-            refreshToken: Cookies.get("refreshToken"),
-          })
-          .then((res) => {
-            localToken = res.data.token;
-            dispatch_redux(
-              login({
-                token: localToken,
-                refreshToken: Cookies.get("refreshToken"),
-              })
-            );
-          });
+        refreshTokenCookie(Cookies.get("refreshToken"))
       }
     }
-
-    if (localToken) {
-      userToken = jwt_decode(localToken);
-    } else {
-      userToken = token ? jwt_decode(token) : null;
-    }
-    userToken ? setUsername(userToken.user_name) : setUsername("Tài khoản");
-    // console.log(userToken);
-  }, [token, isCheck]);
-
+    userInfo ? setUsername(userInfo.user_name) : setUsername("Tài khoản");
+  }, [isCheck, isLogged]);
+  
   return (
     <>
       <header>

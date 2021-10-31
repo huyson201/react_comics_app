@@ -12,44 +12,65 @@ import Footer from "./components/Footer/Footer";
 import DetailComic from "./pages/DetailComic";
 import DetailChapter from "./pages/DetailChapter";
 import "moment/min/locales";
-import Provider from "./context/Provider";
 import ModalNotify from "./components/Modal/ModalNotify";
 import Follow from "./pages/Follow";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import 'moment/locale/vi'
+import { useSelector } from "react-redux";
+import jwtDecode from "jwt-decode";
+import { useEffect, useState } from "react";
 function App() {
+  const [state, setState] = useState()
+  const { token, refreshToken } = useSelector((state) => state.user)
+
+  useEffect(() => {
+    if (token) {
+      const user = jwtDecode(token);
+      console.log(user, "user");
+
+      if (user && user.user_role != null) {
+        if (user.user_role === 'user') {
+          setState(0)
+        } else {
+          setState(1)
+        }
+      }
+
+    }
+  }, [token])
+
+
   return (
     <div className="wrapper">
-      <Provider>
-        <Router>
-          <ModalNotify />
-          <Header />
-          <Switch>
+      <Router>
+        <ModalNotify />
+        <Header />
+        <Switch>
           <Route exact path="/comments" component={Comment}></Route>
-            <Route exact path="/truyen-moi-cap-nhat/page/:number" component={Home}></Route>
-            <Route exact path="/" component={Home}></Route>
-            <Route path="/tim-kiem/:keyword/page/:number" component={Home}></Route>
-            <Route path="/tim-kiem-nang-cao" component={Home}></Route>
-            <Route path="/the-loai/:name/:id/page/:number" component={Home}></Route>
-            <Route path="/truyen-theo-doi" component={Follow}></Route>
-            <Route path="/truyen-tranh/:name" component={DetailComic}></Route>
-            <Route
-              path="/:chapter/:id/truyen-tranh/:name"
-              component={DetailChapter}
-            ></Route>
-            <Route path="/login" component={Login}></Route>
-            <Route path="/register" component={Register}></Route>
-            <Route path="/account" component={Account}></Route>
-            <Route path="/profile" component={Account}></Route>
-            <Route path="/changePassword" component={Account}></Route>
-            <Route path="/forgot-password" component={ForgotPassword}></Route>
-            <Route path="/reset-password/:token" component={ResetPassword}></Route>
-            <Route path="*" component={() => "404 NOT FOUND"}></Route>
-          </Switch>
-          <Footer />
-        </Router>
-      </Provider>
+          <Route exact path="/truyen-moi-cap-nhat/page/:number" component={Home}></Route>
+          <Route exact path="/" component={Home}></Route>
+          <Route path="/tim-kiem/:keyword/page/:number" component={Home}></Route>
+          <Route path="/tim-kiem-nang-cao" component={Home}></Route>
+          <Route path="/the-loai/:name/:id/page/:number" component={Home}></Route>
+          <Route path="/truyen-theo-doi" component={Follow}></Route>
+          <Route path="/truyen-tranh/:name" component={DetailComic}></Route>
+          <Route
+            path="/:chapter/:id/truyen-tranh/:name"
+            component={DetailChapter}
+          ></Route>
+          <Route path="/login" component={Login}></Route>
+          <Route path="/register" component={Register}></Route>
+          <Route path="/account" component={Account}></Route>
+          <Route path="/profile" component={Account}></Route>
+          <Route path="/changePassword" component={Account}></Route>
+          <Route path="/follows" component={Account}></Route>
+          <Route path="/forgot-password" component={ForgotPassword}></Route>
+          <Route path="/reset-password/:token" component={ResetPassword}></Route>
+          <Route path="*" component={() => "404 NOT FOUND"}></Route>
+        </Switch>
+        <Footer />
+      </Router>
     </div>
   );
 }

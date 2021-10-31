@@ -21,29 +21,15 @@ const userApi = {
             refreshToken: refreshCookie,
         });
     },
-    update: (user_name, token) => {
-        const url = "/users/";
-        return axiosClient.patch(
-            url,
-            {
-                user_name: user_name,
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-            }
-        );
-    },
-    updateUserImage: (token, data) => {
-        const url = "/users/";
+    updateUserImage: (token, data, id) => {
+        const url = `/users/${id}`;
         return axiosClient.patch(
             url,
             data,
             {
                 headers: {
                     'Content-Type': `multipart/form-data`,
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`,
                 },
             }
         );
@@ -62,6 +48,10 @@ const userApi = {
                 },
             }
         );
+    },
+    getUserById: (id, token) => {
+        const url = `/users/${id}`
+        return axiosClient.get(url, { headers: { Authorization: `Bearer ${token}` } })
     }
 
 };

@@ -4,25 +4,26 @@ const userSlice = createSlice({
   initialState: {
     token: null,
     refreshToken: null,
-    isCheckUpdate: false,
+    userInfo: null,
     isLogged: false,
   },
   reducers: {
     login(state, action) {
       state.token = action.payload.token;
       state.refreshToken = action.payload.refreshToken;
-      state.isLogged = true;
     },
     logout(state) {
       state.token = null;
       state.refreshToken = null;
+      state.userInfo = null
       state.isLogged = false;
     },
-    isCheck(state, action) {
-      state.isCheckUpdate = action.payload;
-    },
+    setUserInfo(state, action) {
+      state.userInfo = action.payload
+      state.isLogged = true;
+    }
   },
 });
 
-export const { login, logout, isCheck } = userSlice.actions;
+export const { login, logout, isCheck, setUserInfo } = userSlice.actions;
 export default userSlice.reducer;

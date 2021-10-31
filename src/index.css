@@ -42,6 +42,10 @@ input {
   float: left;
 }
 
+.form-label {
+  margin-bottom: 0 !important;
+}
+
 .form-group {
   text-align: right;
   margin-bottom: 10px;
@@ -633,8 +637,15 @@ li:hover {
 }
 
 .profile div:first-child img {
-  margin-top: 19px;
-  width: 220px;
+  width: 100%;
+  object-fit: contain;
+}
+
+.custom_image {
+  width: 100px;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 20px;
 }
 
 .profile div:last-child {

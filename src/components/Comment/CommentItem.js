@@ -31,13 +31,13 @@ const CommentItem = ({
         <div className="image-li-content-comment">
           <img
             className="img-comment"
-            src={`https://ui-avatars.com/api/name=${item.user_info.user_name}&background=random`}
+            // src={`https://ui-avatars.com/api/name=${item.user_info.user_name}&background=random`}
           ></img>
           <span className="role-user-comment bg-user-type-1">Thành viên</span>
         </div>
         <div className="content-li-content-commnet">
           <div className="h3-span-content-li-content-commnet">
-            <h3>{item.user_info.user_name}</h3>
+            {/* <h3>{item.user_info.user_name}</h3> */}
             <span>{date}</span>
           </div>
           <span className="summary-content-li-content-commnet">

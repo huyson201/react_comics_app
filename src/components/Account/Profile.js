@@ -11,16 +11,19 @@ import {
   WARN_LOGIN,
 } from "../../constants";
 import { useDispatch, useSelector } from "react-redux";
-import { isCheck, login } from "../../features/auth/userSlice";
+import { login, logout, setUserInfo } from "../../features/auth/userSlice";
 import { modalNotify } from "../../features/modal/modalSlice";
-import userApi from "../../api/userApi";
+import userApi from "../../api/userApi"
+import { useHistory } from "react-router";
+import Cookies from "js-cookie";
 // import { decode as base64_decode, encode as base64_encode } from 'base-64';
 
 const Profile = () => {
   const [user_name, setUserName] = useState();
   const [user_email, setEmail] = useState();
   const [user_image, setImage] = useState();
-  const { token, refreshToken } = useSelector((state) => state.user);
+  const { token, refreshToken, userInfo } = useSelector((state) => state.user);
+  const history = useHistory()
   const dispatch_redux = useDispatch();
 
   const notify = (error, message) => {
@@ -32,134 +35,169 @@ const Profile = () => {
       })
     );
   };
-
+  //effect user info
   useEffect(() => {
-    const userToken = token ? jwt_decode(token) : null;
-    console.log(userToken);
-    if (userToken !== null) {
-      console.log(userToken);
-      setUserName(userToken.user_name);
-      setEmail(userToken.user_email);
-      let image = userToken.user_image + `&t=${new Date().getTime()}`
+    console.log(userInfo);
+    if (userInfo !== null) {
+      setUserName(userInfo.user_name);
+      setEmail(userInfo.user_email);
+      let image = userInfo.user_image + `&t=${new Date().getTime()}`
       setImage(image)
     }
-  }, [token, refreshToken, user_image]);
-
+  }, [token, refreshToken]);
+  //refresh token
   const updateToken = async () => {
     try {
       const resUpdate = await userApi.refreshToken(refreshToken)
-      dispatch_redux(
-        login({
-          token: resUpdate.data.token,
-          refreshToken: refreshToken,
-        })
-      );
+      if (resUpdate.data && resUpdate.data.token && userInfo !== null) {
+        dispatch_redux(
+          login({
+            token: resUpdate.data.token,
+            refreshToken: refreshToken,
+          })
+        );
+        dispatchUser(userInfo.user_uuid, resUpdate.data.token)
+      }
+      // let newImg = user_image.split('&t=')[0] + `&t=${new Date().getTime()}`
+      //     setImage()
+
     } catch (error) {
       console.log(error);
       notify(error.response.data, null)
     }
   };
-
+  //Lưu redux user info
+  const dispatchUser = async (id, token) => {
+    try {
+      const getInfo = await userApi.getUserById(id, token)
+      if (getInfo.data.data) {
+        dispatch_redux(setUserInfo(getInfo.data.data))
+      }
+    } catch (error) {
+      console.log(error.response.data);
+    }
+  }
+  //thông báo login khi token hết hạn
   const resetDispatch = () => {
-    dispatch_redux(isCheck(true));
-    notify(WARN_LOGIN, null)
+    // dispatch_redux(isCheck(true));
+    dispatch_redux(logout());
+    notify(WARN_LOGIN, null);
   };
 
-  // const convertBase64 = (file) => {
-  //   return new Promise((resolve, reject) => {
-  //     const reader = new FileReader();
-  //     reader.readAsDataURL(file);
-  //     reader.onload = () => {
-  //       resolve(reader.result)
-  //     }
-  //     reader.onerror = (error) => {
-  //       reject(error)
-  //     }
-  //   })
-  // }
-
-  const handleSubmit = async (e) => {
+  const convertBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        resolve(reader.result)
+      }
+      reader.onerror = (error) => {
+        reject(error)
+      }
+    })
+  }
+  //Hiển thị ảnh khi user chọn ảnh từ lib
+  const changeImage = async (file) => {
+    const base64 = await convertBase64(file)
+    setImage(base64);
+  }
+  //update user
+  const update = async (formData) => {
+    try {
+      const res = await userApi.updateUserImage(token, formData, userInfo.user_uuid)
+      if (res.data.data || res.data.message) {
+        if (refreshToken && isJwtExpired(refreshToken) === false) {
+          updateToken();
+          notify(null, res.data.message)
+        }
+      }
+    } catch (error) {
+      console.log(error.response.data);
+    }
+  }
+  //xử lý dữ liệu khi nhấn update
+  const handleSubmit = (e) => {
     e.preventDefault();
     let formData = new FormData();
     const file = e.target[2].files[0]
     formData.append("user_name", user_name)
     formData.append('user_image', file)
 
-    try {
+    if (userInfo !== null) {
       if (token && isJwtExpired(token) === false) {
-        const res = await userApi.updateUserImage(token, formData)
-        if (res.data.data || res.data.message) {
-          if (refreshToken && isJwtExpired(refreshToken) === false) {
-            updateToken();
-            notify(null, res.data.message)
-          }
-          let newImg = user_image.split('&t=')[0] + `&t=${new Date().getTime()}`
-          setImage()
-        }
+        update(formData)
       } else {
-        resetDispatch();
+        if (Cookies.get("refreshToken")) {
+          updateToken()
+          update(formData)
+        } else {
+          resetDispatch();
+        }
       }
-    } catch (error) {
-      // console.log(error.resposne);
-      notify(error.response.data, null)
-      // dispatch_redux(logout());
-      // resetDispatch()
+    } else {
+      console.log("Khong co user");
     }
   };
 
   return (
     <>
-      <h3>{TITLE_ACCOUNT}</h3>
-      <div className="profile">
-        <div>
-          <img
-            key={Date.now()}
-            src={user_image}
-            alt="account" />
-        </div>
-        <div>
-          <Form className="form-profile" onSubmit={handleSubmit}>
-            <FormGroup className="form-group">
-              <FormLabel>{LABEL_FULLNAME}</FormLabel>
-              <Form.Control
-                className="input-text"
-                required
-                type="text"
-                value={user_name ? user_name : ""}
-                onChange={(e) => setUserName(e.target.value)}
-              />
-            </FormGroup>
-            <FormGroup className="form-group">
-              <FormLabel>{LABEL_EMAIL} </FormLabel>
-              <Form.Control
-                readOnly
-                className="input-text"
-                required
-                type="email"
-                value={user_email ? user_email : ""}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </FormGroup>
+      {userInfo !== null ?
+        <>
+          <h3>{TITLE_ACCOUNT}</h3>
+          <div className="profile">
+            <div className="custom_image">
+              <img
+                key={Date.now()}
+                src={user_image}
+                alt="account" />
+            </div>
+            <div>
+              <Form className="form-profile" onSubmit={handleSubmit}>
+                <FormGroup className="form-group">
+                  <FormLabel>{LABEL_FULLNAME}</FormLabel>
+                  <Form.Control
+                    className="input-text"
+                    required
+                    type="text"
+                    value={user_name ? user_name : ""}
+                    onChange={(e) => setUserName(e.target.value)}
+                  />
+                </FormGroup>
+                <FormGroup className="form-group">
+                  <FormLabel>{LABEL_EMAIL} </FormLabel>
+                  <Form.Control
+                    readOnly
+                    className="input-text"
+                    required
+                    type="email"
+                    value={user_email ? user_email : ""}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </FormGroup>
 
-            <FormGroup className="form-group">
-              <FormLabel>{LABEL_IMAGE} </FormLabel>
-              <Form.Control
-                type="file"
-              />
-            </FormGroup>
+                <FormGroup className="form-group">
+                  <FormLabel>{LABEL_IMAGE} </FormLabel>
+                  <Form.Control
+                    type="file"
+                    onChange={(e) => changeImage(e.target.files[0])}
+                  />
+                </FormGroup>
 
-            <Button
-              type="submit"
-              className="btn btn-primary btn-block"
-              variant="dark"
-            >
-              {BUTTON_UPDATE}
-            </Button>
-          </Form>
-        </div>
-      </div>
+                <Button
+                  type="submit"
+                  className="btn btn-primary btn-block"
+                  variant="dark"
+                >
+                  {BUTTON_UPDATE}
+                </Button>
+              </Form>
+            </div>
+          </div>
+        </>
+        : history.push("/login")
+      }
     </>
-  );
+  )
 };
 
 export default Profile;

@@ -13,10 +13,11 @@ import {
   TITLE_LOGIN,
   VALIDATE_PW,
 } from "../constants";
-import { login } from "../features/auth/userSlice";
+import { login, setUserInfo } from "../features/auth/userSlice";
 import { useDispatch } from "react-redux";
 import { modalNotify } from "../features/modal/modalSlice";
 import userApi from "../api/userApi";
+import jwtDecode from "jwt-decode";
 
 const Login = () => {
   const [user_email, setEmail] = useState();
@@ -24,7 +25,8 @@ const Login = () => {
   const [checked, setChecked] = useState(false);
   const dispatch_redux = useDispatch();
 
-  function storageData(res) {
+  //lưu refreshToken khi remember
+  const storageData = (res) => {
     Cookies.set("refreshToken", res.data.data.refreshToken, {
       expires: 7,
     });
@@ -39,38 +41,39 @@ const Login = () => {
       })
     );
   };
-
-  function dispatchData(res, checked) {
+  //lưu data(token refreshtoken userInfo) 
+  const dispatchData = async (res, checked) => {
     //set show modal
-    if (res.data.data) {
-      notify(null, LOGIN_SUCCESS)
-      console.log(res.data.data);
+    if (res.data.data && res.data.data.token) {
+      const token = res.data.data.token
+      const userId = jwtDecode(token)
       dispatch_redux(
         login({
           token: res.data.data.token,
           refreshToken: res.data.data.refreshToken,
         })
       );
-      console.log(res.data.data);
+      userId ? dispatchUser(userId.user_uuid, token) : console.log("Chưa lưu được dữ liệu user");
       if (checked === true) {
         storageData(res);
       }
     }
   }
-
-  async function flogin() {
-    if (checked === false) {
-      if (Cookies.get("refreshToken")) {
-        refreshCookie(Cookies.get("refreshToken"));
-      } else {
-        loginNormal();
+  //Lưu redux user info
+  const dispatchUser = async (id, token) => {
+    try {
+      const getInfo = await userApi.getUserById(id, token)
+      console.log(getInfo.data.data);
+      if (getInfo.data.data) {
+        notify(null, LOGIN_SUCCESS)
+        dispatch_redux(setUserInfo(getInfo.data.data))
       }
-    } else {
-      loginNormal();
+    } catch (error) {
+      console.log(error.response.data);
     }
   }
-
-  async function loginNormal() {
+  //login không remember
+  const loginNormal = async () => {
     try {
       //POST data to login
       const res = await userApi.login(user_email, user_password);
@@ -81,17 +84,29 @@ const Login = () => {
       }
     }
   }
-
-  async function refreshCookie(cookie) {
+  //refreshtoken khi đăng nhập đã có cookie
+  const refreshCookie = async (cookie) => {
     try {
       const res = await userApi.refreshToken(cookie)
       dispatchData(res, checked);
     } catch (error) {
-      console.log(error.response.data);
+      console.log(error);
       notify(error.response.data)
     }
   }
-
+  //login
+  const flogin = async () => {
+    if (checked === false) {
+      if (Cookies.get("refreshToken")) {
+        refreshCookie(Cookies.get("refreshToken"));
+      } else {
+        loginNormal();
+      }
+    } else {
+      loginNormal();
+    }
+  }
+  //login khi nhấn đăng nhập
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (user_password.length < 6) {

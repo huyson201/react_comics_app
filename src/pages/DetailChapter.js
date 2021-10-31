@@ -22,6 +22,7 @@ const DetailChapter = () => {
   const arrName = name.split("-");
   const idComic = arrName[arrName.length - 1];
   const [imgs, setImgs] = useState(null);
+  const [chapterName, setChapterName] = useState(null);
   const [comicName, setComicName] = useState();
   const [chapters, setChapters] = useState();
   const [state, setState] = useState({
@@ -49,17 +50,17 @@ const DetailChapter = () => {
     setChapters(resComic.data.data.chapters);
     setComicName(resComic.data.data.comic_name);
     const resChapter = await comicApi.getChapterByID(id);
+    setChapterName(resChapter.data.data.chapter_name)
     setImgs(resChapter.data.data.chapter_imgs.split(","));
-  }
 
+  }
   const nextId = (id, arr) => {
-    let count = 0;
+  let flag = false
     arr.map((e) => {
-      if (count < 1) {
-        if (e.chapter_id > id) {
-          id = e.chapter_id;
-          count++;
-        }
+      console.log(flag);
+      if (e.chapter_id > id && flag === false) {
+        id = e.chapter_id;
+        flag = true
       }
     });
     return id;
@@ -146,7 +147,7 @@ const DetailChapter = () => {
               className={`nav_top ${state.show === true ? "nav_fixed" : ""}`}
             >
               <div>
-                <div>Chapter 66</div>
+                <div>{chapterName}</div>
                 {state.show === true ? (
                   <>
                     <div>{`( ${state.percent}% )`}</div>

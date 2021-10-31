@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/auth/userSlice";
 import { modalNotify } from "../features/modal/modalSlice";
 import userApi from "../api/userApi";
+import Follow from "./Follow";
 
 const Account = () => {
   const history = useHistory();
@@ -27,7 +28,7 @@ const Account = () => {
   const handleLogout = async () => {
     try {
       const res = await userApi.logout(token)
-      console.log(res.data);
+      // console.log(res.data);
       if (res.status === 204) {
         notify(null, LOGOUT_SUCCESS)
         Cookies.remove("refreshToken");
@@ -58,7 +59,7 @@ const Account = () => {
                     </Link>
                   </li>
                   <li className="nav-li">
-                    <Link to="">
+                    <Link to="/follows">
                       <i className="fas fa-book"></i> Truyện theo dõi
                     </Link>
                   </li>
@@ -86,13 +87,13 @@ const Account = () => {
                   <Profile />
                 ) : history.location.pathname === "/changePassword" ? (
                   <ChangePassword />
-                ) : (
-                  "Chưa xử lý"
-                )}
+                ) : ""}
               </div>
             </div>
           </div>
         </div>
+        {history.location.pathname === "/follows" ? (
+            <Follow />) : ""}
       </div>
     </>
   );
