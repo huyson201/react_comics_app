@@ -71,9 +71,9 @@ const DetailComic = () => {
   const changeStarIndex = (index) => {
     if (token && isJwtExpired(token) === false) {
       setStarIndex(index);
-      setChangeValueRate(index)
+      setChangeValueRate(index);
     } else {
-      notify(WARN_LOGIN, null)
+      notify(WARN_LOGIN, null);
       dispatch_redux(logout());
     }
   };
@@ -85,9 +85,8 @@ const DetailComic = () => {
         setData(res.data.data);
       }
     } catch (error) {
-      notify(error.response.data, null)
+      notify(error.response.data, null);
     }
-
   };
   // func rate
   const rate = async (id, token, starIndex) => {
@@ -100,7 +99,7 @@ const DetailComic = () => {
         }).catch(error => console.log(error));
       }
     } catch (error) {
-      notify(error.response.data, null)
+      notify(error.response.data, null);
     }
   };
   //lấy rate của người dùng
@@ -110,7 +109,7 @@ const DetailComic = () => {
       if (res.data.data && res.data.data.rows.length != 0) {
         setStarIndex(null);
         setRateState(res.data.data.rows[0].rate_star);
-        setChangeValueRate(res.data.data.rows[0].rate_star)
+        setChangeValueRate(res.data.data.rows[0].rate_star);
       }
     } catch (error) {
       console.log(error);
@@ -119,18 +118,20 @@ const DetailComic = () => {
   //tính phần điểm rate
   const calculatePercentRate = async () => {
     try {
-      const res = await rateApi.getSumRate(id)
+      const res = await rateApi.getSumRate(id);
       if (res.data.data) {
         let per = (res.data.data.sum_rate / (res.data.data.count * 5)) * 10;
-        dispatch_redux(calRate({
-          perRate: per,
-          count: res.data.data.count
-        }))
+        dispatch_redux(
+          calRate({
+            perRate: per,
+            count: res.data.data.count,
+          })
+        );
       }
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
     //get comic
@@ -153,7 +154,8 @@ const DetailComic = () => {
   const handleReadLast = () => {
     const chapter = data.chapters[0];
     history.push(
-      `/${xoaDau(chapter.chapter_name)}/${chapter.chapter_id
+      `/${xoaDau(chapter.chapter_name)}/${
+        chapter.chapter_id
       }/truyen-tranh/${name}`
     );
   };
@@ -161,7 +163,8 @@ const DetailComic = () => {
   const handleReadFirst = () => {
     const chapter = data.chapters[data.chapters.length - 1];
     history.push(
-      `/${xoaDau(chapter.chapter_name)}/${chapter.chapter_id
+      `/${xoaDau(chapter.chapter_name)}/${
+        chapter.chapter_id
       }/truyen-tranh/${name}`
     );
   };
@@ -238,16 +241,17 @@ const DetailComic = () => {
                     <div className="item">
                       {data
                         ? data.categories.map((e, i) => {
-                          return (
-                            <Link
-                              key={i}
-                              to={`/the-loai/${xoaDau(e.category_name)}/${e.category_id
-                                }`}
-                            >
-                              {e.category_name}
-                            </Link>
-                          );
-                        })
+                            return (
+                              <Link
+                                key={i}
+                                to={`/the-loai/${xoaDau(e.category_name)}/${
+                                  e.category_id
+                                }/page/1`}
+                              >
+                                {e.category_name}
+                              </Link>
+                            );
+                          })
                         : ""}
                     </div>
                   </div>
@@ -264,10 +268,10 @@ const DetailComic = () => {
                     <div className="item">
                       {data
                         ? updateDate(
-                          data.chapters.sort((a, b) =>
-                            b.chapter_id > a.chapter_id ? 1 : -1
-                          )[0].updatedAt
-                        )
+                            data.chapters.sort((a, b) =>
+                              b.chapter_id > a.chapter_id ? 1 : -1
+                            )[0].updatedAt
+                          )
                         : ""}
                     </div>
                   </div>
@@ -277,7 +281,7 @@ const DetailComic = () => {
               <div className="button comic_bg">
                 <div className="head_left">
                   <Link to="#" type="button" onClick={handleFollow}>
-                    {status == "loading" && (
+                    {status === "loading" && (
                       <>
                         <Spinner
                           as="span"
@@ -289,13 +293,13 @@ const DetailComic = () => {
                         {" " + LOADING}
                       </>
                     )}
-                    {status != "loading" && checked === true && (
+                    {status !== "loading" && checked === true && (
                       <>
                         <MdBookmark className="icon" />
                         {UNFOLLOW}
                       </>
                     )}
-                    {status != "loading" && checked === false && (
+                    {status !== "loading" && checked === false && (
                       <>
                         <MdBookmarkBorder className="icon" />
                         {FOLLOW}
@@ -318,7 +322,12 @@ const DetailComic = () => {
                           key={i}
                           index={i}
                           changeStarIndex={changeStarIndex}
-                          style={((starIndex >= i && starIndex != null) || rateState > i) ? true : false}
+                          style={
+                            (starIndex >= i && starIndex != null) ||
+                            rateState > i
+                              ? true
+                              : false
+                          }
                         />
                       </div>
                     ))}
@@ -335,21 +344,22 @@ const DetailComic = () => {
                     {/* Truyền id chapter và list chapter */}
                     {data
                       ? data.chapters
-                        .sort((a, b) =>
-                          b.chapter_id > a.chapter_id ? 1 : -1
-                        )
-                        .map((e, i) => {
-                          return (
-                            <Link
-                              to={`/${xoaDau(e.chapter_name)}/${e.chapter_id
+                          .sort((a, b) =>
+                            b.chapter_id > a.chapter_id ? 1 : -1
+                          )
+                          .map((e, i) => {
+                            return (
+                              <Link
+                                to={`/${xoaDau(e.chapter_name)}/${
+                                  e.chapter_id
                                 }/truyen-tranh/${name}`}
-                              key={i}
-                            >
-                              <span>{e.chapter_name}</span>
-                              <span>{updateDate(e.updatedAt)}</span>
-                            </Link>
-                          );
-                        })
+                                key={i}
+                              >
+                                <span>{e.chapter_name}</span>
+                                <span>{updateDate(e.updatedAt)}</span>
+                              </Link>
+                            );
+                          })
                       : ""}
                   </div>
                 </div>

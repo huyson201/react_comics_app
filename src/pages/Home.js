@@ -56,7 +56,7 @@ const Home = () => {
     } else {
       dispatch(setOffSet(0));
     }
-  }, [number, params.page, Object.keys(params).length !== 0]);
+  }, [number, params.page]);
 
   const doAction = async (action) => {
     try {
@@ -107,10 +107,10 @@ const Home = () => {
   ]);
   return (
     <div>
-      {status == "loading" && <Loading />}
-      {pathName == "/" && <Carousel></Carousel>}
-      {status == "success" && <ListComic title={title} other={other} />}
-      {total >= LIMIT && status == "success" && (
+      {status === "loading" && <Loading />}
+      {pathName === "/" && <Carousel></Carousel>}
+      {status === "success" && <ListComic title={title} other={other} />}
+      {total >= LIMIT && status === "success" && (
         <Pagination
           activePage={
             number && !params.page

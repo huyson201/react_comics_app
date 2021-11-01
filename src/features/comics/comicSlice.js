@@ -1,5 +1,19 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import comicApi from "../../api/comicApi";
+import rateApi from "../../api/rateApi";
+
+export const getCountRate = createAsyncThunk(
+  "comics/getRate",
+  async (id, thunkAPI) => {
+   let per = 0;
+    rateApi.getSumRate(id).then((res) => {
+      if (res.data.data) {
+        per = (res.data.data.sum_rate / (res.data.data.count * 5)) * 10;
+      }
+    });
+    return per;
+  }
+);
 
 export const getComics = createAsyncThunk(
   "comics/getComics",
@@ -60,6 +74,7 @@ const comicSlice = createSlice({
     status: "",
     selectedCategory: null,
     offset: 0,
+    loaded: false,
   },
   reducers: {
     removeSelectedCategory(state) {
@@ -78,6 +93,9 @@ const comicSlice = createSlice({
     },
     setStatus(state, action) {
       state.status = action.payload;
+    },
+    setLoaded(state, action) {
+      state.loaded = action.payload;
     },
   },
   extraReducers: {
@@ -137,7 +155,12 @@ const comicSlice = createSlice({
     },
   },
 });
-export const { removeSelectedCategory, removeComicList, setOffSet, setStatus } =
-  comicSlice.actions;
+export const {
+  removeSelectedCategory,
+  removeComicList,
+  setOffSet,
+  setStatus,
+  setLoaded,
+} = comicSlice.actions;
 export const getAllComics = (state) => state.comics.comics;
 export default comicSlice.reducer;

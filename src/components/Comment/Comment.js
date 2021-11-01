@@ -12,15 +12,15 @@ const Comment = ({ comicId }) => {
   const [comments, setComments] = useState([]);
   const [activeComment, setActiveComment] = useState(0);
   const token = useSelector((state) => state.user.token);
-  const getComments = async () => {
-    const res = await comicApi.getCommentsByComicID(comicId);
-    if (res.data.data) {
-      setComments(res.data.data);
-    }
-  };
   useEffect(() => {
+    const getComments = async () => {
+      const res = await comicApi.getCommentsByComicID(comicId);
+      if (res.data.data) {
+        setComments(res.data.data);
+      }
+    };
     getComments();
-  }, []);
+  }, [comicId]);
   const addComment = (text, parentId, parentIndex) => {
     comicApi
       .createComment(comicId, text, parentId, token)

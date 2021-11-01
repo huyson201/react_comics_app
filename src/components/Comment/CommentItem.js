@@ -1,6 +1,7 @@
+/* eslint-disable jsx-a11y/alt-text */
 import React, { useEffect, useState } from "react";
 import CommentForm from "./CommentForm";
-import moment from 'moment'
+import moment from "moment";
 const CommentItem = ({
   parentIndex,
   addComment,
@@ -15,37 +16,34 @@ const CommentItem = ({
     if (subComments !== undefined) {
       setReplies(subComments);
     }
-  }, []);
-  const date = moment(item.createdAt).format('L LTS')
+  }, [subComments]);
+  const date = moment(item.createdAt).format("L LTS");
   const onReply = () => {
-    // console.log(item.user_info.user_name);
     setActiveComment(item.comment_id);
   };
   const replyId = parentId ? parentId : item.comment_id;
   const isReplying = activeComment === item.comment_id;
-  // console.log(activeComment);
-  // console.log(item.comment_id);
   return (
     <>
       <li className="item-comment">
         <div className="image-li-content-comment">
           <img
             className="img-comment"
-            // src={`https://ui-avatars.com/api/name=${item.user_info.user_name}&background=random`}
+            src={`https://ui-avatars.com/api/name=${item.user_info.user_name}&background=random`}
           ></img>
           <span className="role-user-comment bg-user-type-1">Thành viên</span>
         </div>
         <div className="content-li-content-commnet">
           <div className="h3-span-content-li-content-commnet">
-            {/* <h3>{item.user_info.user_name}</h3> */}
+            <h3>{item.user_info.user_name}</h3>
             <span>{date}</span>
           </div>
           <span className="summary-content-li-content-commnet">
             {`${item.comment_content}`}
           </span>
-          <a id={item.comment_id} onClick={onReply} className="reply-btn">
+          <div id={item.comment_id} onClick={onReply} className="reply-btn">
             Trả lời
-          </a>
+          </div>
         </div>
       </li>
       <div className="sub-comment">
