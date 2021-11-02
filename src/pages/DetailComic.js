@@ -51,14 +51,12 @@ const DetailComic = () => {
   const { perRate, count } = useSelector((state) => state.rate);
   const dispatch_redux = useDispatch();
 
-  console.log(refreshToken);
   // rating
   let arrStar = [1, 2, 3, 4, 5];
   arrStar.length = 5;
   const [starIndex, setStarIndex] = useState();
   const [rateState, setRateState] = useState();
   const [changeValueRate, setChangeValueRate] = useState(null);
-  // const [count, setCount] = useState(0);
 
   const notify = (error, message) => {
     dispatch_redux(
@@ -69,7 +67,7 @@ const DetailComic = () => {
       })
     );
   };
-
+  //kiểm tra click star
   const changeStarIndex = (index) => {
     if (token && isJwtExpired(token) === false) {
       setStarIndex(index);
@@ -79,7 +77,6 @@ const DetailComic = () => {
       dispatch_redux(logout());
     }
   };
-
   //func get comic
   const getComic = async () => {
     try {
@@ -99,18 +96,17 @@ const DetailComic = () => {
       if (res.data.data) {
         notify(null, RATE_SUCCESS)
         userApi.refreshToken(refreshToken).then(res => {
-          console.log(res);
+          console.log(res.data);
         }).catch(error => console.log(error));
       }
     } catch (error) {
       notify(error.response.data, null)
     }
   };
-
+  //lấy rate của người dùng
   const getRate = async (userId) => {
     try {
       const res = await rateApi.getRateComic(userId, id);
-      console.log(res.data.data, "userid comicid");
       if (res.data.data && res.data.data.rows.length != 0) {
         setStarIndex(null);
         setRateState(res.data.data.rows[0].rate_star);
@@ -120,7 +116,7 @@ const DetailComic = () => {
       console.log(error);
     }
   };
-
+  //tính phần điểm rate
   const calculatePercentRate = async () => {
     try {
       const res = await rateApi.getSumRate(id)
@@ -153,7 +149,6 @@ const DetailComic = () => {
     calculatePercentRate();
     window.scrollTo(0, 0);
   }, [token, changeValueRate]);
-
   //func read first chapter
   const handleReadLast = () => {
     const chapter = data.chapters[0];
@@ -162,7 +157,6 @@ const DetailComic = () => {
       }/truyen-tranh/${name}`
     );
   };
-
   //func read last chapter
   const handleReadFirst = () => {
     const chapter = data.chapters[data.chapters.length - 1];
@@ -171,6 +165,7 @@ const DetailComic = () => {
       }/truyen-tranh/${name}`
     );
   };
+
   useEffect(() => {
     //check status follow
     if (isLogged && token) {
@@ -185,7 +180,7 @@ const DetailComic = () => {
     } else {
     }
   }, [isLogged]);
-
+  //follow
   const handleFollow = () => {
     if (!isLogged) {
       dispatch_redux(
@@ -214,6 +209,7 @@ const DetailComic = () => {
       }
     }
   };
+
   return (
     <>
       {data == null ? (
@@ -317,14 +313,14 @@ const DetailComic = () => {
                 <div className="head_right">
                   <div className="rating">
                     {arrStar.map((e, i) => (
-                      <span key={i}>
+                      <div key={i}>
                         <Star
                           key={i}
                           index={i}
                           changeStarIndex={changeStarIndex}
                           style={((starIndex >= i && starIndex != null) || rateState > i) ? true : false}
                         />
-                      </span>
+                      </div>
                     ))}
                   </div>
                 </div>

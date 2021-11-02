@@ -4,24 +4,26 @@ import comicApi from "../../api/comicApi";
 import ListItem from "../ListComic/ListItem";
 import { BsStars } from "react-icons/bs";
 const Carousel = () => {
+  const [width, setWidth] = useState(0)
   let settings = {
     dots: true,
     infinite: true,
     speed: 200,
-    slidesToShow: 5,
+    slidesToShow: width > 376 ? 5 : 2,
     slidesToScroll: 3,
     autoplay: true,
   };
   const [comics, setComics] = useState();
   const getRecommend = async () => {
-      try {
-        const res = await comicApi.getRecommend(0);
-        setComics(res.data.data.rows)
-      } catch (error) {
-      }
+    try {
+      const res = await comicApi.getRecommend(0);
+      setComics(res.data.data.rows)
+    } catch (error) {
+    }
   };
   useEffect(() => {
     getRecommend();
+    setWidth(document.body.getBoundingClientRect().width)
   }, [])
   return (
     <>

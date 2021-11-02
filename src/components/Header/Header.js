@@ -12,7 +12,6 @@ import "./header.css";
 import jwt_decode from "jwt-decode";
 import { xoaDau } from "../../utilFunction";
 import Cookies from "js-cookie";
-import axiosClient from "../../api/axiosClient";
 import { useDispatch, useSelector } from "react-redux";
 import { login, logout, isCheck, setUserInfo } from "../../features/auth/userSlice";
 import { LOGOUT_SUCCESS, WARN_LOGIN } from "../../constants";

@@ -8,8 +8,9 @@ import { xoaDau } from "../../utilFunction";
 
 const ModalChapters = (props) => {
   const { showChapter } = useSelector((state) => state.modal);
+  const { chapter } = useSelector((state) => state.chapter);
   const dispatch_redux = useDispatch();
-
+  let temp = chapter !== null ? [...chapter] : null
   function splitString(string) {
     const arr = string.split(" ");
     return arr[arr.length - 1];
@@ -32,75 +33,28 @@ const ModalChapters = (props) => {
       </Modal.Header>
       <Modal.Body>
         <div className="list_item_chap">
-          {props.list
-            ? props.list
-                .sort((a, b) => (b.chapter_id > a.chapter_id ? 1 : -1))
-                .map((e) => {
-                  return (
-                    <Link
-                      to={`/${xoaDau(e.chapter_name)}/${
-                        e.chapter_id
+          {temp !== null
+            ? temp
+              .sort((a, b) => (b.chapter_id > a.chapter_id ? 1 : -1))
+              .map((e) => {
+                return (
+                  <Link
+                    to={`/${xoaDau(e.chapter_name)}/${e.chapter_id
                       }/truyen-tranh/${props.name}`}
-                      key={e.chapter_id}
-                      className={`${
-                        +props.id === +e.chapter_id ? "active" : ""
+                    key={e.chapter_id}
+                    className={`${+props.id === +e.chapter_id ? "active" : ""
                       }`}
-                      onClick={handleClose}
-                    >
-                      {splitString(e.chapter_name)}
-                    </Link>
-                  );
-                })
+                    onClick={handleClose}
+                  >
+                    {splitString(e.chapter_name)}
+                  </Link>
+                );
+              })
             : ""}
 
           <Link to="#" className="readChap">
             77
           </Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
-          <Link to="#">77</Link>
           <Link to="#">77</Link>
         </div>
       </Modal.Body>

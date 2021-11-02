@@ -15,6 +15,7 @@ import { BsStars } from "react-icons/bs";
 import { modalChapter } from "../features/modal/modalSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "../components/Loading/Loading";
+import { setChapters } from "../features/comics/chapterSlice";
 
 const DetailChapter = () => {
   const history = useHistory();
@@ -24,7 +25,7 @@ const DetailChapter = () => {
   const [imgs, setImgs] = useState(null);
   const [chapterName, setChapterName] = useState(null);
   const [comicName, setComicName] = useState();
-  const [chapters, setChapters] = useState();
+  // const [chapters, setChapters] = useState();
   const [state, setState] = useState({
     scrollPos: 0,
     show: false,
@@ -32,7 +33,8 @@ const DetailChapter = () => {
   });
   const dispatch_redux = useDispatch();
   const { showChapter } = useSelector((state) => state.modal);
-
+  const { chapter } = useSelector((state) => state.chapter)
+  //tính phần trăm khi user scroll
   const handleScroll = () => {
     let cal =
       ((-1 * document.body.getBoundingClientRect().top) /
@@ -44,20 +46,26 @@ const DetailChapter = () => {
       percent: Math.ceil(cal),
     });
   }
-
+  //get imgs chap, get chaps
   const getComic = async () => {
-    const resComic = await comicApi.getComicByID(idComic);
-    setChapters(resComic.data.data.chapters);
-    setComicName(resComic.data.data.comic_name);
-    const resChapter = await comicApi.getChapterByID(id);
-    setChapterName(resChapter.data.data.chapter_name)
-    setImgs(resChapter.data.data.chapter_imgs.split(","));
-
+    try {
+      const resComic = await comicApi.getComicByID(idComic);
+      const resChapter = await comicApi.getChapterByID(id);
+      if (resComic.data.data && resChapter.data.data) {
+        setComicName(resComic.data.data.comic_name);
+        setChapterName(resChapter.data.data.chapter_name)
+        setImgs(resChapter.data.data.chapter_imgs.split(","));
+        dispatch_redux(setChapters(resComic.data.data.chapters))
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
+  //get next chapId
   const nextId = (id, arr) => {
-  let flag = false
+    let flag = false
     arr.map((e) => {
-      console.log(flag);
+      console.log(e.chapter_id);
       if (e.chapter_id > id && flag === false) {
         id = e.chapter_id;
         flag = true
@@ -65,15 +73,14 @@ const DetailChapter = () => {
     });
     return id;
   }
-
+  //get previou chapId
   const preId = (id, arr) => {
-    let count = 0;
+    let flag = false
     arr.map((e) => {
-      if (count < 1) {
-        if (e.chapter_id < id) {
-          id = e.chapter_id;
-          count++;
-        }
+      console.log(e.chapter_id);
+      if (e.chapter_id < id && flag === false) {
+        id = e.chapter_id;
+        flag = true
       }
     });
     return id;
@@ -89,7 +96,7 @@ const DetailChapter = () => {
   }
 
   const handleClickNextChap = async () => {
-    const nId = await nextId(id, chapters);
+    const nId = await nextId(id, chapter);
     if (checkChapter(id, nId) === 0) {
       alert("Khong con chuong tiep theo");
     } else {
@@ -102,7 +109,9 @@ const DetailChapter = () => {
   };
 
   const handleClickPreChap = async () => {
-    const pId = await preId(id, chapters);
+    let tempChap = [...chapter];
+    tempChap.sort((a, b) => (b.chapter_id > a.chapter_id ? 1 : -1))
+    const pId = await preId(id, tempChap);
     if (checkChapter(id, pId) === 0) {
       alert("khong co chuong truoc");
     } else {
@@ -141,7 +150,7 @@ const DetailChapter = () => {
         <Loading />
       ) : (
         <>
-          <ModalChapters list={chapters} id={id} show={showChapter} name={name} />
+          <ModalChapters list={chapter} id={id} show={showChapter} name={name} />
           <div className="chapter_content">
             <div
               className={`nav_top ${state.show === true ? "nav_fixed" : ""}`}

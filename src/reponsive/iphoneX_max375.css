@@ -19,7 +19,127 @@
     padding: 12px 0 !important;
   }
   .drop-down-item {
-    height: 35px !important;
-    line-height: 35px !important;
+    height: 30px !important;
+    line-height: 30px !important;
+    font-size: 9px !important;
+  }
+
+  .custom-row .col-4 {
+    flex: none !important;
+    width: 97%;
+  }
+
+  .custom-row .col-8 {
+    flex: none !important;
+    width: 99%;
+  }
+
+  .custom-h3 {
+    background: #747924;
+    border: 1px solid;
+    width: 100%;
+    padding: 7px;
+  }
+
+  h3 {
+    font-size: 17px !important;
+  }
+
+  .col-4,
+  .col-8 {
+    border: none !important;
+  }
+  .col-8 {
+    background-color: #1d1c1c;
+  }
+
+  .nav-li {
+    padding: 5px !important;
+    padding-left: 70px !important;
+  }
+
+  .nav-li a i {
+    margin-right: 30px;
+  }
+
+  .nav-li a {
+    font-size: 15px !important;
+  }
+
+  .profile {
+    display: block !important;
+    justify-content: center !important;
+  }
+
+  .custom_image {
+    width: 100% !important;
+  }
+
+  .form-profile {
+    margin-left: 0 !important;
+  }
+
+  .list-comic .list-comic-item {
+    width: 50% !important;
+  }
+  .head {
+    display: block !important;
+  }
+
+  .head .head_left {
+    width: auto !important;
+    margin: 0 30px 10px 30px !important;
+  }
+
+  .head .head_right {
+    padding-left: 0 !important;
+    width: auto !important;
+  }
+
+  .list_cate .item > a {
+    font-size: 10px;
+  }
+
+  .content .button .head_left {
+    justify-content: space-between;
+  }
+
+  .content .button .head_left a {
+    font-size: small !important;
+    padding: 5px !important;
+  }
+
+  .content .button .head_left a .icon {
+    font-size: 14px !important;
+    margin-bottom: 2px;
+  }
+
+  .content .button {
+    display: block !important;
+  }
+
+  .content .body {
+    display: block !important;
+  }
+
+  .rating {
+    margin-top: 5px;
+    justify-content: center;
+  }
+
+  .flex {
+    display: block !important;
+  }
+
+  .heading {
+    text-align: center !important;
+  }
+
+  .modal.modal_chapters {
+    left: 18px !important;
+  }
+
+  .modal-content {
+    width: 90% !important;
   }
 }

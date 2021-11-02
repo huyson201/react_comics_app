@@ -186,7 +186,6 @@ li:hover {
 
 .head .head_right {
   padding-left: 10px;
-  width: 75%;
   width: 80%;
   font-size: 13px;
 }
@@ -195,7 +194,7 @@ li:hover {
   margin-bottom: 10px;
   display: flex;
   text-align: center;
-  align-items: center;
+  /* align-items: center; */
   font-family: "Baloo 2", sans-serif;
 }
 
@@ -260,6 +259,10 @@ li:hover {
   font-size: 32px;
   margin: 2px;
   color: #ffe290;
+}
+
+.rating {
+  display: flex;
 }
 
 /* body_comc */
@@ -459,8 +462,17 @@ li:hover {
   opacity: 0.7;
 }
 
+.width {
+  width: 100%;
+}
+
 .chapter_img {
   padding: 20px;
+}
+
+.chapter_img img {
+  width: 100%;
+  object-fit: cover;
 }
 
 .chapter_content .nav_top {
@@ -474,7 +486,7 @@ li:hover {
 
 .chapter_content .nav_fixed {
   position: sticky;
-  top: 0;
+  top: -0.5px;
   border-radius: 0;
   margin: 0;
 }
@@ -633,7 +645,11 @@ li:hover {
 
 .profile div:first-child {
   flex: 0.7;
-  margin-right: 15px;
+  /* margin-right: 15px; */
+}
+
+.form-profile {
+  margin-left: 10px;
 }
 
 .profile div:first-child img {
@@ -650,4 +666,9 @@ li:hover {
 
 .profile div:last-child {
   flex: 1.2;
+}
+
+ol,
+ul {
+  padding-left: 0 !important;
 }

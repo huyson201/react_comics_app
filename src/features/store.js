@@ -5,6 +5,7 @@ import categorySlice from "./comics/categorySlice";
 import followSlice from "./comics/followSlice";
 import modalSlice from "./modal/modalSlice";
 import rateSlice from "./comics/rateSlice";
+import chapterSlice from "./comics/chapterSlice";
 const store = configureStore({
   reducer: {
     comics: comicsReducer,
@@ -13,6 +14,7 @@ const store = configureStore({
     follows: followSlice,
     modal: modalSlice,
     rate: rateSlice,
+    chapter: chapterSlice
   },
 });
 export default store;

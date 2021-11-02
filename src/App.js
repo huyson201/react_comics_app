@@ -20,6 +20,7 @@ import 'moment/locale/vi'
 import { useSelector } from "react-redux";
 import jwtDecode from "jwt-decode";
 import { useEffect, useState } from "react";
+import Dashboard from "./components/Admin/Dashboard";
 function App() {
   const [state, setState] = useState()
   const { token, refreshToken } = useSelector((state) => state.user)
@@ -45,8 +46,14 @@ function App() {
     <div className="wrapper">
       <Router>
         <ModalNotify />
-        <Header />
+        {/* <Header /> */}
         <Switch>
+          {/* Admin */}
+          <Route exact path="/dashboard" component={Dashboard}></Route>
+          <Route exact path="/comic/chaps" component={Dashboard}></Route>
+          <Route exact path="/comic/chaps/add" component={Dashboard}></Route>
+          <Route exact path="/comic/chaps/:id/update" component={Dashboard}></Route>
+          {/* Client */}
           <Route exact path="/comments" component={Comment}></Route>
           <Route exact path="/truyen-moi-cap-nhat/page/:number" component={Home}></Route>
           <Route exact path="/" component={Home}></Route>
@@ -69,7 +76,7 @@ function App() {
           <Route path="/reset-password/:token" component={ResetPassword}></Route>
           <Route path="*" component={() => "404 NOT FOUND"}></Route>
         </Switch>
-        <Footer />
+        {/* <Footer /> */}
       </Router>
     </div>
   );
