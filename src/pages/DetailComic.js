@@ -93,10 +93,13 @@ const DetailComic = () => {
     try {
       const res = await rateApi.rateComic(id, token, starIndex);
       if (res.data.data) {
-        notify(null, RATE_SUCCESS)
-        userApi.refreshToken(refreshToken).then(res => {
-          console.log(res.data);
-        }).catch(error => console.log(error));
+        notify(null, RATE_SUCCESS);
+        userApi
+          .refreshToken(refreshToken)
+          .then((res) => {
+            console.log(res.data);
+          })
+          .catch((error) => console.log(error));
       }
     } catch (error) {
       notify(error.response.data, null);
@@ -266,7 +269,7 @@ const DetailComic = () => {
                   <div className="update_time">
                     <div className="type">{UPDATE}</div>
                     <div className="item">
-                      {data
+                      {data && data.chapters.length > 0
                         ? updateDate(
                             data.chapters.sort((a, b) =>
                               b.chapter_id > a.chapter_id ? 1 : -1

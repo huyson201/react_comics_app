@@ -1,34 +1,89 @@
-import React, { useEffect, useState } from "react";
-import './dashboard.css'
-import { Nav, Navbar, Container, NavDropdown, Breadcrumb } from "react-bootstrap";
+import React, { StrictMode, useEffect, useState } from "react";
+import "./dashboard.css";
+import {
+  Nav,
+  Navbar,
+  Container,
+  NavDropdown,
+  Breadcrumb,
+} from "react-bootstrap";
 import { useHistory, useParams } from "react-router";
 import AddChap from "./AddChap";
 import ChapList from "./ChapList";
 import UpdateChap from "./UpdateChap";
 import comicApi from "../../api/comicApi";
+import Sidebar from "./Sidebar";
+import ComicList from "./Comics/ComicList";
+import AddOrEditComic from "./Comics/AddOrEditComic";
+import Cookies from "js-cookie";
+import jwt_decode from "jwt-decode";
+import userApi from "../../api/userApi";
+import { useDispatch, useSelector } from "react-redux";
+import { isCheck, login, setUserInfo } from "../../features/auth/userSlice";
 const Dashboard = () => {
-    const history = useHistory()
-    const [chapters, setChapters] = useState();
-    const { id } = useParams()
-    const getChapList = async () => {
-        try {
-            const res = await comicApi.getComicByID(1);
-            if (res.data.data) {
-                setChapters(res.data.data.chapters);
-            }
-        } catch (error) {
-            return error;
-        }
-    };
+  const history = useHistory();
+  const dispatch = useDispatch()
+  const { id } = useParams();
+  const { number, comicId } = useParams();
+  const { userInfo, isLogged } = useSelector((state) => state.user);
+  const dispatchUser = async (id, token) => {
+    try {
+      const getInfo = await userApi.getUserById(id, token)
+      if (getInfo.data.data) {
+        dispatch(setUserInfo(getInfo.data.data))
+      }
+    } catch (error) {
+      console.log(error.response.data);
+    }
+  }
+  //lấy thông tin user sau khi xử lý refresh token cookie
+  const refreshTokenCookie = async (cookie) => {
+    try {
+      const res = await userApi.refreshToken(cookie);
+      if (res.data.token) {
+        const userFromToken = jwt_decode(res.data.token)
+        dispatch(
+          login({
+            token: res.data.token,
+            refreshToken: cookie,
+          })
+        );
+        dispatchUser(userFromToken.user_uuid, res.data.token)
+      }
+    } catch (error) {
+      console.log(error.response.data);
 
-    useEffect(() => {
-        getChapList();
-    }, []);
+    }
+  }
+  useEffect(() => {
+    if (userInfo === null) {
+      if (Cookies.get("refreshToken")) {
+        refreshTokenCookie(Cookies.get("refreshToken"))
+      }
+    }
+  }, [isCheck, isLogged]);
+  return (
+    <>
+      <div className="container_dashboard">
+        <Sidebar></Sidebar>
+        <div className="main-content">
+          {history.location.pathname === `/comics/${comicId}/chaps` ? (
+            <ChapList comicId={comicId} />
+          ) : history.location.pathname === "/comic/chaps/add" ? (
+            <AddChap />
+          ) : history.location.pathname === `/comic/chaps/${id}/update` ? (
+            <UpdateChap />
+          ) : number ? (
+            <ComicList page={number} />
+          ) : history.location.pathname === `/comics/add` ? (
+            <AddOrEditComic />
+          ) : (
+            ""
+          )}
+        </div>
+      </div>
 
-    console.log(chapters);
-    return (
-        <>
-            <div className="container_dashboard">
+      {/* <div className="container_dashboard">
                 <Navbar sticky="top" collapseOnSelect expand="lg" bg="dark" variant="dark">
                     <Container>
                         <Navbar.Brand href="#home">Doctruyen.phake</Navbar.Brand>
@@ -55,9 +110,9 @@ const Dashboard = () => {
                 </Breadcrumb>
                 {history.location.pathname === "/comic/chaps" ? <ChapList chapters={chapters} /> : history.location.pathname == "/comic/chaps/add" ? <AddChap /> : history.location.pathname == `/comic/chaps/${id}/update` ? <UpdateChap /> : ""}
 
-            </div>
-        </>
-    )
-}
+            </div> */}
+    </>
+  );
+};
 
-export default Dashboard
+export default Dashboard;

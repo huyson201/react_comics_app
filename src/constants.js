@@ -29,7 +29,7 @@ export const LOGIN_SUCCESS = "Đăng nhập thành công !";
 export const RATE_SUCCESS = "Cảm ơn bạn đã đánh giá !";
 
 // ================================COMIC================================ //
-export const LIMIT = 30;
+export const LIMIT = 6;
 export const NEW_COMIC_TITLE = "Truyện mới cập nhật";
 export const CATEGORY_COMIC_TITLE = "Truyện theo thể loại ";
 export const SEARCH_BY_KEY_COMIC_TITLE = "Tìm kiếm theo từ khoá ";
@@ -47,8 +47,20 @@ export const LOADING = "Loading...";
 export const READ_FIRST = "Đọc từ đầu";
 export const READ_LAST = "Đọc chap mới nhất";
 export const COMMENT = "Bình luận";
-
+export const UPDATING = "Đang cập nhật"
 export const PRE_CHAPTER = "Chap trước";
 export const NEXT_CHAPTER = "Chap tiếp";
 
 export const RESET_PW_TITLE = 'Vui lòng nhập Email'
+
+// ================================TABLE================================ //
+
+export const COMIC_NAME = 'Tên truyện'
+export const COMIC_IMAGE = 'Bìa truyện'
+export const COMIC_AUTHOR = 'Tác giả'
+export const COMIC_CATOGORIES = 'Thể loại'
+export const COMIC_SUMMARY = 'Tóm tắt'
+export const COMIC_STATUS = 'Tình trạng'
+export const COMIC_STATUS_ONGOING = 'Đang tiến hành'
+export const COMIC_STATUS_COMPLETED = 'Đã hoàn thành'
+export const COMIC_STATUS_STOP = 'Tạm ngưng'

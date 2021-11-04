@@ -1,19 +1,9 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  createEntityAdapter,
+} from "@reduxjs/toolkit";
 import comicApi from "../../api/comicApi";
-import rateApi from "../../api/rateApi";
-
-export const getCountRate = createAsyncThunk(
-  "comics/getRate",
-  async (id, thunkAPI) => {
-   let per = 0;
-    rateApi.getSumRate(id).then((res) => {
-      if (res.data.data) {
-        per = (res.data.data.sum_rate / (res.data.data.count * 5)) * 10;
-      }
-    });
-    return per;
-  }
-);
 
 export const getComics = createAsyncThunk(
   "comics/getComics",
@@ -33,7 +23,13 @@ export const getComicsByCategory = createAsyncThunk(
     return comics.data.data;
   }
 );
-
+export const getCategoryById = createAsyncThunk(
+  "categories/selectedCategory",
+  async (id) => {
+    const categories = await comicApi.getCategoryById(id);
+    return categories.data.data;
+  }
+);
 export const getComicsByKey = createAsyncThunk(
   "comics/searchByKey",
   async (key, thunkAPI) => {
@@ -52,13 +48,7 @@ export const getComicsByFilters = createAsyncThunk(
     return comics.data;
   }
 );
-export const getCategoryById = createAsyncThunk(
-  "categories/selectedCategory",
-  async (id) => {
-    const categories = await comicApi.getCategoryById(id);
-    return categories.data.data;
-  }
-);
+
 export const getComicByID = createAsyncThunk(
   "comics/selectedComic",
   async (id) => {
@@ -66,31 +56,53 @@ export const getComicByID = createAsyncThunk(
     return comic.data.data;
   }
 );
+export const createComic = createAsyncThunk(
+  "comics/create",
+  async ({ name, image, desc, author, status, userToken }) => {
+    const comic = await comicApi.createComic(
+      name,
+      image,
+      desc,
+      author,
+      status,
+      userToken
+    );
+    return comic.data.data;
+  }
+);
+export const deleteComic = createAsyncThunk(
+  "comics/delete",
+  async ({ id, token }, thunkAPI) => {
+    await comicApi.deleteComic(id, token);
+    return id;
+  }
+);
+const comicAdapter = createEntityAdapter({
+  selectId: (comic) => comic.comic_id,
+});
+export const comicSelectors = comicAdapter.getSelectors(
+  (state) => state.comics
+);
 const comicSlice = createSlice({
   name: "comics",
-  initialState: {
-    comics: [],
+  initialState: comicAdapter.getInitialState({
+    status: "loading",
     count: 0,
-    status: "",
-    selectedCategory: null,
     offset: 0,
-    loaded: false,
-  },
+    selectedCategory: null,
+  }),
   reducers: {
     removeSelectedCategory(state) {
       state.selectedCategory = null;
     },
     removeComicList(state) {
-      state.comics = [];
+      comicAdapter.removeAll(state);
       state.status = "loading";
     },
     setOffSet(state, action) {
       state.offset = action.payload;
     },
-    removeSelectedComic(state) {
-      state.selectedComic = null;
-      state.status = "loading";
-    },
+
     setStatus(state, action) {
       state.status = action.payload;
     },
@@ -107,7 +119,7 @@ const comicSlice = createSlice({
     },
     [getComics.fulfilled]: (state, action) => {
       state.status = "success";
-      state.comics = action.payload.rows;
+      comicAdapter.setAll(state, action.payload.rows);
       state.count = action.payload.count;
     },
     [getComicsByCategory.pending]: (state) => {
@@ -118,7 +130,7 @@ const comicSlice = createSlice({
     },
     [getComicsByCategory.fulfilled]: (state, action) => {
       state.status = "success";
-      state.comics = action.payload.rows[0].comics;
+      comicAdapter.setAll(state, action.payload.rows[0].comics);
       state.count = action.payload.count;
     },
     [getCategoryById.pending]: (state) => {
@@ -139,7 +151,7 @@ const comicSlice = createSlice({
     },
     [getComicsByKey.fulfilled]: (state, action) => {
       state.status = "success";
-      state.comics = action.payload.rows;
+      comicAdapter.setAll(state, action.payload.rows);
       state.count = action.payload.count;
     },
     [getComicsByFilters.pending]: (state) => {
@@ -150,17 +162,23 @@ const comicSlice = createSlice({
     },
     [getComicsByFilters.fulfilled]: (state, action) => {
       state.status = "success";
-      state.comics = action.payload.rows;
+      comicAdapter.setAll(state, action.payload.rows);
       state.count = action.payload.count;
+    },
+    [deleteComic.pending]: (state) => {
+      state.status = "loading";
+    },
+    [deleteComic.rejected]: (state) => {
+      state.status = "rejected";
+    },
+    [deleteComic.fulfilled]: (state, action) => {
+      state.status = "success";
+      console.log(action.payload)
+      comicAdapter.removeOne(state,action.payload);
     },
   },
 });
-export const {
-  removeSelectedCategory,
-  removeComicList,
-  setOffSet,
-  setStatus,
-  setLoaded,
-} = comicSlice.actions;
-export const getAllComics = (state) => state.comics.comics;
+
+export const { removeSelectedCategory, setOffSet, removeComicList } =
+  comicSlice.actions;
 export default comicSlice.reducer;

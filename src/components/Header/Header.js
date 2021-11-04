@@ -146,7 +146,7 @@ const Navbar = (props) => {
     </>
   );
 };
-const SearchForm = ({ }) => {
+const SearchForm = () => {
   const history = useHistory();
   const [key, setKey] = useState("");
   const [open, setOpen] = useState(false);

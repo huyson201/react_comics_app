@@ -4,14 +4,7 @@ import ListComic from "../components/ListComic/ListComic";
 import { useHistory, useParams } from "react-router-dom";
 import queryString from "query-string";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getComics,
-  getComicsByCategory,
-  getComicsByFilters,
-  getComicsByKey,
-  removeComicList,
-  setOffSet,
-} from "../features/comics/comicSlice";
+
 import {
   FILTER_COMIC_TITLE,
   LIMIT,
@@ -20,6 +13,14 @@ import {
 } from "../constants";
 import Loading from "../components/Loading/Loading";
 import Carousel from "../components/Slider/Carousel";
+import {
+  getComics,
+  getComicsByCategory,
+  getComicsByFilters,
+  getComicsByKey,
+  removeComicList,
+  setOffSet,
+} from "../features/comics/comicSlice";
 
 const Home = () => {
   const history = useHistory();
@@ -58,46 +59,38 @@ const Home = () => {
     }
   }, [number, params.page]);
 
-  const doAction = async (action) => {
-    try {
-      await action;
-    } catch (error) {
-      dispatch(setOffSet(0));
-    }
-  };
   useEffect(() => {
     if (id) {
       // comics by category
       setCheckOther(true);
-      doAction(dispatch(getComicsByCategory(id)));
+      dispatch(getComicsByCategory(id));
     } else if (keyword) {
       // searck by key
       setCheckOther(true);
+      console.log(keyword);
       status === "success" && setTitle(SEARCH_BY_KEY_COMIC_TITLE + keyword);
-      doAction(dispatch(getComicsByKey(keyword)));
+      dispatch(getComicsByKey(keyword));
     } else if (Object.keys(params).length !== 0) {
       // search by filter
       setCheckOther(true);
       status === "success" && setTitle(FILTER_COMIC_TITLE);
-      doAction(
-        dispatch(
-          getComicsByFilters({
-            categories: params["the-loai"],
-            status:
-              params["tinh-trang"] === "Tất cả" ? "" : params["tinh-trang"],
-          })
-        )
+      dispatch(
+        getComicsByFilters({
+          categories: params["the-loai"],
+          status: params["tinh-trang"] === "Tất cả" ? "" : params["tinh-trang"],
+        })
       );
     } else {
       // get comics
       setCheckOther(false);
       setTitle(NEW_COMIC_TITLE);
-      doAction(dispatch(getComics()));
+      dispatch(getComics());
     }
     return () => {
       dispatch(removeComicList());
     };
   }, [
+    pathName,
     number,
     id,
     keyword,
@@ -108,7 +101,7 @@ const Home = () => {
   return (
     <div>
       {status === "loading" && <Loading />}
-      {pathName === "/" && <Carousel></Carousel>}
+      {/* {pathName === "/" && <Carousel></Carousel>} */}
       {status === "success" && <ListComic title={title} other={other} />}
       {total >= LIMIT && status === "success" && (
         <Pagination

@@ -10,6 +10,7 @@ import {
   deleteComic,
   deleteComicFollow,
 } from "../../features/comics/followSlice";
+import { UPDATING } from "../../constants";
 import jwtDecode from "jwt-decode";
 import rateApi from "../../api/rateApi";
 import { setStatus, setLoaded } from "../../features/comics/comicSlice";
@@ -59,7 +60,6 @@ const ListItem = ({ other, index, item, isFollow }) => {
         });
         setNewChapter(item["chapters"][0]);
         setChapterName(xoaDau(item["chapters"][0]["chapter_name"]));
-       
       }
     } catch (error) {}
     return () => {
@@ -100,12 +100,17 @@ const ListItem = ({ other, index, item, isFollow }) => {
           ></img>
         </Link>
         <div className="item-row">
-          <Link
-            to={`/${chapterName}/${newChapter["chapter_id"]}/truyen-tranh/${name}-${item["comic_id"]}`}
-            className="item-new-chapter"
-          >
-            {newChapter && newChapter["chapter_name"]}
-          </Link>
+          {chapterName != null && newChapter != null ? (
+            <Link
+              to={`/${chapterName}/${newChapter["chapter_id"]}/truyen-tranh/${name}-${item["comic_id"]}`}
+              className="item-new-chapter"
+            >
+              {newChapter && newChapter["chapter_name"]}
+            </Link>
+          ) : (
+            { UPDATING } + ""
+          )}
+
           <div className="item-rate">{rate}</div>
         </div>
         <Link to={`/truyen-tranh/${name}-${item["comic_id"]}`}>

@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from "react";
 import "./ListComic.css";
 import { BsStars } from "react-icons/bs";
-import {useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { CATEGORY_COMIC_TITLE } from "../../constants";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import ListItem from "./ListItem";
-import { useHistory } from "react-router";
+import { comicSelectors } from "../../features/comics/comicSlice";
 
 const ListComic = ({ other, title, isFollow }) => {
-  const comics = useSelector((state) => state.comics.comics);
   const category = useSelector((state) => state.comics.selectedCategory);
   const comics_follow = useSelector((state) => state.follows.comics);
+  const comics = useSelector(comicSelectors.selectAll);
   return (
     <>
-   
       <div className="list-title">
         <BsStars />
         {category ? CATEGORY_COMIC_TITLE + category["category_name"] : title}

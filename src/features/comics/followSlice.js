@@ -1,11 +1,26 @@
 import { createAsyncThunk, createSlice, unwrapResult } from "@reduxjs/toolkit";
 import followApi from "../../api/followApi";
+import { WARN_LOGIN } from "../../constants";
+import { logout } from "../auth/userSlice";
+import { modalNotify } from "../modal/modalSlice";
 import { removeComicList, removeSelectedCategory } from "./comicSlice";
 export const followComic = createAsyncThunk(
   "follow/create",
   async ({ id, userToken }, thunkAPI) => {
-    const res = await followApi.followComics(id, userToken);
-    return res.data.data;
+    try {
+      const res = await followApi.followComics(id, userToken);
+      return res.data.data;
+    } catch (error) {
+      console.log(error);
+      thunkAPI.dispatch(logout());
+      thunkAPI.dispatch(
+        modalNotify({
+          show: true,
+          message: null,
+          error: WARN_LOGIN,
+        })
+      );
+    }
   }
 );
 export const getComicsFollow = createAsyncThunk(
@@ -13,19 +28,43 @@ export const getComicsFollow = createAsyncThunk(
   async ({ id, userToken }, thunkAPI) => {
     thunkAPI.dispatch(removeComicList());
     thunkAPI.dispatch(removeSelectedCategory());
-    const res = await followApi.getFollowUser(id, userToken);
-    return res.data.data;
+    try {
+      const res = await followApi.getFollowUser(id, userToken);
+      return res.data.data;
+    } catch (error) {
+      console.log(error);
+      // thunkAPI.dispatch(logout());
+      // thunkAPI.dispatch(
+      //   modalNotify({
+      //     show: true,
+      //     message: null,
+      //     error: WARN_LOGIN,
+      //   })
+      // );
+    }
   }
 );
 export const deleteComicFollow = createAsyncThunk(
   "follow/delete",
   async ({ user_id, comic_id, userToken }, thunkAPI) => {
-    const action = await thunkAPI.dispatch(
-      getFollowID({ user_id: user_id, comic_id: comic_id })
-    );
-    const id = unwrapResult(action);
-    const res = await followApi.deleteFollow(id, userToken);
-    return res.data.data;
+    try {
+      const action = await thunkAPI.dispatch(
+        getFollowID({ user_id: user_id, comic_id: comic_id })
+      );
+      const id = unwrapResult(action);
+      const res = await followApi.deleteFollow(id, userToken);
+      return res.data.data;
+    } catch (error) {
+      console.log(error);
+      thunkAPI.dispatch(logout());
+      thunkAPI.dispatch(
+        modalNotify({
+          show: true,
+          message: null,
+          error: WARN_LOGIN,
+        })
+      );
+    }
   }
 );
 export const getFollowID = createAsyncThunk(
@@ -64,7 +103,9 @@ const followSlice = createSlice({
     },
     [getComicsFollow.fulfilled]: (state, action) => {
       state.status = "success";
-      state.comics = action.payload.comics_follow;
+      if (action.payload) {
+        state.comics = action.payload.comics_follow;
+      }
     },
     [deleteComicFollow.pending]: (state) => {
       state.status = "loading";

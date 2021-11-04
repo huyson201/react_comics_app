@@ -8,13 +8,13 @@ import rateSlice from "./comics/rateSlice";
 import chapterSlice from "./comics/chapterSlice";
 const store = configureStore({
   reducer: {
-    comics: comicsReducer,
     user: userReducer,
     categories: categorySlice,
     follows: followSlice,
     modal: modalSlice,
     rate: rateSlice,
-    chapter: chapterSlice
+    chapter: chapterSlice,
+    comics: comicsReducer,
   },
 });
 export default store;

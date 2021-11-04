@@ -11,6 +11,10 @@ const comicApi = {
     const url = "/categories";
     return axiosClient.get(url);
   },
+  getCategoriesByKey: (key) => {
+    const url = `/categories/search?q=${key}`;
+    return axiosClient.get(url);
+  },
   getCategoryById: (id) => {
     const url = "/categories/" + id;
     return axiosClient.get(url);
@@ -56,6 +60,32 @@ const comicApi = {
         },
       }
     );
+  },
+  createComic: (name, image, desc, author, status, userToken) => {
+    const url = "/admin/comics";
+    return axiosClient.post(
+      url,
+      {
+        comic_name: name,
+        comic_img: image,
+        comic_desc: desc,
+        comic_author: author,
+        comic_status: status,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      }
+    );
+  },
+  deleteComic: (id, token) => {
+    const url = `/admin/comics/${id}`;
+    return axiosClient.delete(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
   },
 };
 export default comicApi;
