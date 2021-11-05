@@ -52,35 +52,35 @@ const AddOrEditComic = () => {
       >
         <h3>{"Thêm truyện"}</h3>
         <Form.Group as={Row} className="mb-3">
-          <Form.Label column md="3">
+          <Form.Label column md="2">
             {COMIC_NAME}
           </Form.Label>
-          <Col md="9">
+          <Col md="10">
             <Form.Control required type="text" placeholder={COMIC_NAME} 
              onChange={(e) => setName(e.target.value)}/>
           </Col>
         </Form.Group>
         <Form.Group as={Row} className="mb-3">
-          <Form.Label column md="3">
+          <Form.Label column md="2">
             {COMIC_IMAGE}
           </Form.Label>
-          <Col md="9">
+          <Col md="10">
             <Form.Control type="file" onChange={(e) => setImage(e.target.files[0])}/>
           </Col>
         </Form.Group>
         <Form.Group as={Row} className="mb-3">
-          <Form.Label column md="3">
+          <Form.Label column md="2">
             {COMIC_AUTHOR}
           </Form.Label>
-          <Col md="9">
+          <Col md="10">
             <Form.Control required type="text" placeholder={COMIC_AUTHOR} />
           </Col>
         </Form.Group>
         <Form.Group as={Row} className="mb-3">
-          <Form.Label column md="3">
+          <Form.Label column md="2">
             {COMIC_CATOGORIES}
           </Form.Label>
-          <Col md="9">
+          <Col md="10">
             {/* <AsyncSelect
               inputValue={inputValue}
               isMulti
@@ -97,10 +97,10 @@ const AddOrEditComic = () => {
           </Col>
         </Form.Group>
         <Form.Group as={Row} className="mb-3">
-          <Form.Label column md="3">
+          <Form.Label column md="2">
             {COMIC_SUMMARY}
           </Form.Label>
-          <Col md="9">
+          <Col md="10">
             <Form.Control
               as="textarea"
               style={{ height: "100px" }}
@@ -109,10 +109,10 @@ const AddOrEditComic = () => {
           </Col>
         </Form.Group>
         <Form.Group as={Row} className="mb-3">
-          <Form.Label column md="3">
+          <Form.Label column md="2">
             {COMIC_STATUS}
           </Form.Label>
-          <Col md="9">
+          <Col md="10">
             <Form.Select aria-label="Default select example">
               <option value={COMIC_STATUS_ONGOING}>
                 {COMIC_STATUS_ONGOING}

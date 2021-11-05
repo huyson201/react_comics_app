@@ -16,7 +16,9 @@ const Sidebar = () => {
     <>
       <ProSidebar breakPoint="md">
         <SidebarHeader>
-          <div className="header-text-sidebar">love comic</div>
+          <div className="header-text-sidebar">
+            <FaHeart style={{ color: "red", marginBottom: 3, }} /> love comic
+          </div>
         </SidebarHeader>
         <SidebarContent>
           <Menu iconShape="square">

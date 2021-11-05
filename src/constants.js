@@ -29,7 +29,7 @@ export const LOGIN_SUCCESS = "Đăng nhập thành công !";
 export const RATE_SUCCESS = "Cảm ơn bạn đã đánh giá !";
 
 // ================================COMIC================================ //
-export const LIMIT = 6;
+export const LIMIT = 30;
 export const NEW_COMIC_TITLE = "Truyện mới cập nhật";
 export const CATEGORY_COMIC_TITLE = "Truyện theo thể loại ";
 export const SEARCH_BY_KEY_COMIC_TITLE = "Tìm kiếm theo từ khoá ";

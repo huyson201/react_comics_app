@@ -1,5 +1,5 @@
 import React, { StrictMode, useEffect, useState } from "react";
-import "./dashboard.css";
+// import "./dashboard.css";
 import {
   Nav,
   Navbar,

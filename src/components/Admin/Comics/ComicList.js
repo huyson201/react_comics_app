@@ -8,6 +8,7 @@ import {
   comicSelectors,
   deleteComic,
   getComics,
+  removeComicList,
   setOffSet,
 } from "../../../features/comics/comicSlice";
 import { Link } from "react-router-dom";
@@ -31,7 +32,10 @@ const ComicList = ({ page }) => {
   useEffect(() => {
     dispatch(setOffSet((+page - 1) * LIMIT));
     dispatch(getComics());
-  }, [dispatch, page]);
+    return()=>{
+      dispatch(removeComicList())
+    }
+  }, [page]);
   const columns = [
     {
       Header: "ID",
@@ -50,13 +54,13 @@ const ComicList = ({ page }) => {
             style={{ marginRight: 10 }}
             to={`/comics/${cell.row.values.comic_id}/chaps`}
           >
-            <FaList style={{ color: "black" }}></FaList>
+            <FaList style={{ color: "white" }}></FaList>
           </Link>
           <Link
             style={{ marginRight: 10 }}
             to={`/comics/edit/${cell.row.values.comic_id}`}
           >
-            <FaEdit style={{ color: "black" }}></FaEdit>
+            <FaEdit style={{ color: "white" }}></FaEdit>
           </Link>
           <button
             onClick={handleDeleteComic}
