@@ -24,10 +24,12 @@ import Dashboard from "./components/Admin/Dashboard";
 import { setIsAdmin } from "./features/auth/userSlice";
 import ChapList from "./components/Admin/ChapList";
 import Sidebar from "./components/Admin/Sidebar";
+import { io } from 'socket.io-client'
 function App() {
   const [state, setState] = useState();
   const { token, refreshToken, isAdmin } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const [socketIo, setSocketIo] = useState(false)
   useEffect(() => {
     if (token) {
       const user = jwtDecode(token);
@@ -41,6 +43,28 @@ function App() {
       }
     }
   }, [token]);
+
+  useEffect(() => {
+    if (!socketIo) {
+      const socket = io('localhost:3001', {
+        auth: {
+          token: token
+        }
+      })
+
+      socket.on("connect", () => {
+        console.log(socket.id); // x8WIv7-mJelg7on_ALbx
+      });
+
+      socket.on('disconnect', () => {
+        socket.emit('user-disconnect', { socket_id: socket.id })
+        setSocketIo(false)
+      })
+
+      setSocketIo(true)
+    }
+
+  }, [token])
 
   return (
     <>
