@@ -15,7 +15,6 @@ import jwtDecode from "jwt-decode";
 import rateApi from "../../api/rateApi";
 import { setStatus, setLoaded } from "../../features/comics/comicSlice";
 const ListItem = ({ other, index, item, isFollow }) => {
-  console.log(item);
   const name = xoaDau(item["comic_name"]);
   const ourRequest = axios.CancelToken.source();
   const [newChapter, setNewChapter] = useState({});

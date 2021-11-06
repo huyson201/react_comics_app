@@ -11,7 +11,8 @@ const Comment = ({ comicId }) => {
   const dispatch = useDispatch();
   const [comments, setComments] = useState([]);
   const [activeComment, setActiveComment] = useState(0);
-  const token = useSelector((state) => state.user.token);
+  const {userInfo,token } = useSelector((state) => state.user);
+
   useEffect(() => {
     const getComments = async () => {
       const res = await comicApi.getCommentsByComicID(comicId);
@@ -25,7 +26,6 @@ const Comment = ({ comicId }) => {
     comicApi
       .createComment(comicId, text, parentId, token)
       .then((res) => {
-        const userInfo = jwtDecode(token);
         if (res.data.data) {
           const data = res.data.data;
           data.subComments = [];
@@ -34,6 +34,7 @@ const Comment = ({ comicId }) => {
             user_image: userInfo.user_image,
             user_email: userInfo.user_email,
           };
+          console.log(data)
           if (parentId !== 0) {
             const newArr = updateCommentList(parentIndex, data);
             setComments(newArr);

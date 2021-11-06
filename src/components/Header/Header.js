@@ -99,7 +99,6 @@ const Navbar = (props) => {
         <div className="nav-item account" onClick={handleClickAccount}>
           <MdPerson />
           {props.username}
-          {console.log(props.username)}
           {stateOption === true ? <div className="drop-down">
             {props.username === "Tài khoản" ? (
               <>

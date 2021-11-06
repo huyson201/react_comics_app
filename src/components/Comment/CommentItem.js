@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import CommentForm from "./CommentForm";
 import moment from "moment";
+import { useSelector } from "react-redux";
 const CommentItem = ({
   parentIndex,
   addComment,
@@ -23,6 +24,7 @@ const CommentItem = ({
   };
   const replyId = parentId ? parentId : item.comment_id;
   const isReplying = activeComment === item.comment_id;
+  console.log(item.user_info.user_name)
   return (
     <>
       <li className="item-comment">
