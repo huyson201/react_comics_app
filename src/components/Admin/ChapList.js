@@ -4,7 +4,7 @@ import { useHistory, useParams } from "react-router";
 import Loading from "../Loading/Loading";
 import { Link } from "react-router-dom";
 import chapApi from "../../api/chapApi";
-import { chapterSelectors, getChapsByComicId } from "../../features/comics/chapterSlice";
+import { chapterSelectors, deleteChapter, getChapsByComicId, removeChapList } from "../../features/comics/chapterSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { FaEdit, FaList, FaTrashAlt } from "react-icons/fa";
 import Table from "../Table/Table";
@@ -34,12 +34,15 @@ const ChapList = (props) => {
   const handleDeleteChap = (e) => {
     e.preventDefault();
     console.log(e.currentTarget.value);
-    // dispatch(deleteChap({ id: e.currentTarget.value, token: token }));
+    dispatch(deleteChapter({ id: e.currentTarget.value, token: token }));
   };
 
   useEffect(() => {
     dispatch(getChapsByComicId(comicId));
-  }, [])
+    return (
+      dispatch(removeChapList())
+    )
+  }, [page])
 
   const columns = [
     {
@@ -73,7 +76,7 @@ const ChapList = (props) => {
           </Link>
           <button
             onClick={handleDeleteChap}
-            value={cell.row.values.comic_id}
+            value={cell.row.values.chapter_id}
             style={{ marginRight: 10, background: "none" }}
           >
             <FaTrashAlt style={{ color: "red" }}></FaTrashAlt>

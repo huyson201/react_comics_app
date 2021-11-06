@@ -54,7 +54,7 @@ const Dashboard = () => {
         dispatchUser(userFromToken.user_uuid, res.data.token);
       }
     } catch (error) {
-      console.log(error.response.data);
+      console.log(error);
     }
   };
   useEffect(() => {

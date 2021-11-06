@@ -18,10 +18,9 @@ const chapApi = {
             })
     },
     delete: (chapId, token) => {
-        const url = `/chapters/delete/${chapId}`
-        return axiosClient.post(url, {
+        const url = `/admin/chapters/delete/${chapId}`
+        return axiosClient.delete(url, {
             headers: {
-                'Content-Type': `multipart/form-data`,
                 Authorization: `Bearer ${token}`,
             },
         })
