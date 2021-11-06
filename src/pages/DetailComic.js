@@ -275,7 +275,7 @@ const DetailComic = () => {
                               b.chapter_id > a.chapter_id ? 1 : -1
                             )[0].updatedAt
                           )
-                        : ""}
+                        : "Đang cập nhật"}
                     </div>
                   </div>
                 </div>

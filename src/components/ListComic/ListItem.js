@@ -15,6 +15,7 @@ import jwtDecode from "jwt-decode";
 import rateApi from "../../api/rateApi";
 import { setStatus, setLoaded } from "../../features/comics/comicSlice";
 const ListItem = ({ other, index, item, isFollow }) => {
+  console.log(item);
   const name = xoaDau(item["comic_name"]);
   const ourRequest = axios.CancelToken.source();
   const [newChapter, setNewChapter] = useState({});
@@ -41,10 +42,14 @@ const ListItem = ({ other, index, item, isFollow }) => {
               setRate(per + "");
               const data = val[1].data.data;
               const chapters = data["chapters"];
-              setNewChapter(chapters[chapters.length - 1]);
-              setChapterName(
-                xoaDau(chapters[chapters.length - 1]["chapter_name"])
-              );
+              if (chapters.length > 0) {
+                setNewChapter(chapters[chapters.length - 1]);
+                setChapterName(
+                  xoaDau(chapters[chapters.length - 1]["chapter_name"])
+                );
+              } else {
+                setNewChapter("Đang cập nhật");
+              }
             });
           } catch (error) {
             setNewChapter("NaN");
@@ -108,7 +113,12 @@ const ListItem = ({ other, index, item, isFollow }) => {
               {newChapter && newChapter["chapter_name"]}
             </Link>
           ) : (
-            { UPDATING } + ""
+            <Link
+            to="#"
+              className="item-new-chapter"
+            >
+              {UPDATING}
+            </Link>
           )}
 
           <div className="item-rate">{rate}</div>

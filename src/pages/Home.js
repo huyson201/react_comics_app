@@ -62,17 +62,16 @@ const Home = () => {
   useEffect(() => {
     if (id) {
       // comics by category
-      setCheckOther(true);
+      setCheckOther(false);
       dispatch(getComicsByCategory(id));
     } else if (keyword) {
       // searck by key
-      setCheckOther(true);
-      console.log(keyword);
+      setCheckOther(false);
       status === "success" && setTitle(SEARCH_BY_KEY_COMIC_TITLE + keyword);
       dispatch(getComicsByKey(keyword));
     } else if (Object.keys(params).length !== 0) {
       // search by filter
-      setCheckOther(true);
+      setCheckOther(false);
       status === "success" && setTitle(FILTER_COMIC_TITLE);
       dispatch(
         getComicsByFilters({

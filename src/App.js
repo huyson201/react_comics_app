@@ -77,6 +77,7 @@ function App() {
           <Route path="/dashboard" component={Dashboard}></Route>
           <Route exact path="/comics/page/:number" component={Dashboard}></Route>
           <Route exact path="/comics/add" component={Dashboard}></Route>
+          <Route exact path="/comics/edit/:comicId" component={Dashboard}></Route>
           <Route exact path="/comics/:comicId" component={Dashboard}></Route>
           <Route exact path="/comics/:comicId/chaps/page/:numberPageChap" component={Dashboard}></Route>
           <Route exact path="/comic/:comicId/chaps/add" component={Dashboard}></Route>

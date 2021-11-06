@@ -61,23 +61,23 @@ const comicApi = {
       }
     );
   },
-  createComic: (name, image, desc, author, status, userToken) => {
+  createComic: (data, userToken) => {
     const url = "/admin/comics";
-    return axiosClient.post(
-      url,
-      {
-        comic_name: name,
-        comic_img: image,
-        comic_desc: desc,
-        comic_author: author,
-        comic_status: status,
+    return axiosClient.post(url, data, {
+      headers: {
+        "Content-Type": `multipart/form-data`,
+        Authorization: `Bearer ${userToken}`,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      }
-    );
+    });
+  },
+  updateComic: (id,data, userToken) => {
+    const url = `/admin/comics/${id}`;
+    return axiosClient.patch(url, data, {
+      headers: {
+        "Content-Type": `multipart/form-data`,
+        Authorization: `Bearer ${userToken}`,
+      },
+    });
   },
   deleteComic: (id, token) => {
     const url = `/admin/comics/${id}`;

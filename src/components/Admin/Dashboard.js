@@ -20,48 +20,55 @@ import jwt_decode from "jwt-decode";
 import userApi from "../../api/userApi";
 import { useDispatch, useSelector } from "react-redux";
 import { login, setUserInfo } from "../../features/auth/userSlice";
+import { isCheck, login, setUserInfo } from "../../features/auth/userSlice";
+import { removeSelectedComic } from "../../features/comics/comicSlice";
 const Dashboard = () => {
   const history = useHistory();
   const dispatch = useDispatch()
   const { number, comicId, numberPageChap, chapId } = useParams();
+
+
   const { userInfo, isLogged } = useSelector((state) => state.user);
 
   const dispatchUser = async (id, token) => {
     try {
-      const getInfo = await userApi.getUserById(id, token)
+      const getInfo = await userApi.getUserById(id, token);
       if (getInfo.data.data) {
-        dispatch(setUserInfo(getInfo.data.data))
+        dispatch(setUserInfo(getInfo.data.data));
       }
     } catch (error) {
       console.log(error.response.data);
     }
-  }
+  };
   //lấy thông tin user sau khi xử lý refresh token cookie
   const refreshTokenCookie = async (cookie) => {
     try {
       const res = await userApi.refreshToken(cookie);
       if (res.data.token) {
-        const userFromToken = jwt_decode(res.data.token)
+        const userFromToken = jwt_decode(res.data.token);
         dispatch(
           login({
             token: res.data.token,
             refreshToken: cookie,
           })
         );
-        dispatchUser(userFromToken.user_uuid, res.data.token)
+        dispatchUser(userFromToken.user_uuid, res.data.token);
       }
     } catch (error) {
       console.log(error.response.data);
-
     }
-  }
+  };
   useEffect(() => {
     if (userInfo === null) {
       if (Cookies.get("refreshToken")) {
-        refreshTokenCookie(Cookies.get("refreshToken"))
+        refreshTokenCookie(Cookies.get("refreshToken"));
       }
     }
   }, [isLogged]);
+
+  useEffect(() => {
+    dispatch(removeSelectedComic());
+  }, [history.location]);
   return (
     <>
       <div className="container_dashboard">
@@ -77,6 +84,8 @@ const Dashboard = () => {
             <ComicList page={number} />
           ) : history.location.pathname === `/comics/add` ? (
             <AddOrEditComic />
+          ) : history.location.pathname === `/comics/edit/${comicId}` ? (
+            <AddOrEditComic id={comicId} />
           ) : (
             ""
           )}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import {
   COMIC_AUTHOR,
@@ -13,7 +13,17 @@ import {
 } from "../../../constants";
 import AsyncSelect from "react-select/async";
 import comicApi from "../../../api/comicApi";
-const AddOrEditComic = () => {
+import { convertBase64 } from "../../../utilFunction";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  createComic,
+  getComicByID,
+  removeSelectedComic,
+  updateComic,
+} from "../../../features/comics/comicSlice";
+import Loading from "../../Loading/Loading";
+const AddOrEditComic = ({ id }) => {
+  const dispatch = useDispatch();
   const [inputValue, setValue] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [name, setName] = useState("");
@@ -21,11 +31,19 @@ const AddOrEditComic = () => {
   const [author, setAuthor] = useState("");
   const [summary, setSummary] = useState("");
   const [status, setStatus] = useState("");
+  const [validated, setValidated] = useState(false);
+  const [color, setColor] = useState(true);
+  const token = useSelector((state) => state.user.token);
+  const statusComic = useSelector((state) => state.comics.status);
+  const { selectedComic } = useSelector((state) => state.comics);
+  const refSelect = useRef();
+  const refForm = useRef();
   const handleInputChange = (value) => {
     setValue(value);
   };
   // handle selection
   const handleChange = (value) => {
+    setColor(true);
     setSelectedCategories(value);
   };
   const loadOptions = async (inputValue) => {
@@ -34,21 +52,107 @@ const AddOrEditComic = () => {
       return res.data.data.rows;
     }
   };
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    let arrCate = [];
-    selectedCategories.forEach((e) => {
-      arrCate.push(e.category_id);
-    });
-    console.log(arrCate);
-    setSelectedCategories("")
+  const changeImage = async (file) => {
+    const base64 = await convertBase64(file);
+    setImage(base64);
   };
+
+  const handleSubmit = (e) => {
+    const form = e.currentTarget;
+    if (form.checkValidity() === false && selectedCategories.length === 0) {
+      setColor(false);
+      e.preventDefault();
+      e.stopPropagation();
+      console.log(image);
+      setValidated(true);
+    } else {
+      setColor(true);
+      setValidated(true);
+      e.preventDefault();
+      let arrCate = [];
+      selectedCategories.forEach((e) => {
+        arrCate.push(e.category_id);
+      });
+      let formData = new FormData();
+      const file = e.target[1].files[0];
+      formData.append("comic_name", name);
+      formData.append("comic_desc", summary);
+      formData.append("comic_author", author);
+      formData.append("comic_status", refSelect.current.value);
+      formData.append("comic_view", 0);
+      formData.append("categories", arrCate);
+      // console.log(name);
+      // console.log(summary);
+      // console.log(file);
+      // console.log(author);
+      // console.log(refSelect.current.value);
+      // console.log(formData.get("categories"));
+      // console.log(image);
+      if (!id) {
+        formData.append("comic_img", file);
+        dispatch(createComic({ data: formData, userToken: token }));
+      } else
+        dispatch(updateComic({ id: id, data: formData, userToken: token }));
+    }
+
+    // setSelectedCategories("");
+  };
+  const customStyles = {
+    control: (_, { selectProps: { borderColor } }) => ({
+      fontSize: 13,
+      alignItems: "center",
+      backgroundColor: "hsl(0, 0%, 100%)",
+      borderColor: borderColor,
+      borderRadius: 4,
+      borderStyle: "solid",
+      borderWidth: 1,
+      cursor: "default",
+      display: "flex",
+      flexWrap: "wrap",
+      justifyContent: "space-between",
+      minHeight: 38,
+      outline: 0,
+      position: "relative",
+      transition: "all 100ms",
+      boxSizing: "border-box",
+    }),
+  };
+  useEffect(() => {
+    if (id) {
+      dispatch(getComicByID(id));
+    }
+    return () => {
+      dispatch(removeSelectedComic());
+    };
+  }, [id]);
+  useEffect(() => {
+    if (selectedComic !== null) {
+      setName(selectedComic.comic_name);
+      setAuthor(selectedComic.comic_author);
+      setSummary(selectedComic.comic_desc);
+      setSelectedCategories(selectedComic.categories);
+      setImage(selectedComic.comic_img);
+      setStatus(selectedComic.comic_status);
+    }
+    else{
+      setName("");
+      setAuthor("");
+      setSummary("");
+      setSelectedCategories("");
+      setImage("");
+      setStatus(""); 
+    }
+  }, [selectedComic !== null]);
   return (
     <>
+      {statusComic === "loading" && <Loading />}
+
       <Form
+        style={{ fontSize: 13 }}
         onSubmit={handleSubmit}
         noValidate
-        // validated={validated}
+        validated={validated}
+        ref={refForm}
       >
         <h3>{"Thêm truyện"}</h3>
         <Form.Group as={Row} className="mb-3">
@@ -56,8 +160,17 @@ const AddOrEditComic = () => {
             {COMIC_NAME}
           </Form.Label>
           <Col md="10">
-            <Form.Control required type="text" placeholder={COMIC_NAME} 
-             onChange={(e) => setName(e.target.value)}/>
+            <Form.Control
+              value={name}
+              size="sm"
+              required
+              type="text"
+              placeholder={COMIC_NAME}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <Form.Control.Feedback type="invalid">
+              {"Yêu cầu"}
+            </Form.Control.Feedback>
           </Col>
         </Form.Group>
         <Form.Group as={Row} className="mb-3">
@@ -65,7 +178,15 @@ const AddOrEditComic = () => {
             {COMIC_IMAGE}
           </Form.Label>
           <Col md="10">
-            <Form.Control type="file" onChange={(e) => setImage(e.target.files[0])}/>
+            <Form.Control
+              size="sm"
+              type="file"
+              onChange={(e) => changeImage(e.target.files[0])}
+            />
+            <Form.Control.Feedback type="invalid">
+              {"Yêu cầu"}
+            </Form.Control.Feedback>
+            {image !== "" && <img key={Date.now()} src={image} alt="account" />}
           </Col>
         </Form.Group>
         <Form.Group as={Row} className="mb-3">
@@ -73,15 +194,27 @@ const AddOrEditComic = () => {
             {COMIC_AUTHOR}
           </Form.Label>
           <Col md="10">
-            <Form.Control required type="text" placeholder={COMIC_AUTHOR} />
+            <Form.Control
+              value={author}
+              size="sm"
+              onChange={(e) => setAuthor(e.target.value)}
+              required
+              type="text"
+              placeholder={COMIC_AUTHOR}
+            />
+            <Form.Control.Feedback type="invalid">
+              {"Yêu cầu"}
+            </Form.Control.Feedback>
           </Col>
         </Form.Group>
         <Form.Group as={Row} className="mb-3">
           <Form.Label column md="2">
             {COMIC_CATOGORIES}
           </Form.Label>
-          <Col md="10">
-            {/* <AsyncSelect
+          <Col md="10" required>
+            <AsyncSelect
+              styles={customStyles}
+              borderColor={color ? "hsl(0, 0%, 80%)" : "red"}
               inputValue={inputValue}
               isMulti
               cacheOptions
@@ -91,9 +224,12 @@ const AddOrEditComic = () => {
               onInputChange={handleInputChange}
               value={selectedCategories}
               onChange={handleChange}
-              placeholder={COMIC_CATOGORIES}
+              placeholder={"Tìm và chọn thể loại"}
               loadOptions={loadOptions}
-            ></AsyncSelect> */}
+            ></AsyncSelect>
+            <Form.Control.Feedback type="invalid" style={{ display: "block" }}>
+              {!color && "Yêu cầu"}
+            </Form.Control.Feedback>
           </Col>
         </Form.Group>
         <Form.Group as={Row} className="mb-3">
@@ -102,10 +238,17 @@ const AddOrEditComic = () => {
           </Form.Label>
           <Col md="10">
             <Form.Control
+              value={summary}
+              size="sm"
+              required
+              onChange={(e) => setSummary(e.target.value)}
               as="textarea"
               style={{ height: "100px" }}
               placeholder={COMIC_SUMMARY}
             />
+            <Form.Control.Feedback type="invalid">
+              {"Yêu cầu"}
+            </Form.Control.Feedback>
           </Col>
         </Form.Group>
         <Form.Group as={Row} className="mb-3">
@@ -113,7 +256,15 @@ const AddOrEditComic = () => {
             {COMIC_STATUS}
           </Form.Label>
           <Col md="10">
-            <Form.Select aria-label="Default select example">
+            <Form.Select
+              ref={refSelect}
+              size="sm"
+              isValid={validated && status !== ""}
+              required
+              onChange={(e) => setStatus(e.target.value)}
+              value={status}
+            >
+              <option value="">Chọn tình trạng...</option>
               <option value={COMIC_STATUS_ONGOING}>
                 {COMIC_STATUS_ONGOING}
               </option>
@@ -122,18 +273,21 @@ const AddOrEditComic = () => {
               </option>
               <option value={COMIC_STATUS_STOP}>{COMIC_STATUS_STOP}</option>
             </Form.Select>
+            <Form.Control.Feedback type="invalid">
+              {"Yêu cầu"}
+            </Form.Control.Feedback>
           </Col>
         </Form.Group>
         <Form.Group as={Row} className="mb-3">
-          <Form.Label column md="3"></Form.Label>
-          <Col md="9">
+          <Form.Label column md="2"></Form.Label>
+          <Col md="10">
             <Button
               type="submit"
-              style={{ float: "left" }}
+              style={{ float: "left", width: 150 }}
               className="btn-primary"
               variant="dark"
             >
-              {"Thêm"}
+              {!selectedComic ? "Thêm" : "Chỉnh sửa"}
             </Button>
           </Col>
         </Form.Group>

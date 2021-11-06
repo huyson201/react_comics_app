@@ -58,15 +58,15 @@ export const getComicByID = createAsyncThunk(
 );
 export const createComic = createAsyncThunk(
   "comics/create",
-  async ({ name, image, desc, author, status, userToken }) => {
-    const comic = await comicApi.createComic(
-      name,
-      image,
-      desc,
-      author,
-      status,
-      userToken
-    );
+  async ({ data, userToken }) => {
+    const comic = await comicApi.createComic(data, userToken);
+    return comic.data.data;
+  }
+);
+export const updateComic = createAsyncThunk(
+  "comics/update",
+  async ({ id,data, userToken }) => {
+    const comic = await comicApi.updateComic(id,data, userToken);
     return comic.data.data;
   }
 );
@@ -86,10 +86,11 @@ export const comicSelectors = comicAdapter.getSelectors(
 const comicSlice = createSlice({
   name: "comics",
   initialState: comicAdapter.getInitialState({
-    status: "loading",
+    status: "",
     count: 0,
     offset: 0,
     selectedCategory: null,
+    selectedComic: null,
   }),
   reducers: {
     removeSelectedCategory(state) {
@@ -97,7 +98,7 @@ const comicSlice = createSlice({
     },
     removeComicList(state) {
       comicAdapter.removeAll(state);
-      state.status = "loading";
+      state.status = "";
     },
     setOffSet(state, action) {
       state.offset = action.payload;
@@ -106,8 +107,8 @@ const comicSlice = createSlice({
     setStatus(state, action) {
       state.status = action.payload;
     },
-    setLoaded(state, action) {
-      state.loaded = action.payload;
+    removeSelectedComic(state) {
+      state.selectedComic = null;
     },
   },
   extraReducers: {
@@ -173,12 +174,42 @@ const comicSlice = createSlice({
     },
     [deleteComic.fulfilled]: (state, action) => {
       state.status = "success";
+      console.log(action.payload);
+      comicAdapter.removeOne(state, action.payload);
+    },
+    [createComic.pending]: (state) => {
+      state.status = "loading";
+    },
+    [createComic.rejected]: (state) => {
+      state.status = "rejected";
+    },
+    [createComic.fulfilled]: (state, action) => {
+      state.status = "success";
+      comicAdapter.addOne(state, action.payload);
+    },
+    [getComicByID.pending]: (state) => {
+      state.status = "loading";
+    },
+    [getComicByID.rejected]: (state) => {
+      state.status = "rejected";
+    },
+    [getComicByID.fulfilled]: (state, action) => {
+      state.status = "success";
+      state.selectedComic = action.payload
+    },
+    [updateComic.pending]: (state) => {
+      state.status = "loading";
+    },
+    [updateComic.rejected]: (state) => {
+      state.status = "rejected";
+    },
+    [updateComic.fulfilled]: (state, action) => {
+      state.status = "success";
       console.log(action.payload)
-      comicAdapter.removeOne(state,action.payload);
     },
   },
 });
 
-export const { removeSelectedCategory, setOffSet, removeComicList } =
+export const { removeSelectedCategory, setOffSet, removeComicList ,removeSelectedComic} =
   comicSlice.actions;
 export default comicSlice.reducer;

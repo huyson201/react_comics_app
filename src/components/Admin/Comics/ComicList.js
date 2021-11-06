@@ -9,10 +9,12 @@ import {
   deleteComic,
   getComics,
   removeComicList,
+  removeSelectedComic,
   setOffSet,
 } from "../../../features/comics/comicSlice";
 import { Link } from "react-router-dom";
 import Table from "../../Table/Table";
+import { xoaDau } from "../../../utilFunction";
 const ComicList = ({ page }) => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -27,15 +29,15 @@ const ComicList = ({ page }) => {
   };
   const handleDeleteComic = (e) => {
     e.preventDefault();
-    console.log(e.currentTarget.value);
     dispatch(deleteComic({ id: e.currentTarget.value, token: token }));
   };
   useEffect(() => {
     dispatch(setOffSet((+page - 1) * LIMIT));
     dispatch(getComics());
-    return()=>{
-      dispatch(removeComicList())
-    }
+    return () => {
+      dispatch(removeComicList());
+      dispatch(removeSelectedComic());
+    };
   }, [page]);
   const columns = [
     {
@@ -45,6 +47,14 @@ const ComicList = ({ page }) => {
     {
       Header: COMIC_NAME,
       accessor: "comic_name",
+      Cell: ({ cell }) => (
+        
+        <div>
+          <Link className="column-comic-name" to={`/truyen-tranh/${xoaDau(cell.row.values.comic_name)}-${cell.row.values.comic_id}`}>
+            {cell.row.values.comic_name}
+          </Link>
+        </div>
+      ),
     },
     {
       Header: "Action",
@@ -55,13 +65,13 @@ const ComicList = ({ page }) => {
             style={{ marginRight: 10 }}
             to={`/comics/${cell.row.values.comic_id}/chaps/page/1`}
           >
-            <FaList style={{ color: "white" }}></FaList>
+            <FaList style={{ color: "black" }}></FaList>
           </Link>
           <Link
             style={{ marginRight: 10 }}
             to={`/comics/edit/${cell.row.values.comic_id}`}
           >
-            <FaEdit style={{ color: "white" }}></FaEdit>
+            <FaEdit style={{ color: "black" }}></FaEdit>
           </Link>
           <button
             onClick={handleDeleteComic}
