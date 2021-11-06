@@ -56,6 +56,8 @@ function App() {
         console.log(socket.id); // x8WIv7-mJelg7on_ALbx
       });
 
+      socket.on('comment-notify', data => console.log(data))
+
       socket.on('disconnect', () => {
         socket.emit('user-disconnect', { socket_id: socket.id })
         setSocketIo(false)
