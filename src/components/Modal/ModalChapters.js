@@ -5,10 +5,11 @@ import { FiX } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { modalChapter } from "../../features/modal/modalSlice";
 import { xoaDau } from "../../utilFunction";
+import { chapterSelectors } from "../../features/comics/chapterSlice";
 
 const ModalChapters = (props) => {
   const { showChapter } = useSelector((state) => state.modal);
-  const { chapter } = useSelector((state) => state.chapter);
+  const chapter = useSelector(chapterSelectors.selectAll);
   const dispatch_redux = useDispatch();
   let temp = chapter !== null ? [...chapter] : null
   function splitString(string) {

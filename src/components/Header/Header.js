@@ -13,7 +13,7 @@ import jwt_decode from "jwt-decode";
 import { xoaDau } from "../../utilFunction";
 import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
-import { login, logout, isCheck, setUserInfo } from "../../features/auth/userSlice";
+import { login, logout, setUserInfo, setIsCheckUpdate } from "../../features/auth/userSlice";
 import { LOGOUT_SUCCESS, WARN_LOGIN } from "../../constants";
 import { getCategories } from "../../features/comics/categorySlice";
 import { modalNotify } from "../../features/modal/modalSlice";
@@ -297,7 +297,6 @@ const Header = () => {
       }
     } catch (error) {
       console.log(error.response.data);
-
     }
   }
 
@@ -307,9 +306,12 @@ const Header = () => {
         refreshTokenCookie(Cookies.get("refreshToken"))
       }
     }
+    // if (isCheckUpdate === true) {
+    //   dispatch_redux(setIsCheckUpdate(false))
+    // }
     userInfo ? setUsername(userInfo.user_name) : setUsername("Tài khoản");
-  }, [isCheck, isLogged]);
-  
+  }, [isLogged, userInfo]);
+
   return (
     <>
       <header>

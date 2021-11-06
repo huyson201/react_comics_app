@@ -15,7 +15,7 @@ import { BsStars } from "react-icons/bs";
 import { modalChapter } from "../features/modal/modalSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "../components/Loading/Loading";
-import { setChapters } from "../features/comics/chapterSlice";
+import { chapterSelectors, getChapsByComicId } from "../features/comics/chapterSlice";
 
 const DetailChapter = () => {
   const history = useHistory();
@@ -25,7 +25,6 @@ const DetailChapter = () => {
   const [imgs, setImgs] = useState(null);
   const [chapterName, setChapterName] = useState(null);
   const [comicName, setComicName] = useState();
-  // const [chapters, setChapters] = useState();
   const [state, setState] = useState({
     scrollPos: 0,
     show: false,
@@ -33,13 +32,14 @@ const DetailChapter = () => {
   });
   const dispatch_redux = useDispatch();
   const { showChapter } = useSelector((state) => state.modal);
-  const { chapter } = useSelector((state) => state.chapter)
+  const chapter = useSelector(chapterSelectors.selectAll)
   //tính phần trăm khi user scroll
   const handleScroll = () => {
     let cal =
       ((-1 * document.body.getBoundingClientRect().top) /
         document.body.getBoundingClientRect().height) *
       100;
+    console.log(document.body.getBoundingClientRect().top);
     setState({
       scrollPos: document.body.getBoundingClientRect().top,
       show: document.body.getBoundingClientRect().top < -100,
@@ -55,7 +55,8 @@ const DetailChapter = () => {
         setComicName(resComic.data.data.comic_name);
         setChapterName(resChapter.data.data.chapter_name)
         setImgs(resChapter.data.data.chapter_imgs.split(","));
-        dispatch_redux(setChapters(resComic.data.data.chapters))
+        dispatch_redux(getChapsByComicId(idComic))
+        // dispatch_redux(setChapters(resComic.data.data.chapters))
       }
     } catch (error) {
       console.log(error);
@@ -124,7 +125,7 @@ const DetailChapter = () => {
   };
 
   const handleInfo = () => {
-    history.push(`/truyen-tranh/${name}-${idComic}`);
+    history.push(`/truyen-tranh/${name}`);
   };
 
   const handleList = () => {

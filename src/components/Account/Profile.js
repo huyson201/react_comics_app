@@ -11,7 +11,7 @@ import {
   WARN_LOGIN,
 } from "../../constants";
 import { useDispatch, useSelector } from "react-redux";
-import { login, logout, setUserInfo } from "../../features/auth/userSlice";
+import { login, logout, setIsCheckUpdate, setUserInfo } from "../../features/auth/userSlice";
 import { modalNotify } from "../../features/modal/modalSlice";
 import userApi from "../../api/userApi"
 import { useHistory } from "react-router";
@@ -79,7 +79,6 @@ const Profile = () => {
   }
   //thông báo login khi token hết hạn
   const resetDispatch = () => {
-    // dispatch_redux(isCheck(true));
     dispatch_redux(logout());
     notify(WARN_LOGIN, null);
   };
@@ -106,10 +105,11 @@ const Profile = () => {
     try {
       const res = await userApi.updateUserImage(token, formData, userInfo.user_uuid)
       if (res.data.data || res.data.message) {
-        if (refreshToken && isJwtExpired(refreshToken) === false) {
-          updateToken();
-          notify(null, res.data.message)
-        }
+        dispatchUser(userInfo.user_uuid, token)
+        notify(null, res.data.message)
+        // if (refreshToken && isJwtExpired(refreshToken) === false) {
+        //   // updateToken();
+        // }
       }
     } catch (error) {
       console.log(error.response.data);
@@ -126,10 +126,12 @@ const Profile = () => {
     if (userInfo !== null) {
       if (token && isJwtExpired(token) === false) {
         update(formData)
+        dispatch_redux(setIsCheckUpdate(true));
       } else {
         if (Cookies.get("refreshToken")) {
           updateToken()
           update(formData)
+          dispatch_redux(setIsCheckUpdate(true));
         } else {
           resetDispatch();
         }

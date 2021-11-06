@@ -27,9 +27,10 @@ import Sidebar from "./components/Admin/Sidebar";
 import { io } from 'socket.io-client'
 function App() {
   const [state, setState] = useState();
-  const { token, refreshToken, isAdmin } = useSelector((state) => state.user);
+  const { token, userInfo, refreshToken, isAdmin } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [socketIo, setSocketIo] = useState(false)
+
   useEffect(() => {
     if (token) {
       const user = jwtDecode(token);
@@ -66,7 +67,7 @@ function App() {
       setSocketIo(true)
     }
 
-  }, [token])
+  }, [token, userInfo])
 
   return (
     <>
@@ -77,11 +78,11 @@ function App() {
           <Route exact path="/comics/page/:number" component={Dashboard}></Route>
           <Route exact path="/comics/add" component={Dashboard}></Route>
           <Route exact path="/comics/:comicId" component={Dashboard}></Route>
-          <Route exact path="/comics/:comicId/chaps" component={Dashboard}></Route>
-          <Route exact path="/comic/chaps/add" component={Dashboard}></Route>
+          <Route exact path="/comics/:comicId/chaps/page/:numberPageChap" component={Dashboard}></Route>
+          <Route exact path="/comic/:comicId/chaps/add" component={Dashboard}></Route>
           <Route
             exact
-            path="/comic/chaps/:id/update"
+            path="/comics/:comicId/chaps/:chapId/update"
             component={Dashboard}
           ></Route>
 
@@ -111,7 +112,7 @@ function App() {
                 path="/:chapter/:id/truyen-tranh/:name"
                 component={DetailChapter}
               ></Route>
-              <Route path="/login" component={Login}></Route>
+
               <Route path="/register" component={Register}></Route>
               <Route path="/account" component={Account}></Route>
               <Route path="/profile" component={Account}></Route>
@@ -122,6 +123,8 @@ function App() {
                 path="/reset-password/:token"
                 component={ResetPassword}
               ></Route>
+              <Route path="/login" component={Login}></Route>
+
               <Footer />
             </div>
           </Fragment>

@@ -40,16 +40,23 @@ const AddChap = () => {
                             Vui lòng chọn ảnh
                         </Form.Control.Feedback>
                     </FormGroup>
-
-                    <Button
-                        type="submit"
-                        className="btn-primary"
-                        variant="dark"
-                    >
-                        Thêm
-                    </Button>
                 </Form>
             </div>
+
+            <div class="progress" style={{ marginTop: 10 }}>
+                <div class="progress-bar" role="progressbar" style={{ width: '25%' }} aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div class="progress" style={{ marginTop: 10 }}>
+                <div class="progress-bar" role="progressbar" style={{ width: '25%' }} aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+
+            <Button
+                type="submit"
+                className="btn-primary"
+                variant="dark"
+            >
+                Thêm
+            </Button>
 
         </>
     )

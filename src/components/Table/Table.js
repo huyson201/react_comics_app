@@ -60,14 +60,14 @@ const Table = ({ columns, data }) => {
               {headerGroup.headers.map((column, index) => (
                 <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                   {column.render("Header")}
-                  {index > 0 && index < headerGroup.headers.length - 1 && (
-                    <span>
-                      {column.isSorted
-                        ? column.isSortedDesc
-                          ? " ⭣"
-                          : " ⭡	"
-                        : " ⮁"}
-                    </span>
+                  {index > 0 && index < headerGroup.headers.length - 1 && column.Header !== "AD_NAME" &&(
+                  <span>
+                    {column.isSorted
+                      ? column.isSortedDesc
+                        ? " ⭣"
+                        : " ⭡	"
+                      : " ⮁"}
+                  </span>
                   )}
                 </th>
               ))}
@@ -89,7 +89,7 @@ const Table = ({ columns, data }) => {
           })}
         </tbody>
       </BTable>
-      <p>Selected Rows: {Object.keys(selectedRowIds).length}</p>
+      {/* <p>Selected Rows: {Object.keys(selectedRowIds).length}</p>
       <pre>
         <code>
           {JSON.stringify(
@@ -103,7 +103,7 @@ const Table = ({ columns, data }) => {
             2
           )}
         </code>
-      </pre>
+      </pre> */}
     </>
   );
 };

@@ -19,6 +19,7 @@ const ComicList = ({ page }) => {
   const total = useSelector((state) => state.comics.count);
   const token = useSelector((state) => state.user.token);
   console.log(token);
+  console.log(total);
   const { status } = useSelector((state) => state.comics);
   const comics = useSelector(comicSelectors.selectAll);
   const handlePageChange = (pageNumber) => {
@@ -52,7 +53,7 @@ const ComicList = ({ page }) => {
         <div>
           <Link
             style={{ marginRight: 10 }}
-            to={`/comics/${cell.row.values.comic_id}/chaps`}
+            to={`/comics/${cell.row.values.comic_id}/chaps/page/1`}
           >
             <FaList style={{ color: "white" }}></FaList>
           </Link>

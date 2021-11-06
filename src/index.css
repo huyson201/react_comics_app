@@ -4,13 +4,13 @@
 @import "./reponsive/iphoneX_max375.css";
 @import "./reponsive/desktop_max1050.css";
 
-html{
+html {
   background: #5a5454;
 }
 
 body {
   margin: 0;
-  height: 100vh;
+  /* height: 100vh; */
   color: #353535;
 }
 
@@ -20,7 +20,7 @@ body {
 
 .container_dashboard {
   background-color: #fff;
-  height: 100%;
+  height: 100vh;
   display: flex;
   position: relative;
   font-family: "Roboto", sans-serif;

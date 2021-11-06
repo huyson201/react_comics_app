@@ -19,13 +19,13 @@ import Cookies from "js-cookie";
 import jwt_decode from "jwt-decode";
 import userApi from "../../api/userApi";
 import { useDispatch, useSelector } from "react-redux";
-import { isCheck, login, setUserInfo } from "../../features/auth/userSlice";
+import { login, setUserInfo } from "../../features/auth/userSlice";
 const Dashboard = () => {
   const history = useHistory();
   const dispatch = useDispatch()
-  const { id } = useParams();
-  const { number, comicId } = useParams();
+  const { number, comicId, numberPageChap, chapId } = useParams();
   const { userInfo, isLogged } = useSelector((state) => state.user);
+
   const dispatchUser = async (id, token) => {
     try {
       const getInfo = await userApi.getUserById(id, token)
@@ -61,17 +61,17 @@ const Dashboard = () => {
         refreshTokenCookie(Cookies.get("refreshToken"))
       }
     }
-  }, [isCheck, isLogged]);
+  }, [isLogged]);
   return (
     <>
       <div className="container_dashboard">
         <Sidebar></Sidebar>
         <div className="main-content">
-          {history.location.pathname === `/comics/${comicId}/chaps` ? (
-            <ChapList comicId={comicId} />
-          ) : history.location.pathname === "/comic/chaps/add" ? (
+          {history.location.pathname === `/comics/${comicId}/chaps/page/${numberPageChap}` ? (
+            <ChapList page={numberPageChap} />
+          ) : history.location.pathname === `/comic/${comicId}/chaps/add` ? (
             <AddChap />
-          ) : history.location.pathname === `/comic/chaps/${id}/update` ? (
+          ) : history.location.pathname === `/comics/${comicId}/chaps/${chapId}/update` ? (
             <UpdateChap />
           ) : number ? (
             <ComicList page={number} />

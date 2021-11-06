@@ -7,6 +7,7 @@ const userSlice = createSlice({
     userInfo: null,
     isLogged: false,
     isAdmin: false,
+    isCheckUpdate:false
   },
   reducers: {
     login(state, action) {
@@ -26,9 +27,12 @@ const userSlice = createSlice({
     setIsAdmin(state, action) {
       state.isAdmin = action.payload;
     },
+    setIsCheckUpdate(state, action) {
+      state.isCheckUpdate = action.payload;
+    },
   },
 });
 
-export const { login, logout, isCheck, setUserInfo, setIsAdmin } =
+export const { login, logout, setIsCheckUpdate, setUserInfo, setIsAdmin } =
   userSlice.actions;
 export default userSlice.reducer;

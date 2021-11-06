@@ -1,94 +1,116 @@
 import React, { useEffect, useState } from "react";
 // import "./dashboard.css";
-import { useHistory } from "react-router";
-import comicApi from "../../api/comicApi";
+import { useHistory, useParams } from "react-router";
 import Loading from "../Loading/Loading";
 import { Link } from "react-router-dom";
+import chapApi from "../../api/chapApi";
+import { chapterSelectors, getChapsByComicId } from "../../features/comics/chapterSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { FaEdit, FaList, FaTrashAlt } from "react-icons/fa";
+import Table from "../Table/Table";
+import Pagination from "react-js-pagination";
+import { LIMIT } from "../../constants";
+import Button from "@restart/ui/esm/Button";
 
 const ChapList = (props) => {
-  const [checkAll, setCheckAll] = useState(false);
-  const [check, setCheck] = useState();
-  const [chapters, setChapters] = useState();
-  const history = useHistory();
-  const getChapList = async () => {
-    try {
-      const res = await comicApi.getComicByID(props.comicId);
-      if (res.data.data) {
-        setChapters(res.data.data.chapters);
-      }
-    } catch (error) {
-      return error;
-    }
-  };
-
-  useEffect(() => {
-    getChapList();
-  }, []);
-
+  const { comicId } = useParams()
+  const page = props.page
+  const history = useHistory()
+  const dispatch = useDispatch()
+  const chapters = useSelector(chapterSelectors.selectAll);
+  const { status, count } = useSelector(state => state.chapter);
+  const { token } = useSelector(state => state.user);
   console.log(chapters);
-
   const handleClickAdd = () => {
-    history.push("/comic/chaps/add");
+    history.push(`/comic/${comicId}/chaps/add`);
   };
   const handleClickDetail = () => {
     console.log("click detail");
   };
+
+  const handlePageChange = (pageNumber) => {
+    history.push(`/comics/${comicId}/chaps/page/${pageNumber}`);
+  };
+  const handleDeleteChap = (e) => {
+    e.preventDefault();
+    console.log(e.currentTarget.value);
+    // dispatch(deleteChap({ id: e.currentTarget.value, token: token }));
+  };
+
+  useEffect(() => {
+    dispatch(getChapsByComicId(comicId));
+  }, [])
+
+  const columns = [
+    {
+      Header: "ID",
+      accessor: "chapter_id",
+    },
+    {
+      Header: "CHAP_NAME",
+      accessor: "chapter_name",
+    },
+    {
+      Header: "AD_NAME",
+      Cell: ({ cell }) => (
+        <div>Kieu Oanh</div>
+      )
+    },
+    {
+      Header: "CREATED_AT",
+      accessor: "createdAt",
+    },
+    {
+      Header: "Action",
+      sort: false,
+      Cell: ({ cell }) => (
+        <div>
+          <Link
+            style={{ marginRight: 10 }}
+            to={`/comics/${comicId}/chaps/${cell.row.values.chapter_id}/update`}
+          >
+            <FaEdit style={{ color: "black" }}></FaEdit>
+          </Link>
+          <button
+            onClick={handleDeleteChap}
+            value={cell.row.values.comic_id}
+            style={{ marginRight: 10, background: "none" }}
+          >
+            <FaTrashAlt style={{ color: "red" }}></FaTrashAlt>
+          </button>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <>
       {!chapters ? (
         <Loading />
       ) : (
-        <>
-          <div className="heading">
-            <div>Comic name (2)</div>
-            <div className="button_add" onClick={handleClickAdd}>
-              <i className="fas fa-plus-circle"></i>
-              <span>Thêm chương</span>
-            </div>
-          </div>
-
-          <div className="chap_list">
-            <ul>
-              <li className="head_chap_list">
-                <div>
-                  <input type="checkbox" />
-                  <span>Chapter name</span>
-                </div>
-                <div>
-                  <span>Admin name</span>
-                  <span>Create date</span>
-                </div>
-              </li>
-
-              {chapters
-                .sort((a, b) => (b.chapter_id > a.chapter_id ? 1 : -1))
-                .map((e, i) => {
-                  return (
-                    <li key={i} className="body_chap_list">
-                      <input type="checkbox" />
-                      <div key={i} className="content">
-                        <div>
-                          <span>{e.chapter_name}</span>
-                        </div>
-                        <div>
-                          <span>luu thi kieu oanh</span>
-                          <span>{e.createdAt.split("T")[0]}</span>
-                          <i
-                            className="fas fa-edit"
-                            onClick={() => {
-                              history.push(
-                                `/comic/chaps/${e.chapter_id}/update`
-                              );
-                            }}
-                          ></i>
-                        </div>
-                      </div>
-                    </li>
-                  );
-                })}
-            </ul>
-          </div>
-        </>
+        <div>
+          {status === "success" && (
+            <>
+              <h3>Comic name ({`${count}`} chap)</h3>
+              <Button onClick={handleClickAdd} style={{ borderRadius: 5, backgroundColor: "#40c057", padding: 7, color: "white", float: "right", marginBottom: 10, marginRight: 10 }}>Thêm chương</Button>
+              <Table data={chapters && chapters} columns={columns}></Table>
+            </>
+          )}
+          {status === "success" && count > LIMIT && (
+            <Pagination
+              activePage={page && +page}
+              itemClass="paginate-item"
+              linkClass="page-link"
+              itemsCountPerPage={LIMIT}
+              totalItemsCount={count >= 0 ? count : 0}
+              pageRangeDisplayed={3}
+              hideNavigation={true}
+              firstPageText={"Đầu"}
+              lastPageText={"Cuối"}
+              onChange={(val) => handlePageChange(val)}
+            />
+          )}
+        </div>
       )}
     </>
   );
