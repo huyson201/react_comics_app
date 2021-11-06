@@ -19,7 +19,6 @@ import Cookies from "js-cookie";
 import jwt_decode from "jwt-decode";
 import userApi from "../../api/userApi";
 import { useDispatch, useSelector } from "react-redux";
-import { login, setUserInfo } from "../../features/auth/userSlice";
 import { isCheck, login, setUserInfo } from "../../features/auth/userSlice";
 import { removeSelectedComic } from "../../features/comics/comicSlice";
 const Dashboard = () => {
