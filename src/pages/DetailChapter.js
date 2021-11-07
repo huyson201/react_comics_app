@@ -30,7 +30,7 @@ const DetailChapter = () => {
     show: false,
     percent: 3,
   });
-  const dispatch_redux = useDispatch();
+  const dispatch = useDispatch();
   const { showChapter } = useSelector((state) => state.modal);
   const chapter = useSelector(chapterSelectors.selectAll)
   //tính phần trăm khi user scroll
@@ -55,8 +55,8 @@ const DetailChapter = () => {
         setComicName(resComic.data.data.comic_name);
         setChapterName(resChapter.data.data.chapter_name)
         setImgs(resChapter.data.data.chapter_imgs.split(","));
-        dispatch_redux(getChapsByComicId(idComic))
-        // dispatch_redux(setChapters(resComic.data.data.chapters))
+        dispatch(getChapsByComicId(idComic))
+        // dispatch(setChapters(resComic.data.data.chapters))
       }
     } catch (error) {
       console.log(error);
@@ -129,7 +129,7 @@ const DetailChapter = () => {
   };
 
   const handleList = () => {
-    dispatch_redux(
+    dispatch(
       modalChapter({
         showChapter: true,
       })
@@ -143,7 +143,6 @@ const DetailChapter = () => {
     window.scrollTo(0, 0);
     return window.removeEventListener("scroll", () => handleScroll);
   }, [id]);
-
 
   return (
     <>

@@ -1,7 +1,6 @@
 import axiosClient from "./axiosClient";
 const rateApi = {
   rateComic: (comicId, token, starIndex) => {
-    console.log(starIndex, "api rate");
     const url = "/rates";
     return axiosClient.post(
       url,
@@ -23,6 +22,10 @@ const rateApi = {
   getSumRate: (comicId) => {
     const url = `/rates/sum?comic_id=${comicId}`
     return axiosClient.get(url)
+  },
+  updateRateComic: (rateId, rateStar, token, userId) => {
+    const url = `/rates/${rateId}`
+    return axiosClient.patch(url, { user_uuid: userId, rate_star: `${+rateStar + 1}` }, { headers: { Authorization: `Bearer ${token}` } })
   }
 };
 export default rateApi;

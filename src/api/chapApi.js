@@ -7,15 +7,9 @@ const chapApi = {
             params: { limit: LIMIT, offset: offset, sort: "createdAt:desc" },
         })
     },
-    create: (comicId, formData, token) => {
-        const url = `/chapters/comics/${comicId}/add`
-        return axiosClient.post(url, formData,
-            {
-                headers: {
-                    'Content-Type': `multipart/form-data`,
-                    Authorization: `Bearer ${token}`,
-                },
-            })
+    create: (formData, options) => {
+        const url = `/admin/chapters`
+        return axiosClient.post(url, formData, options)
     },
     delete: (chapId, token) => {
         const url = `/admin/chapters/delete/${chapId}`
@@ -25,14 +19,10 @@ const chapApi = {
             },
         })
     },
-    update: (chapId, token) => {
-        const url = `/chapters/update/${chapId}`
-        return axiosClient.post(url, {
-            headers: {
-                'Content-Type': `multipart/form-data`,
-                Authorization: `Bearer ${token}`,
-            },
-        })
-    }
+    updateImg: (chapId, options, formData) => {
+        const url = `/admin/chapters/image/${chapId}`
+        return axiosClient.post(url, formData, options)
+    },
+  
 };
 export default chapApi;

@@ -11,7 +11,6 @@ import { useHistory, useParams } from "react-router";
 import AddChap from "./AddChap";
 import ChapList from "./ChapList";
 import UpdateChap from "./UpdateChap";
-import comicApi from "../../api/comicApi";
 import Sidebar from "./Sidebar";
 import ComicList from "./Comics/ComicList";
 import AddOrEditComic from "./Comics/AddOrEditComic";
@@ -25,8 +24,6 @@ const Dashboard = () => {
   const history = useHistory();
   const dispatch = useDispatch()
   const { number, comicId, numberPageChap, chapId } = useParams();
-
-
   const { userInfo, isLogged } = useSelector((state) => state.user);
 
   const dispatchUser = async (id, token) => {
@@ -78,7 +75,7 @@ const Dashboard = () => {
           ) : history.location.pathname === `/comic/${comicId}/chaps/add` ? (
             <AddChap />
           ) : history.location.pathname === `/comics/${comicId}/chaps/${chapId}/update` ? (
-            <UpdateChap />
+            <UpdateChap id={chapId} />
           ) : number ? (
             <ComicList page={number} />
           ) : history.location.pathname === `/comics/add` ? (

@@ -720,6 +720,10 @@ ol,
 ul {
   padding-left: 0 !important;
 }
-.column-comic-name{
-  color:black !important;
+.column-comic-name {
+  color: black !important;
+}
+
+.progress {
+  height: 1.5rem !important;
 }

@@ -8,13 +8,12 @@ import {
   LABEL_EMAIL,
   LABEL_FORGOT,
   LABEL_PW,
-  LABEL_REMEMBER,
   LOGIN_SUCCESS,
   TITLE_LOGIN,
   VALIDATE_PW,
 } from "../constants";
 import { login, setUserInfo } from "../features/auth/userSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch} from "react-redux";
 import { modalNotify } from "../features/modal/modalSlice";
 import userApi from "../api/userApi";
 import jwtDecode from "jwt-decode";
@@ -22,15 +21,7 @@ import jwtDecode from "jwt-decode";
 const Login = () => {
   const [user_email, setEmail] = useState();
   const [user_password, setPassword] = useState();
-  const [checked, setChecked] = useState(false);
   const dispatch_redux = useDispatch();
-
-  //lưu refreshToken khi remember
-  const storageData = (res) => {
-    Cookies.set("refreshToken", res.data.data.refreshToken, {
-      expires: 7,
-    });
-  }
 
   const notify = (error, message) => {
     dispatch_redux(
@@ -42,28 +33,24 @@ const Login = () => {
     );
   };
   //lưu data(token refreshtoken userInfo) 
-  const dispatchData = async (res, checked) => {
+  const dispatchData = async (res) => {
     //set show modal
     if (res.data.data && res.data.data.token) {
       const token = res.data.data.token
       const userId = jwtDecode(token)
       dispatch_redux(
         login({
-          token: res.data.data.token,
+          token: token,
           refreshToken: res.data.data.refreshToken,
         })
       );
       userId ? dispatchUser(userId.user_uuid, token) : console.log("Chưa lưu được dữ liệu user");
-      if (checked === true) {
-        storageData(res);
-      }
     }
   }
   //Lưu redux user info
   const dispatchUser = async (id, token) => {
     try {
       const getInfo = await userApi.getUserById(id, token)
-      console.log(getInfo.data.data);
       if (getInfo.data.data) {
         notify(null, LOGIN_SUCCESS)
         dispatch_redux(setUserInfo(getInfo.data.data))
@@ -77,42 +64,26 @@ const Login = () => {
     try {
       //POST data to login
       const res = await userApi.login(user_email, user_password);
-      dispatchData(res, checked);
+      if (res.data.data && res.data.data.token) {
+        dispatchData(res);
+        Cookies.set("refreshToken", res.data.data.refreshToken, {
+          expires: 7,
+        });
+      }
     } catch (error) {
       if (error.response) {
         notify(error.response.data, null)
       }
     }
   }
-  //refreshtoken khi đăng nhập đã có cookie
-  const refreshCookie = async (cookie) => {
-    try {
-      const res = await userApi.refreshToken(cookie)
-      dispatchData(res, checked);
-    } catch (error) {
-      console.log(error);
-      notify(error.response.data)
-    }
-  }
-  //login
-  const flogin = async () => {
-    if (checked === false) {
-      if (Cookies.get("refreshToken")) {
-        refreshCookie(Cookies.get("refreshToken"));
-      } else {
-        loginNormal();
-      }
-    } else {
-      loginNormal();
-    }
-  }
+
   //login khi nhấn đăng nhập
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (user_password.length < 6) {
       notify(VALIDATE_PW, null)
     } else {
-      flogin();
+      loginNormal()
     }
   };
 
@@ -147,13 +118,6 @@ const Login = () => {
         </FormGroup>
 
         <div className="flex-remember">
-          <Form.Check
-            type="checkbox"
-            label={LABEL_REMEMBER}
-            checked={checked}
-            onChange={() => setChecked(!checked)}
-          />
-
           <p className="forgot-password text-right">
             <Link to="/forgot-password" className="here">
               {LABEL_FORGOT}

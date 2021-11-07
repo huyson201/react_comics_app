@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Form, FormLabel, FormGroup, Button } from "react-bootstrap";
-import jwt_decode from "jwt-decode";
 import { isJwtExpired } from "jwt-check-expiration";
 import {
   BUTTON_UPDATE,
@@ -8,15 +7,14 @@ import {
   LABEL_FULLNAME,
   LABEL_IMAGE,
   TITLE_ACCOUNT,
+  UPDATE_SUCCESS,
   WARN_LOGIN,
 } from "../../constants";
 import { useDispatch, useSelector } from "react-redux";
-import { login, logout, setIsCheckUpdate, setUserInfo } from "../../features/auth/userSlice";
+import { login, logout, setUserInfo } from "../../features/auth/userSlice";
 import { modalNotify } from "../../features/modal/modalSlice";
 import userApi from "../../api/userApi"
 import { useHistory } from "react-router";
-import Cookies from "js-cookie";
-// import { decode as base64_decode, encode as base64_encode } from 'base-64';
 
 const Profile = () => {
   const [user_name, setUserName] = useState();
@@ -37,14 +35,13 @@ const Profile = () => {
   };
   //effect user info
   useEffect(() => {
-    console.log(userInfo);
     if (userInfo !== null) {
       setUserName(userInfo.user_name);
       setEmail(userInfo.user_email);
       let image = userInfo.user_image + `&t=${new Date().getTime()}`
       setImage(image)
     }
-  }, [token, refreshToken]);
+  }, [userInfo]);
   //refresh token
   const updateToken = async () => {
     try {
@@ -58,9 +55,6 @@ const Profile = () => {
         );
         dispatchUser(userInfo.user_uuid, resUpdate.data.token)
       }
-      // let newImg = user_image.split('&t=')[0] + `&t=${new Date().getTime()}`
-      //     setImage()
-
     } catch (error) {
       console.log(error);
       notify(error.response.data, null)
@@ -104,36 +98,34 @@ const Profile = () => {
   const update = async (formData) => {
     try {
       const res = await userApi.updateUserImage(token, formData, userInfo.user_uuid)
-      if (res.data.data || res.data.message) {
+      if (res.data.data) {
         dispatchUser(userInfo.user_uuid, token)
-        notify(null, res.data.message)
-        // if (refreshToken && isJwtExpired(refreshToken) === false) {
-        //   // updateToken();
-        // }
+        notify(null, UPDATE_SUCCESS)
       }
     } catch (error) {
       console.log(error.response.data);
     }
   }
   //xử lý dữ liệu khi nhấn update
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     let formData = new FormData();
     const file = e.target[2].files[0]
     formData.append("user_name", user_name)
-    formData.append('user_image', file)
+
+    if (file) {
+      formData.append('user_image', file)
+    }
 
     if (userInfo !== null) {
       if (token && isJwtExpired(token) === false) {
         update(formData)
-        dispatch_redux(setIsCheckUpdate(true));
       } else {
-        if (Cookies.get("refreshToken")) {
-          updateToken()
+        if (refreshToken && isJwtExpired(refreshToken) === false) {
+          await updateToken()
           update(formData)
-          dispatch_redux(setIsCheckUpdate(true));
         } else {
-          resetDispatch();
+          resetDispatch()
         }
       }
     } else {
@@ -196,7 +188,7 @@ const Profile = () => {
             </div>
           </div>
         </>
-        : history.push("/login")
+        : history.push("/")
       }
     </>
   )

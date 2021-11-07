@@ -51,6 +51,9 @@ const Table = ({ columns, data }) => {
       ]);
     }
   );
+
+  console.log(data);
+
   return (
     <>
       <BTable striped bordered hover size="md" {...getTableProps()}>
@@ -60,14 +63,14 @@ const Table = ({ columns, data }) => {
               {headerGroup.headers.map((column, index) => (
                 <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                   {column.render("Header")}
-                  {index > 0 && index < headerGroup.headers.length - 1 && column.Header !== "AD_NAME" &&(
-                  <span>
-                    {column.isSorted
-                      ? column.isSortedDesc
-                        ? " ⭣"
-                        : " ⭡	"
-                      : " ⮁"}
-                  </span>
+                  {index > 0 && index < headerGroup.headers.length - 1 && column.Header !== "AD_NAME" && column.Header !== "IMG" && (
+                    <span>
+                      {column.isSorted
+                        ? column.isSortedDesc
+                          ? " ⭣"
+                          : " ⭡	"
+                        : " ⮁"}
+                    </span>
                   )}
                 </th>
               ))}

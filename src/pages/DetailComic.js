@@ -11,7 +11,6 @@ import {
   LABEL_CONTENT,
   LABEL_LIST_CHAPTER,
   LOADING,
-  RATE,
   RATE_SUCCESS,
   READ_FIRST,
   READ_LAST,
@@ -19,12 +18,13 @@ import {
   STATUS,
   UNFOLLOW,
   UPDATE,
+  UPDATE_SUCCESS,
   WARN_LOGIN,
 } from "../constants";
 import Star from "../components/Rate/Star";
 import ModalNotify from "../components/Modal/ModalNotify";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../features/auth/userSlice";
+import { login, logout } from "../features/auth/userSlice";
 import { xoaDau } from "../utilFunction";
 import comicApi from "../api/comicApi";
 import rateApi from "../api/rateApi";
@@ -36,7 +36,7 @@ import { Spinner } from "react-bootstrap";
 import { modalNotify } from "../features/modal/modalSlice";
 import Comment from "../components/Comment/Comment";
 import userApi from "../api/userApi";
-import { calRate } from "../features/comics/rateSlice";
+import { calRate, getRateByUserId, setRate } from "../features/comics/rateSlice";
 
 const DetailComic = () => {
   const history = useHistory();
@@ -46,20 +46,16 @@ const DetailComic = () => {
   const [data, setData] = useState();
   const [checked, setChecked] = useState(false);
   const { status } = useSelector((state) => state.follows);
-  const { token, refreshToken, isLogged } = useSelector((state) => state.user);
+  const { token, refreshToken, isLogged, userInfo } = useSelector((state) => state.user);
   const { show, error, message } = useSelector((state) => state.modal);
-  const { perRate, count } = useSelector((state) => state.rate);
-  const dispatch_redux = useDispatch();
-
+  const { perRate, count, rateState } = useSelector((state) => state.rate);
+  const dispatch = useDispatch();
   // rating
   let arrStar = [1, 2, 3, 4, 5];
   arrStar.length = 5;
   const [starIndex, setStarIndex] = useState();
-  const [rateState, setRateState] = useState();
-  const [changeValueRate, setChangeValueRate] = useState(null);
-
   const notify = (error, message) => {
-    dispatch_redux(
+    dispatch(
       modalNotify({
         show: true,
         message: message,
@@ -71,10 +67,9 @@ const DetailComic = () => {
   const changeStarIndex = (index) => {
     if (token && isJwtExpired(token) === false) {
       setStarIndex(index);
-      setChangeValueRate(index);
     } else {
       notify(WARN_LOGIN, null);
-      dispatch_redux(logout());
+      dispatch(logout());
     }
   };
   //func get comic
@@ -90,32 +85,26 @@ const DetailComic = () => {
   };
   // func rate
   const rate = async (id, token, starIndex) => {
-    try {
-      const res = await rateApi.rateComic(id, token, starIndex);
-      if (res.data.data) {
-        notify(null, RATE_SUCCESS);
-        userApi
-          .refreshToken(refreshToken)
-          .then((res) => {
-            console.log(res.data);
-          })
-          .catch((error) => console.log(error));
+    if (rateState) {
+      try {
+        const resUpdate = await rateApi.updateRateComic(rateState.rate_id, starIndex, token, rateState.user_uuid)
+        if (resUpdate.data.data) {
+          dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }))
+          notify(null, UPDATE_SUCCESS)
+        }
+      } catch (error) {
+        console.log(error.response.data);
       }
-    } catch (error) {
-      notify(error.response.data, null);
-    }
-  };
-  //lấy rate của người dùng
-  const getRate = async (userId) => {
-    try {
-      const res = await rateApi.getRateComic(userId, id);
-      if (res.data.data && res.data.data.rows.length != 0) {
-        setStarIndex(null);
-        setRateState(res.data.data.rows[0].rate_star);
-        setChangeValueRate(res.data.data.rows[0].rate_star);
+    } else {
+      try {
+        const res = await rateApi.rateComic(id, token, starIndex);
+        if (res.data.data) {
+          dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }))
+          notify(null, RATE_SUCCESS);
+        }
+      } catch (error) {
+        notify(error.response.data, null);
       }
-    } catch (error) {
-      console.log(error);
     }
   };
   //tính phần điểm rate
@@ -124,7 +113,7 @@ const DetailComic = () => {
       const res = await rateApi.getSumRate(id);
       if (res.data.data) {
         let per = (res.data.data.sum_rate / (res.data.data.count * 5)) * 10;
-        dispatch_redux(
+        dispatch(
           calRate({
             perRate: per,
             count: res.data.data.count,
@@ -135,30 +124,58 @@ const DetailComic = () => {
       console.log(error);
     }
   };
+  //refresh token
+  const updateToken = async () => {
+    try {
+      const resUpdate = await userApi.refreshToken(refreshToken)
+      if (resUpdate.data && resUpdate.data.token) {
+        dispatch(
+          login({
+            token: resUpdate.data.token,
+            refreshToken: refreshToken,
+          })
+        );
+        dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }))
+        rate(id, token, starIndex)
+        notify(null, RATE_SUCCESS)
 
+      }
+    } catch (error) {
+      console.log(error);
+      notify(error.response.data, null)
+    }
+  };
+  //effect rate
   useEffect(() => {
     //get comic
     getComic();
     //rating
-    if (token && isJwtExpired(token) === false) {
-      const user = jwtDecode(token);
-      if (!rateState) {
-        getRate(user.user_uuid);
-      }
-      if (starIndex) {
-        setRateState(null);
+    if (starIndex) {
+      if (token && isJwtExpired(token) === false && userInfo) {
+        dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }))
         rate(id, token, starIndex);
+      } else if (refreshToken && isJwtExpired(refreshToken) === false && userInfo) {
+        updateToken()
+      } else {
+        notify(WARN_LOGIN, null)
+      }
+    } else {
+      if (token && isJwtExpired(token) === false && userInfo) {
+        dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }))
+      } else if (refreshToken && isJwtExpired(refreshToken) === false && userInfo) {
+        updateToken()
+      } else {
+        dispatch(setRate(null))
       }
     }
     calculatePercentRate();
     window.scrollTo(0, 0);
-  }, [token, changeValueRate]);
+  }, [token, starIndex, isLogged]);
   //func read first chapter
   const handleReadLast = () => {
     const chapter = data.chapters[0];
     history.push(
-      `/${xoaDau(chapter.chapter_name)}/${
-        chapter.chapter_id
+      `/${xoaDau(chapter.chapter_name)}/${chapter.chapter_id
       }/truyen-tranh/${name}`
     );
   };
@@ -166,12 +183,11 @@ const DetailComic = () => {
   const handleReadFirst = () => {
     const chapter = data.chapters[data.chapters.length - 1];
     history.push(
-      `/${xoaDau(chapter.chapter_name)}/${
-        chapter.chapter_id
+      `/${xoaDau(chapter.chapter_name)}/${chapter.chapter_id
       }/truyen-tranh/${name}`
     );
   };
-
+  //effect follow
   useEffect(() => {
     //check status follow
     if (isLogged && token) {
@@ -189,7 +205,7 @@ const DetailComic = () => {
   //follow
   const handleFollow = () => {
     if (!isLogged) {
-      dispatch_redux(
+      dispatch(
         modalNotify({
           show: true,
           message: null,
@@ -200,7 +216,7 @@ const DetailComic = () => {
       if (checked && token) {
         // delete follow comic
         const user_id = jwtDecode(token).user_uuid;
-        dispatch_redux(
+        dispatch(
           deleteComicFollow({
             user_id: user_id,
             comic_id: id,
@@ -210,7 +226,7 @@ const DetailComic = () => {
         setChecked(!checked);
       } else if (!checked && token) {
         // follow comic
-        dispatch_redux(followComic({ id: id, userToken: token }));
+        dispatch(followComic({ id: id, userToken: token }));
         setChecked(!checked);
       }
     }
@@ -244,17 +260,16 @@ const DetailComic = () => {
                     <div className="item">
                       {data
                         ? data.categories.map((e, i) => {
-                            return (
-                              <Link
-                                key={i}
-                                to={`/the-loai/${xoaDau(e.category_name)}/${
-                                  e.category_id
+                          return (
+                            <Link
+                              key={i}
+                              to={`/the-loai/${xoaDau(e.category_name)}/${e.category_id
                                 }/page/1`}
-                              >
-                                {e.category_name}
-                              </Link>
-                            );
-                          })
+                            >
+                              {e.category_name}
+                            </Link>
+                          );
+                        })
                         : ""}
                     </div>
                   </div>
@@ -271,10 +286,10 @@ const DetailComic = () => {
                     <div className="item">
                       {data && data.chapters.length > 0
                         ? updateDate(
-                            data.chapters.sort((a, b) =>
-                              b.chapter_id > a.chapter_id ? 1 : -1
-                            )[0].updatedAt
-                          )
+                          data.chapters.sort((a, b) =>
+                            b.chapter_id > a.chapter_id ? 1 : -1
+                          )[0].updatedAt
+                        )
                         : "Đang cập nhật"}
                     </div>
                   </div>
@@ -327,7 +342,7 @@ const DetailComic = () => {
                           changeStarIndex={changeStarIndex}
                           style={
                             (starIndex >= i && starIndex != null) ||
-                            rateState > i
+                              rateState && +rateState.rate_star - 1 >= i
                               ? true
                               : false
                           }
@@ -347,22 +362,21 @@ const DetailComic = () => {
                     {/* Truyền id chapter và list chapter */}
                     {data
                       ? data.chapters
-                          .sort((a, b) =>
-                            b.chapter_id > a.chapter_id ? 1 : -1
-                          )
-                          .map((e, i) => {
-                            return (
-                              <Link
-                                to={`/${xoaDau(e.chapter_name)}/${
-                                  e.chapter_id
+                        .sort((a, b) =>
+                          b.chapter_id > a.chapter_id ? 1 : -1
+                        )
+                        .map((e, i) => {
+                          return (
+                            <Link
+                              to={`/${xoaDau(e.chapter_name)}/${e.chapter_id
                                 }/truyen-tranh/${name}`}
-                                key={i}
-                              >
-                                <span>{e.chapter_name}</span>
-                                <span>{updateDate(e.updatedAt)}</span>
-                              </Link>
-                            );
-                          })
+                              key={i}
+                            >
+                              <span>{e.chapter_name}</span>
+                              <span>{updateDate(e.updatedAt)}</span>
+                            </Link>
+                          );
+                        })
                       : ""}
                   </div>
                 </div>

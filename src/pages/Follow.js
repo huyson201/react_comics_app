@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
-import Pagination from "react-js-pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import ListComic from "../components/ListComic/ListComic";
-import { FOLLOW_COMICS, LIMIT } from "../constants";
+import { FOLLOW_COMICS} from "../constants";
 import jwt_decode from "jwt-decode";
 import { getComicsFollow } from "../features/comics/followSlice";
-import { removeComicList } from "../features/comics/comicSlice";
 import Loading from "../components/Loading/Loading";
 const Follow = () => {
-  const history = useHistory();
   const dispatch = useDispatch();
   const [title, setTitle] = useState("");
   const [other, setCheckOther] = useState(false);

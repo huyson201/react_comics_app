@@ -4,6 +4,7 @@ export const TITLE_CHANGE_PW = "Đổi mật khẩu";
 export const TITLE_ACCOUNT = "Thông tin tài khoản";
 
 export const LABEL_REMEMBER = " Nhớ phiên đăng nhập";
+export const EXPIRED = "Hết phiên đăng nhập";
 export const LABEL_FORGOT = "Quên mật khẩu ?";
 export const LABEL_EMAIL = "Email";
 export const LABEL_IMAGE = "Tải ảnh lên";
@@ -26,6 +27,7 @@ export const CHECK_PW = "Kiểm tra lại mật khẩu !";
 export const REGISTER_SUCCESS = "Đăng ký thành công !";
 export const LOGOUT_SUCCESS = "Đăng xuất thành công !";
 export const LOGIN_SUCCESS = "Đăng nhập thành công !";
+export const UPDATE_SUCCESS = "Cập nhật thành công !";
 export const RATE_SUCCESS = "Cảm ơn bạn đã đánh giá !";
 
 // ================================COMIC================================ //

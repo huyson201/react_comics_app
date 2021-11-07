@@ -31,7 +31,7 @@ const Carousel = () => {
         <BsStars />
         {"Truyện đề cử"}
       </div>
-      <div className="slider_comic">
+      <div className="slider_comic" style={{height:300}}>
         <Slider {...settings}>
           {comics &&
             comics.map((e, i) => {

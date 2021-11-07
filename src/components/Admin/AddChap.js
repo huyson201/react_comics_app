@@ -1,36 +1,65 @@
 import React, { useEffect, useState } from "react";
-import { Form, FormGroup, FormLabel, Button } from "react-bootstrap";
+import { Form, FormGroup, FormLabel, Button, ProgressBar } from "react-bootstrap";
+import chapApi from "../../api/chapApi";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router";
+import axiosClient from "../../api/axiosClient";
+import { modalNotify } from "../../features/modal/modalSlice";
+import { createChapter } from "../../features/comics/chapterSlice";
 // import "./addChap.css"
 const AddChap = () => {
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        console.log("add");
-    }
     const [files, setFiles] = useState()
-    useEffect(() => {
+    const [chapter_name, setChapName] = useState()
+    const { comicId } = useParams()
+    const { token } = useSelector(state => state.user)
+    const { status } = useSelector(state => state.chapter)
+    const [progress, setPogress] = useState()
+    const dispatch = useDispatch()
 
-    }, [files])
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        setPogress(null)
+        let formData = new FormData()
+        formData.append('comic_id', comicId)
+        formData.append('chapter_name', chapter_name)
+        for (let i = 0; i < files.length; i++) {
+            formData.append("chapter_imgs", files[i]);
+        }
+        const options = {
+            headers: {
+                'Content-Type': `multipart/form-data`,
+                Authorization: `Bearer ${token}`
+            },
+            onUploadProgress: (progressEvent) => {
+                console.log(progressEvent);
+                const { loaded, total } = progressEvent
+                setPogress(Math.ceil((loaded / total) * 100))
+            }
+        }
+        dispatch(createChapter({ formData: formData, options: options }))
+
+    }
+    console.log(progress)
 
     return (
         <>
             <div className="container_form_add">
-                <Form
-                    onSubmit={handleSubmit}
-                >
-                    <FormGroup className="form-group">
+                <Form onSubmit={handleSubmit}>
+                    <FormGroup>
                         <FormLabel>Tên chương</FormLabel>
                         <Form.Control
                             required
                             type="text"
+                            onChange={(e) => setChapName(e.target.value)}
                         />
                         <Form.Control.Feedback type="invalid">
                             Vui lòng nhập tên chương
                         </Form.Control.Feedback>
                     </FormGroup>
-
-                    <FormGroup className="form-group">
+                    <FormGroup>
                         <FormLabel>Ảnh chương </FormLabel>
                         <Form.Control
+                            name="imgs"
                             required
                             type="file"
                             multiple
@@ -40,24 +69,20 @@ const AddChap = () => {
                             Vui lòng chọn ảnh
                         </Form.Control.Feedback>
                     </FormGroup>
+                    <FormGroup >
+                        <Button
+                            type="submit"
+                            className="btn-primary"
+                            variant="dark"
+                        >
+                            Thêm
+                        </Button>
+                    </FormGroup>
+                    {status && status === "loading" && progress && < ProgressBar animated now={progress} label={`${progress < 100 ? progress : 'loading...'}`} />}
+                    {status && status === "success" && progress && <ProgressBar variant="success" now={100} label="Done" />}
+
                 </Form>
             </div>
-
-            <div class="progress" style={{ marginTop: 10 }}>
-                <div class="progress-bar" role="progressbar" style={{ width: '25%' }} aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
-            <div class="progress" style={{ marginTop: 10 }}>
-                <div class="progress-bar" role="progressbar" style={{ width: '25%' }} aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
-
-            <Button
-                type="submit"
-                className="btn-primary"
-                variant="dark"
-            >
-                Thêm
-            </Button>
-
         </>
     )
 }

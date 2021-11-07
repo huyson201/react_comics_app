@@ -21,29 +21,53 @@ import { useDispatch, useSelector } from "react-redux";
 import jwtDecode from "jwt-decode";
 import { Fragment, useEffect, useState } from "react";
 import Dashboard from "./components/Admin/Dashboard";
-import { setIsAdmin } from "./features/auth/userSlice";
+import { login, logout, setIsAdmin, setUserInfo } from "./features/auth/userSlice";
 import ChapList from "./components/Admin/ChapList";
 import Sidebar from "./components/Admin/Sidebar";
 import { io } from 'socket.io-client'
+import userApi from "./api/userApi";
+import Cookies from "js-cookie";
 function App() {
-  const [state, setState] = useState();
-  const { token, userInfo, refreshToken, isAdmin } = useSelector((state) => state.user);
+  const { token, userInfo } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [socketIo, setSocketIo] = useState(false)
 
-  useEffect(() => {
-    if (token) {
-      const user = jwtDecode(token);
-
-      if (user && user.user_role != null) {
-        if (user.user_role === "user") {
-          setState(0);
-        } else {
-          setState(1);
-        }
-      }
+  const getToken = () => {
+    if (Cookies.get("refreshToken") && jwtDecode(Cookies.get("refreshToken"))) {
+      refreshTokenCookie(Cookies.get("refreshToken"))
     }
-  }, [token]);
+  }
+
+  //lấy thông tin user sau khi xử lý refresh token cookie
+  const refreshTokenCookie = async (cookie) => {
+    try {
+      const res = await userApi.refreshToken(cookie);
+      if (res.data.token) {
+        const userFromToken = jwtDecode(res.data.token)
+        dispatch(
+          login({
+            token: res.data.token,
+            refreshToken: cookie,
+          })
+        );
+        dispatchUser(userFromToken.user_uuid, res.data.token)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  //Lưu redux user info
+  const dispatchUser = async (id, token) => {
+    try {
+      const getInfo = await userApi.getUserById(id, token)
+      if (getInfo.data.data) {
+        dispatch(setUserInfo(getInfo.data.data))
+      }
+    } catch (error) {
+      console.log(error.response.data);
+    }
+  }
 
   useEffect(() => {
     if (!socketIo) {
@@ -63,10 +87,18 @@ function App() {
         socket.emit('user-disconnect', { socket_id: socket.id })
         setSocketIo(false)
       })
-
       setSocketIo(true)
-    }
 
+    }
+    if (userInfo === null) {
+      getToken()
+    }
+    return (
+      <>
+        {/* {dispatch(logout())} */}
+        {setSocketIo(false)}
+      </>
+    )
   }, [token, userInfo])
 
   return (

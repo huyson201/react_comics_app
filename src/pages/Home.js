@@ -100,7 +100,7 @@ const Home = () => {
   return (
     <div>
       {status === "loading" && <Loading />}
-      {/* {pathName === "/" && <Carousel></Carousel>} */}
+      {pathName === "/" && <Carousel></Carousel>}
       {status === "success" && <ListComic title={title} other={other} />}
       {total >= LIMIT && status === "success" && (
         <Pagination

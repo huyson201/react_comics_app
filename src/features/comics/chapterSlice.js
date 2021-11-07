@@ -1,5 +1,6 @@
 import { createAsyncThunk, createEntityAdapter, createSlice } from "@reduxjs/toolkit";
 import chapApi from "../../api/chapApi";
+import comicApi from "../../api/comicApi";
 
 const chapterAdapter = createEntityAdapter({
     selectId: (chapter) => chapter.chapter_id,
@@ -26,12 +27,39 @@ export const deleteChapter = createAsyncThunk(
     }
 );
 
+export const createChapter = createAsyncThunk(
+    "chapters/create",
+    async ({ formData, options }, thunkAPI) => {
+        const res = await chapApi.create(formData, options);
+        return res.data.data;
+    }
+);
+
+export const updateChapter = createAsyncThunk(
+    "chapters/create",
+    async ({ chapId, options, formData }, thunkAPI) => {
+        const res = await chapApi.update(chapId, options, formData);
+        return res.data.data;
+    }
+);
+
+export const getChapterByChapID = createAsyncThunk(
+    "chapters/getChaptersById",
+    async (params, thunkAPI) => {
+        // const index = thunkAPI.getState().chapter.offset;
+        const chapters = await comicApi.getChapterByID(params);
+        return chapters.data.data;
+    }
+);
+
 const chapterSlice = createSlice({
     name: "chapter",
     initialState: chapterAdapter.getInitialState({
-        status: "loading",
+        status: "",
         count: 0,
         offset: 0,
+        chapImgs: null,
+        chapName: null
     }),
     reducers: {
         removeChapList(state) {
@@ -41,6 +69,10 @@ const chapterSlice = createSlice({
         setOffSet(state, action) {
             state.offset = action.payload;
         },
+        resetChap(state) {
+            state.chapImgs = null;
+            state.chapName = null;
+        }
     },
     extraReducers: {
         [getChapsByComicId.pending]: (state) => {
@@ -64,9 +96,41 @@ const chapterSlice = createSlice({
             state.status = "success";
             console.log(action.payload)
             chapterAdapter.removeOne(state, action.payload);
+            state.count = --state.count;
+        },
+        [createChapter.pending]: (state) => {
+            state.status = "loading";
+        },
+        [createChapter.rejected]: (state) => {
+            state.status = "rejected";
+        },
+        [createChapter.fulfilled]: (state, action) => {
+            state.status = "success";
+            console.log(action.payload);
+        },
+        [updateChapter.pending]: (state) => {
+            state.status = "loading";
+        },
+        [updateChapter.rejected]: (state) => {
+            state.status = "rejected";
+        },
+        [updateChapter.fulfilled]: (state, action) => {
+            state.status = "success";
+            console.log(action.payload);
+        },
+        [getChapterByChapID.pending]: (state) => {
+            state.status = "loading";
+        },
+        [getChapterByChapID.rejected]: (state) => {
+            state.status = "rejected";
+        },
+        [getChapterByChapID.fulfilled]: (state, action) => {
+            state.status = "success";
+            state.chapImgs = action.payload.chapter_imgs.split(",");
+            state.chapName = action.payload.chapter_name;
         },
     },
 });
 
-export const { removeChapList, setOffSet } = chapterSlice.actions;
+export const { removeChapList, setOffSet,resetChap } = chapterSlice.actions;
 export default chapterSlice.reducer;

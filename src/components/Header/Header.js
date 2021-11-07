@@ -9,15 +9,15 @@ import { ImBooks, ImHistory, ImSearch } from "react-icons/im";
 import { Collapse } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
 import "./header.css";
-import jwt_decode from "jwt-decode";
 import { xoaDau } from "../../utilFunction";
 import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
-import { login, logout, setUserInfo, setIsCheckUpdate } from "../../features/auth/userSlice";
+import { logout} from "../../features/auth/userSlice";
 import { LOGOUT_SUCCESS, WARN_LOGIN } from "../../constants";
 import { getCategories } from "../../features/comics/categorySlice";
 import { modalNotify } from "../../features/modal/modalSlice";
 import userApi from "../../api/userApi";
+
 const Navbar = (props) => {
   const [open, setOpen] = useState(false);
   const status = useSelector((state) => state.comics.status);
@@ -145,6 +145,7 @@ const Navbar = (props) => {
     </>
   );
 };
+
 const SearchForm = () => {
   const history = useHistory();
   const [key, setKey] = useState("");
@@ -260,56 +261,17 @@ const SearchForm = () => {
 
 const Header = () => {
   const dispatch_redux = useDispatch();
-  const { token, isCheckUpdate, userInfo, isLogged } = useSelector((state) => state.user);
-  const [categories, setCategories] = useState([]);
+  const { userInfo } = useSelector((state) => state.user);
   const [username, setUsername] = useState("Tài khoản");
-
-  // const isLogged = useSelector((state) => state.user.isLogged);
+  const categories = useSelector((state) => state.categories.categories);
+  
   useEffect(() => {
     dispatch_redux(getCategories());
   }, [dispatch_redux]);
 
-  //Lưu redux user info
-  const dispatchUser = async (id, token) => {
-    try {
-      const getInfo = await userApi.getUserById(id, token)
-      if (getInfo.data.data) {
-        dispatch_redux(setUserInfo(getInfo.data.data))
-      }
-    } catch (error) {
-      console.log(error.response.data);
-    }
-  }
-  //lấy thông tin user sau khi xử lý refresh token cookie
-  const refreshTokenCookie = async (cookie) => {
-    try {
-      const res = await userApi.refreshToken(cookie);
-      if (res.data.token) {
-        const userFromToken = jwt_decode(res.data.token)
-        dispatch_redux(
-          login({
-            token: res.data.token,
-            refreshToken: cookie,
-          })
-        );
-        dispatchUser(userFromToken.user_uuid, res.data.token)
-      }
-    } catch (error) {
-      console.log(error.response.data);
-    }
-  }
-
   useEffect(() => {
-    if (userInfo === null) {
-      if (Cookies.get("refreshToken")) {
-        refreshTokenCookie(Cookies.get("refreshToken"))
-      }
-    }
-    // if (isCheckUpdate === true) {
-    //   dispatch_redux(setIsCheckUpdate(false))
-    // }
     userInfo ? setUsername(userInfo.user_name) : setUsername("Tài khoản");
-  }, [isLogged, userInfo]);
+  }, [userInfo]);
 
   return (
     <>

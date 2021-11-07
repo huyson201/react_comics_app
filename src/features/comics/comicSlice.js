@@ -65,8 +65,8 @@ export const createComic = createAsyncThunk(
 );
 export const updateComic = createAsyncThunk(
   "comics/update",
-  async ({ id,data, userToken }) => {
-    const comic = await comicApi.updateComic(id,data, userToken);
+  async ({ id, data, userToken }) => {
+    const comic = await comicApi.updateComic(id, data, userToken);
     return comic.data.data;
   }
 );
@@ -113,6 +113,7 @@ const comicSlice = createSlice({
   },
   extraReducers: {
     [getComics.pending]: (state) => {
+      console.log(getComics.pending);
       state.status = "loading";
     },
     [getComics.rejected]: (state) => {
@@ -210,6 +211,6 @@ const comicSlice = createSlice({
   },
 });
 
-export const { removeSelectedCategory, setOffSet, removeComicList ,removeSelectedComic} =
+export const { removeSelectedCategory, setOffSet, removeComicList, removeSelectedComic } =
   comicSlice.actions;
 export default comicSlice.reducer;

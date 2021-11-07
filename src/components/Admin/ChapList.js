@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from "react";
-// import "./dashboard.css";
+import React, { useEffect} from "react";
 import { useHistory, useParams } from "react-router";
 import Loading from "../Loading/Loading";
 import { Link } from "react-router-dom";
-import chapApi from "../../api/chapApi";
 import { chapterSelectors, deleteChapter, getChapsByComicId, removeChapList } from "../../features/comics/chapterSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { FaEdit, FaList, FaTrashAlt } from "react-icons/fa";
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import Table from "../Table/Table";
 import Pagination from "react-js-pagination";
 import { LIMIT } from "../../constants";
@@ -33,7 +31,6 @@ const ChapList = (props) => {
   };
   const handleDeleteChap = (e) => {
     e.preventDefault();
-    console.log(e.currentTarget.value);
     dispatch(deleteChapter({ id: e.currentTarget.value, token: token }));
   };
 
@@ -42,7 +39,7 @@ const ChapList = (props) => {
     return (
       dispatch(removeChapList())
     )
-  }, [page])
+  }, [page, count])
 
   const columns = [
     {

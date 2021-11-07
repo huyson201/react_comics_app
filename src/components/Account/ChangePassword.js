@@ -3,6 +3,7 @@ import { Form, FormLabel, FormGroup, Button } from "react-bootstrap";
 import { isJwtExpired } from "jwt-check-expiration";
 import {
   CHECK_PW,
+  EXPIRED,
   LABEL_CF_NEW_PW,
   LABEL_NEW_PW,
   LABEL_OLD_PW,
@@ -64,23 +65,23 @@ const ChangePassword = () => {
   //xử lý dữ liệu khi người dùng nhấn submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (token && isJwtExpired(token) === false) {
-      if (checkCfPw(new_password, cfnew_password) === false) {
-        notify(CHECK_PW, null)
-      } else {
+    if (checkCfPw(new_password, cfnew_password) === true) {
+      if (token && isJwtExpired(token) === false) {
         changePW()
+      } else {
+        if (refreshToken && isJwtExpired(refreshToken) === false) {
+          await updateToken()
+          changePW()
+        } else {
+          dispatch_redux(logout())
+          notify(EXPIRED, null)
+        }
       }
     } else {
-      if (Cookies.get("refreshToken")) {
-        await updateToken()
-        changePW()
-      } else {
-        dispatch_redux(logout())
-        notify(WARN_LOGIN, null)
-      }
+      notify(CHECK_PW, null)
     }
   };
-  console.log(userInfo);
+
   return (
     <>
       {userInfo !== null ?

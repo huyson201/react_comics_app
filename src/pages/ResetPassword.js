@@ -4,12 +4,11 @@ import { Form, FormLabel, FormGroup, Button, Alert } from "react-bootstrap";
 import { Redirect } from "react-router";
 import axiosClient from "../api/axiosClient";
 import Loader from "react-loader-spinner";
-import { set } from "js-cookie";
 
 const ResetPassword = () => {
   const { token } = useParams();
   const [showLoader, setShowLoader] = useState(false);
-  const [showForm, setShowForm] = useState(false);
+  // const [showForm, setShowForm] = useState(false);
   const [redirect, setRedirect] = useState(false);
   const [formData, setFormData] = useState({
     newPassword: "",
@@ -23,9 +22,9 @@ const ResetPassword = () => {
       .post("/forget-password/confirm", { reset_password_token: token })
       .then((res) => {
         console.log(res);
-        if (res.data.data && res.data.code === 200) {
-          setShowForm(true);
-        }
+        // if (res.data.data && res.data.code === 200) {
+        //   setShowForm(true);
+        // }
       })
       .catch((error) => {
         if (error.response) {
