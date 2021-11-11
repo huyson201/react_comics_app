@@ -88,14 +88,14 @@ const Navbar = (props) => {
   // socket io processing
   useEffect(() => {
 
-    const socket = io(config[process.env.NODE_ENV].apiURL, {
+    const socket = io('http://localhost:3001/', {
       auth: {
         token: token
       }
     })
 
     socket.on("connect", () => {
-      console.log(socket.id);
+      console.log('user_connected ' + socket.id);
     });
 
     socket.on('comment-notify', data => {
