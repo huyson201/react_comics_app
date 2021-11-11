@@ -66,3 +66,9 @@ export const COMIC_STATUS = 'Tình trạng'
 export const COMIC_STATUS_ONGOING = 'Đang tiến hành'
 export const COMIC_STATUS_COMPLETED = 'Đã hoàn thành'
 export const COMIC_STATUS_STOP = 'Tạm ngưng'
+
+export const NOTIFY_STATUS = {
+    NEW: 'new',
+    CHECKED: 'checked',
+    READ: 'read'
+}

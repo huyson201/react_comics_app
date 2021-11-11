@@ -24,9 +24,8 @@ import Dashboard from "./components/Admin/Dashboard";
 import { login, logout, setIsAdmin, setUserInfo } from "./features/auth/userSlice";
 import ChapList from "./components/Admin/ChapList";
 import Sidebar from "./components/Admin/Sidebar";
-import { io } from 'socket.io-client'
-import userApi from "./api/userApi";
-import Cookies from "js-cookie";
+
+
 function App() {
   const { token, userInfo } = useSelector((state) => state.user);
   const dispatch = useDispatch();
@@ -70,36 +69,20 @@ function App() {
   }
 
   useEffect(() => {
-    if (!socketIo) {
-      const socket = io('localhost:3001', {
-        auth: {
-          token: token
+    if (token) {
+      const user = jwtDecode(token);
+
+      if (user && user.user_role != null) {
+        if (user.user_role === "user") {
+          setState(0);
+        } else {
+          setState(1);
         }
-      })
-
-      socket.on("connect", () => {
-        console.log(socket.id); // x8WIv7-mJelg7on_ALbx
-      });
-
-      socket.on('comment-notify', data => console.log(data))
-
-      socket.on('disconnect', () => {
-        socket.emit('user-disconnect', { socket_id: socket.id })
-        setSocketIo(false)
-      })
-      setSocketIo(true)
-
+      }
     }
-    if (userInfo === null) {
-      getToken()
-    }
-    return (
-      <>
-        {/* {dispatch(logout())} */}
-        {setSocketIo(false)}
-      </>
-    )
-  }, [token, userInfo])
+  }, [token]);
+
+
 
   return (
     <>

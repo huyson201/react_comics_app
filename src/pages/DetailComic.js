@@ -80,7 +80,12 @@ const DetailComic = () => {
         setData(res.data.data);
       }
     } catch (error) {
-      notify(error.response.data, null);
+      if (error.response.data) {
+        notify(error.response.data, null);
+      }
+      else {
+        notify(error.message, null);
+      }
     }
   };
   // func rate

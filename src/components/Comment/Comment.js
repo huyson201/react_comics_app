@@ -11,7 +11,7 @@ const Comment = ({ comicId }) => {
   const dispatch = useDispatch();
   const [comments, setComments] = useState([]);
   const [activeComment, setActiveComment] = useState(0);
-  const {userInfo,token } = useSelector((state) => state.user);
+  const { userInfo, token } = useSelector((state) => state.user);
 
   useEffect(() => {
     const getComments = async () => {
@@ -61,11 +61,12 @@ const Comment = ({ comicId }) => {
     arr[parentIndex] = parent;
     return arr;
   };
+
   return (
     <>
       <div className="content-comments">
         <CommentForm handleSubmit={(text) => addComment(text, 0)}></CommentForm>
-        <ul className="ul-content-comment">
+        <div className="ul-content-comment">
           {comicId &&
             comments &&
             comments.map((e, index) => {
@@ -83,7 +84,7 @@ const Comment = ({ comicId }) => {
                 </div>
               );
             })}
-        </ul>
+        </div>
       </div>
     </>
   );

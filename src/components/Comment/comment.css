@@ -1,7 +1,8 @@
 .content-comments {
   color: white;
- 
+
 }
+
 .ul-content-comment {
   padding: 0;
   display: flex;
@@ -25,9 +26,11 @@
   height: 100%;
   border-radius: 50%;
 }
+
 .bg-user-type-1 {
   background: #5aadbe;
 }
+
 .role-user-comment {
   display: block;
   text-align: center;
@@ -48,6 +51,7 @@
   margin: 5px 0;
   border-radius: 2px;
   position: relative;
+  margin-top: 12px;
 }
 
 .ul-content-comment li .content-li-content-commnet h3 {
@@ -64,15 +68,14 @@
   overflow: hidden;
   text-align: left;
 }
+
 .item-comment {
   display: flex;
   flex-direction: row;
+  margin-top: 5px;
 }
-.ul-content-comment
-  li
-  .content-li-content-commnet
-  .h3-span-content-li-content-commnet
-  span {
+
+.ul-content-comment li .content-li-content-commnet .h3-span-content-li-content-commnet span {
   color: #a1a1a1;
   font-size: 11px;
   line-height: 18px;
@@ -82,16 +85,20 @@
   clear: unset;
   display: unset;
 }
+
 .reply-btn {
   float: left;
 }
+
 .sub-comment {
   padding-left: 3%;
 }
+
 .comment-form {
   text-align: right;
   margin-bottom: 10px;
 }
+
 .comment-form-textarea {
   width: 100%;
   padding: 5px 0 0 5px;

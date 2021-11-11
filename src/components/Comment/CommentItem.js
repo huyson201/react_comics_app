@@ -11,6 +11,7 @@ const CommentItem = ({
   activeComment,
   subComments,
   setActiveComment,
+  reply
 }) => {
   const [replies, setReplies] = useState([]);
   useEffect(() => {
@@ -43,9 +44,11 @@ const CommentItem = ({
           <span className="summary-content-li-content-commnet">
             {`${item.comment_content}`}
           </span>
-          <div id={item.comment_id} onClick={onReply} className="reply-btn">
-            Trả lời
-          </div>
+          {(!reply || reply === false) &&
+            (<div id={item.comment_id} onClick={onReply} className="reply-btn">
+              Trả lời
+            </div>)
+          }
         </div>
       </li>
       <div className="sub-comment">
@@ -58,7 +61,7 @@ const CommentItem = ({
         {replies &&
           replies.map((e, index) => {
             return (
-              <ul key={index} style={{ padding: 0 }}>
+              <div key={index} style={{ padding: 0 }}>
                 <CommentItem
                   parentIndex={parentIndex}
                   parentId={item.comment_id}
@@ -67,8 +70,9 @@ const CommentItem = ({
                   setActiveComment={setActiveComment}
                   key={e.comment_id}
                   item={e}
+                  reply={true}
                 ></CommentItem>
-              </ul>
+              </div>
             );
           })}
       </div>

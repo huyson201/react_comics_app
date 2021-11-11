@@ -1,25 +1,59 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   MdHome,
   MdBookmark,
   MdPerson,
   MdFilterAlt,
 } from "react-icons/md";
+import { FaBell } from "react-icons/fa";
 import { ImBooks, ImHistory, ImSearch } from "react-icons/im";
 import { Collapse } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
 import "./header.css";
+import jwt_decode from "jwt-decode";
 import { xoaDau } from "../../utilFunction";
 import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
-import { logout} from "../../features/auth/userSlice";
+import { login, logout, setUserInfo, setIsCheckUpdate } from "../../features/auth/userSlice";
 import { LOGOUT_SUCCESS, WARN_LOGIN } from "../../constants";
 import { getCategories } from "../../features/comics/categorySlice";
 import { modalNotify } from "../../features/modal/modalSlice";
+
 import userApi from "../../api/userApi";
+import notifyApi from '../../api/notifyApi'
+import { io } from 'socket.io-client'
+import dotenv from 'dotenv'
+import config from '../../config/config'
+import { NOTIFY_STATUS } from '../../constants'
+dotenv.config()
+
+
+const calDate = (dateA, dateB) => {
+  let dateResult
+  const date1 = new Date(dateA);
+  const date2 = new Date(dateB);
+  const diffTime = Math.abs(date2 - date1);
+
+  if ((dateResult = (diffTime / (1000 * 60 * 60 * 24))) >= 1) {
+    return `${Math.ceil(dateResult)} ngày trước`
+  }
+
+  if ((dateResult = (diffTime / (1000 * 60 * 60))) >= 1) {
+    return `${Math.ceil(dateResult)} giờ trước`
+  }
+
+  if ((dateResult = (diffTime / (1000 * 60))) >= 1) {
+    return `${Math.ceil(dateResult)} phút trước`
+  }
+
+  dateResult = Math.ceil(diffTime / (1000))
+  return `${dateResult} giây trước`
+}
 
 const Navbar = (props) => {
   const [open, setOpen] = useState(false);
+  const [openNotification, setOpenNotification] = useState(false)
+  const [listNotifications, setListNotifications] = useState([])
   const status = useSelector((state) => state.comics.status);
   const statusFollows = useSelector((state) => state.follows.status);
   const token = useSelector((state) => state.user.token)
@@ -37,12 +71,133 @@ const Navbar = (props) => {
       })
     );
   };
+
+  const handleClickNotifyLink = async (notify) => {
+    notify.status = NOTIFY_STATUS.READ
+    await notifyApi.update(notify.id, notify)
+    return true
+  }
   //effect follow
   useEffect(() => {
     if (status === "loading" || statusFollows === "loading") {
       setOpen(false);
     }
   }, [status, statusFollows]);
+
+  // socket io processing
+  useEffect(() => {
+
+    const socket = io(config[process.env.NODE_ENV].apiURL, {
+      auth: {
+        token: token
+      }
+    })
+
+    socket.on("connect", () => {
+      console.log(socket.id);
+    });
+
+    socket.on('comment-notify', data => {
+      ; (async () => {
+        if (data) {
+          let decoded = jwt_decode(token)
+          let res = await notifyApi.get(decoded.user_uuid, token)
+          setListNotifications([...res.data.data])
+        }
+      })()
+    })
+
+    socket.on('disconnect', () => {
+      console.log("user disconnected: ", socket.id)
+    })
+
+
+    return () => {
+      socket.disconnect()
+      socket.close()
+    }
+
+
+  }, [token])
+
+  // get notify
+  useEffect(() => {
+    if (token) {
+      let decoded = jwt_decode(token)
+        ; (async () => {
+          let res = await notifyApi.get(decoded.user_uuid, token)
+          setListNotifications([...res.data.data])
+        })()
+    }
+
+
+  }, [token])
+
+  // update status after user clicked notify
+  useEffect(() => {
+    ; (async () => {
+      if (token && openNotification) {
+        for (let notify of listNotifications) {
+          if (notify.status === NOTIFY_STATUS.NEW) {
+            notify.status = NOTIFY_STATUS.CHECKED
+            await notifyApi.update(notify.id, { ...notify, notifier_info: undefined })
+          }
+        }
+
+        let decoded = jwt_decode(token)
+        let res = await notifyApi.get(decoded.user_uuid, token)
+        setListNotifications([...res.data.data])
+
+      }
+    })()
+  }, [openNotification])
+
+  // generate notify items
+  let notifications = useMemo(() => {
+    console.log('use Memo')
+    if (!token) {
+      return (
+        <li className='notify-item empty'>
+          Vui lòng đăng nhập để xem thông báo
+        </li>
+      )
+    }
+
+    if (listNotifications.length <= 0) {
+      return (
+        <li className='notify-item empty'>
+          Nothing...
+        </li>
+      )
+    }
+
+    return listNotifications.map(el => {
+      return (
+        <li className='notify-item' key={el.id}>
+          <Link className='notify-link' to={`/truyen-tranh/toan-cau-sup-do-1?comment=${el.comment_id}`} onClick={() => handleClickNotifyLink(el)}>
+            <div className='notify-col'>
+              <img className='notify-user-img' src={el.notifier_info.user_image ? el.notifier_info.user_image : `https://ui-avatars.com/api/name=${el.notifier_info.user_name}&background=random`} />
+              <div className='notify-content'>{el.notification_message}</div>
+              {(el.status !== NOTIFY_STATUS.READ) && <div className='dot'></div>}
+            </div>
+            <p className='notify-time'>{calDate(Date.now(), el.createdAt)}</p>
+          </Link>
+        </li>
+      )
+    })
+
+  }, [listNotifications])
+
+  // count new notify
+  let countNotify = useMemo(() => {
+    if (listNotifications.length <= 0) {
+      return 0
+    }
+    return listNotifications.filter(el => {
+      return el.status === NOTIFY_STATUS.NEW
+    }).length
+  }, [listNotifications])
+
   //xử lý data khi nhấn logout
   const handleLogout = async () => {
     try {
@@ -57,6 +212,7 @@ const Navbar = (props) => {
       notify(error.response.data, null)
     }
   };
+
   //hiện thông báo khi không có user
   const handleClick = () => {
     if (!isLogged) {
@@ -68,6 +224,14 @@ const Navbar = (props) => {
     setStateOption(!stateOption)
   }
 
+  const handleClickNotify = async () => {
+    setOpenNotification(!openNotification)
+    setOpen(false)
+  }
+
+
+
+
   return (
     <>
       <nav className="nav-bar">
@@ -77,7 +241,7 @@ const Navbar = (props) => {
         </Link>
         <div
           className="nav-item"
-          onClick={() => setOpen(!open)}
+          onClick={() => { setOpen(!open); setOpenNotification(false) }}
           aria-controls="categories-collapse"
           aria-expanded={open}
         >
@@ -95,7 +259,17 @@ const Navbar = (props) => {
           <MdBookmark />
           Theo dõi
         </Link>
-
+        {/* notify */}
+        <div className="nav-item" id="notify" onClick={handleClickNotify} >
+          <span className='notify-title'>
+            <FaBell />
+            Thông báo
+            {countNotify !== 0 && (<span className='notify-count'>{countNotify}</span>)}
+          </span>
+          <ul className={openNotification ? 'notify-list active' : 'notify-list'} >
+            {notifications}
+          </ul>
+        </div>
         <div className="nav-item account" onClick={handleClickAccount}>
           <MdPerson />
           {props.username}
