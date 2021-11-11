@@ -57,6 +57,7 @@ const Navbar = (props) => {
   const status = useSelector((state) => state.comics.status);
   const statusFollows = useSelector((state) => state.follows.status);
   const token = useSelector((state) => state.user.token)
+  console.log(token + '  token')
   const [stateOption, setStateOption] = useState(false)
   const dispatch_redux = useDispatch();
   const categories = useSelector((state) => state.categories.categories);
@@ -365,14 +366,14 @@ const SearchForm = () => {
   return (
     <>
       <div className="search">
-        <a
+        <div
           className="search-filter"
           onClick={() => setOpen(!open)}
           aria-controls="filter-collapse"
           aria-expanded={open}
         >
           <MdFilterAlt />
-        </a>
+        </div>
         <form onSubmit={handleSubmit} className="form-search">
           <input
             value={key}
@@ -438,7 +439,7 @@ const Header = () => {
   const { userInfo } = useSelector((state) => state.user);
   const [username, setUsername] = useState("Tài khoản");
   const categories = useSelector((state) => state.categories.categories);
-  
+
   useEffect(() => {
     dispatch_redux(getCategories());
   }, [dispatch_redux]);

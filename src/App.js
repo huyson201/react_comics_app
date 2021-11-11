@@ -24,12 +24,12 @@ import Dashboard from "./components/Admin/Dashboard";
 import { login, logout, setIsAdmin, setUserInfo } from "./features/auth/userSlice";
 import ChapList from "./components/Admin/ChapList";
 import Sidebar from "./components/Admin/Sidebar";
-
-
+import userApi from './api/userApi'
+import Cookies from "js-cookie";
 function App() {
   const { token, userInfo } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const [socketIo, setSocketIo] = useState(false)
+  const [state, setState] = useState()
 
   const getToken = () => {
     if (Cookies.get("refreshToken") && jwtDecode(Cookies.get("refreshToken"))) {
@@ -67,7 +67,9 @@ function App() {
       console.log(error.response.data);
     }
   }
-
+  useEffect(() => {
+    getToken()
+  }, [])
   useEffect(() => {
     if (token) {
       const user = jwtDecode(token);
