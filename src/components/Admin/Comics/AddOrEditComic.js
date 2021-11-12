@@ -35,7 +35,7 @@ const AddOrEditComic = ({ id }) => {
   const [color, setColor] = useState(true);
   const token = useSelector((state) => state.user.token);
   const statusComic = useSelector((state) => state.comics.status);
-  const { selectedComic } = useSelector((state) => state.comics);
+  const { selectedComic, loading } = useSelector((state) => state.comics);
   const refSelect = useRef();
   const refForm = useRef();
   const handleInputChange = (value) => {
@@ -59,42 +59,44 @@ const AddOrEditComic = ({ id }) => {
 
   const handleSubmit = (e) => {
     const form = e.currentTarget;
-    if (form.checkValidity() === false && selectedCategories.length === 0) {
-      setColor(false);
+    if (form.checkValidity() === false) {
+      console.log(selectedCategories.length, "b");
+      console.log(form.checkValidity());
+      if (selectedCategories.length === 0) {
+        setColor(false);
+      }
       e.preventDefault();
       e.stopPropagation();
       console.log(image);
       setValidated(true);
-    } else {
-      setColor(true);
-      setValidated(true);
+    } else if (form.checkValidity()) {
+      console.log(form.checkValidity(), "HIHI");
+      console.log(selectedCategories.length, "a");
       e.preventDefault();
-      let arrCate = [];
-      selectedCategories.forEach((e) => {
-        arrCate.push(e.category_id);
-      });
-      let formData = new FormData();
-      const file = e.target[1].files[0];
-      formData.append("comic_name", name);
-      formData.append("comic_desc", summary);
-      formData.append("comic_author", author);
-      formData.append("comic_status", refSelect.current.value);
-      formData.append("comic_view", 0);
-      formData.append("categories", arrCate);
-      // console.log(name);
-      // console.log(summary);
-      // console.log(file);
-      // console.log(author);
-      // console.log(refSelect.current.value);
-      // console.log(formData.get("categories"));
-      // console.log(image);
-      if (!id) {
-        formData.append("comic_img", file);
-        dispatch(createComic({ data: formData, userToken: token }));
-      } else
-        dispatch(updateComic({ id: id, data: formData, userToken: token }));
+      setValidated(true);
+      if (selectedCategories.length > 0) {
+        setColor(true);
+        let arrCate = [];
+        selectedCategories.forEach((e) => {
+          arrCate.push(e.category_id);
+        });
+        let formData = new FormData();
+        const file = e.target[1].files[0];
+        formData.append("comic_name", name);
+        formData.append("comic_desc", summary);
+        formData.append("comic_author", author);
+        formData.append("comic_status", refSelect.current.value);
+        formData.append("comic_view", 0);
+        formData.append("categories", arrCate);
+        if (!id) {
+          formData.append("comic_img", file);
+          dispatch(createComic({ data: formData, userToken: token }));
+        } else
+          dispatch(updateComic({ id: id, data: formData, userToken: token }));
+      } else {
+        setColor(false);
+      }
     }
-
     // setSelectedCategories("");
   };
   const customStyles = {
@@ -133,165 +135,181 @@ const AddOrEditComic = ({ id }) => {
       setSelectedCategories(selectedComic.categories);
       setImage(selectedComic.comic_img);
       setStatus(selectedComic.comic_status);
-    }
-    else{
+    } else {
+      setValidated(false);
       setName("");
       setAuthor("");
       setSummary("");
       setSelectedCategories("");
       setImage("");
-      setStatus(""); 
+      setStatus("");
     }
   }, [selectedComic !== null]);
   return (
     <>
-      {statusComic === "loading" && <Loading />}
+      {loading && <Loading />}
+      {(statusComic === "success" || !loading) && (
+        <Form
+          style={{ fontSize: 13 }}
+          onSubmit={handleSubmit}
+          noValidate
+          validated={validated}
+          ref={refForm}
+        >
+          <h3>{selectedComic ? "Chỉnh sửa truyện" : "Thêm truyện"}</h3>
+          <Form.Group as={Row} className="mb-3">
+            <Form.Label column md="2">
+              {COMIC_NAME}
+            </Form.Label>
+            <Col md="10">
+              <Form.Control
+                value={name}
+                size="sm"
+                required
+                type="text"
+                placeholder={COMIC_NAME}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <Form.Control.Feedback type="invalid">
+                {"Yêu cầu"}
+              </Form.Control.Feedback>
+            </Col>
+          </Form.Group>
+          <Form.Group as={Row} className="mb-3">
+            <Form.Label column md="2">
+              {COMIC_IMAGE}
+            </Form.Label>
+            <Col md="10">
+              {id ? (
+                <Form.Control
+                  size="sm"
+                  type="file"
+                  onChange={(e) => changeImage(e.target.files[0])}
+                />
+              ) : (
+                <Form.Control
+                  required
+                  size="sm"
+                  type="file"
+                  onChange={(e) => changeImage(e.target.files[0])}
+                />
+              )}
 
-      <Form
-        style={{ fontSize: 13 }}
-        onSubmit={handleSubmit}
-        noValidate
-        validated={validated}
-        ref={refForm}
-      >
-        <h3>{"Thêm truyện"}</h3>
-        <Form.Group as={Row} className="mb-3">
-          <Form.Label column md="2">
-            {COMIC_NAME}
-          </Form.Label>
-          <Col md="10">
-            <Form.Control
-              value={name}
-              size="sm"
-              required
-              type="text"
-              placeholder={COMIC_NAME}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <Form.Control.Feedback type="invalid">
-              {"Yêu cầu"}
-            </Form.Control.Feedback>
-          </Col>
-        </Form.Group>
-        <Form.Group as={Row} className="mb-3">
-          <Form.Label column md="2">
-            {COMIC_IMAGE}
-          </Form.Label>
-          <Col md="10">
-            <Form.Control
-              size="sm"
-              type="file"
-              onChange={(e) => changeImage(e.target.files[0])}
-            />
-            <Form.Control.Feedback type="invalid">
-              {"Yêu cầu"}
-            </Form.Control.Feedback>
-            {image !== "" && <img key={Date.now()} src={image} alt="account" />}
-          </Col>
-        </Form.Group>
-        <Form.Group as={Row} className="mb-3">
-          <Form.Label column md="2">
-            {COMIC_AUTHOR}
-          </Form.Label>
-          <Col md="10">
-            <Form.Control
-              value={author}
-              size="sm"
-              onChange={(e) => setAuthor(e.target.value)}
-              required
-              type="text"
-              placeholder={COMIC_AUTHOR}
-            />
-            <Form.Control.Feedback type="invalid">
-              {"Yêu cầu"}
-            </Form.Control.Feedback>
-          </Col>
-        </Form.Group>
-        <Form.Group as={Row} className="mb-3">
-          <Form.Label column md="2">
-            {COMIC_CATOGORIES}
-          </Form.Label>
-          <Col md="10" required>
-            <AsyncSelect
-              styles={customStyles}
-              borderColor={color ? "hsl(0, 0%, 80%)" : "red"}
-              inputValue={inputValue}
-              isMulti
-              cacheOptions
-              defaultOptions
-              getOptionLabel={(e) => e.category_name}
-              getOptionValue={(e) => e.category_id}
-              onInputChange={handleInputChange}
-              value={selectedCategories}
-              onChange={handleChange}
-              placeholder={"Tìm và chọn thể loại"}
-              loadOptions={loadOptions}
-            ></AsyncSelect>
-            <Form.Control.Feedback type="invalid" style={{ display: "block" }}>
-              {!color && "Yêu cầu"}
-            </Form.Control.Feedback>
-          </Col>
-        </Form.Group>
-        <Form.Group as={Row} className="mb-3">
-          <Form.Label column md="2">
-            {COMIC_SUMMARY}
-          </Form.Label>
-          <Col md="10">
-            <Form.Control
-              value={summary}
-              size="sm"
-              required
-              onChange={(e) => setSummary(e.target.value)}
-              as="textarea"
-              style={{ height: "100px" }}
-              placeholder={COMIC_SUMMARY}
-            />
-            <Form.Control.Feedback type="invalid">
-              {"Yêu cầu"}
-            </Form.Control.Feedback>
-          </Col>
-        </Form.Group>
-        <Form.Group as={Row} className="mb-3">
-          <Form.Label column md="2">
-            {COMIC_STATUS}
-          </Form.Label>
-          <Col md="10">
-            <Form.Select
-              ref={refSelect}
-              size="sm"
-              isValid={validated && status !== ""}
-              required
-              onChange={(e) => setStatus(e.target.value)}
-              value={status}
-            >
-              <option value="">Chọn tình trạng...</option>
-              <option value={COMIC_STATUS_ONGOING}>
-                {COMIC_STATUS_ONGOING}
-              </option>
-              <option value={COMIC_STATUS_COMPLETED}>
-                {COMIC_STATUS_COMPLETED}
-              </option>
-              <option value={COMIC_STATUS_STOP}>{COMIC_STATUS_STOP}</option>
-            </Form.Select>
-            <Form.Control.Feedback type="invalid">
-              {"Yêu cầu"}
-            </Form.Control.Feedback>
-          </Col>
-        </Form.Group>
-        <Form.Group as={Row} className="mb-3">
-          <Form.Label column md="2"></Form.Label>
-          <Col md="10">
-            <Button
-              type="submit"
-              style={{ float: "left", width: 150 }}
-              className="btn-primary"
-              variant="dark"
-            >
-              {!selectedComic ? "Thêm" : "Chỉnh sửa"}
-            </Button>
-          </Col>
-        </Form.Group>
-      </Form>
+              <Form.Control.Feedback type="invalid">
+                {"Yêu cầu"}
+              </Form.Control.Feedback>
+              {image !== "" && (
+                <img key={Date.now()} src={image} alt="account" />
+              )}
+            </Col>
+          </Form.Group>
+          <Form.Group as={Row} className="mb-3">
+            <Form.Label column md="2">
+              {COMIC_AUTHOR}
+            </Form.Label>
+            <Col md="10">
+              <Form.Control
+                value={author}
+                size="sm"
+                onChange={(e) => setAuthor(e.target.value)}
+                required
+                type="text"
+                placeholder={COMIC_AUTHOR}
+              />
+              <Form.Control.Feedback type="invalid">
+                {"Yêu cầu"}
+              </Form.Control.Feedback>
+            </Col>
+          </Form.Group>
+          <Form.Group as={Row} className="mb-3">
+            <Form.Label column md="2">
+              {COMIC_CATOGORIES}
+            </Form.Label>
+            <Col md="10" required>
+              <AsyncSelect
+                styles={customStyles}
+                borderColor={color ? "hsl(0, 0%, 80%)" : "red"}
+                inputValue={inputValue}
+                isMulti
+                cacheOptions
+                defaultOptions
+                getOptionLabel={(e) => e.category_name}
+                getOptionValue={(e) => e.category_id}
+                onInputChange={handleInputChange}
+                value={selectedCategories}
+                onChange={handleChange}
+                placeholder={"Tìm và chọn thể loại"}
+                loadOptions={loadOptions}
+              ></AsyncSelect>
+              <Form.Control.Feedback
+                type="invalid"
+                style={{ display: "block" }}
+              >
+                {!color && "Yêu cầu"}
+              </Form.Control.Feedback>
+            </Col>
+          </Form.Group>
+          <Form.Group as={Row} className="mb-3">
+            <Form.Label column md="2">
+              {COMIC_SUMMARY}
+            </Form.Label>
+            <Col md="10">
+              <Form.Control
+                value={summary}
+                size="sm"
+                required
+                onChange={(e) => setSummary(e.target.value)}
+                as="textarea"
+                style={{ height: "100px" }}
+                placeholder={COMIC_SUMMARY}
+              />
+              <Form.Control.Feedback type="invalid">
+                {"Yêu cầu"}
+              </Form.Control.Feedback>
+            </Col>
+          </Form.Group>
+          <Form.Group as={Row} className="mb-3">
+            <Form.Label column md="2">
+              {COMIC_STATUS}
+            </Form.Label>
+            <Col md="10">
+              <Form.Select
+                ref={refSelect}
+                size="sm"
+                isValid={validated && status !== ""}
+                required
+                onChange={(e) => setStatus(e.target.value)}
+                value={status}
+              >
+                <option value="">Chọn tình trạng...</option>
+                <option value={COMIC_STATUS_ONGOING}>
+                  {COMIC_STATUS_ONGOING}
+                </option>
+                <option value={COMIC_STATUS_COMPLETED}>
+                  {COMIC_STATUS_COMPLETED}
+                </option>
+                <option value={COMIC_STATUS_STOP}>{COMIC_STATUS_STOP}</option>
+              </Form.Select>
+              <Form.Control.Feedback type="invalid">
+                {"Yêu cầu"}
+              </Form.Control.Feedback>
+            </Col>
+          </Form.Group>
+          <Form.Group as={Row} className="mb-3">
+            <Form.Label column md="2"></Form.Label>
+            <Col md="10">
+              <Button
+                type="submit"
+                style={{ float: "left", width: 150 }}
+                className="btn-primary"
+                variant="dark"
+              >
+                {!selectedComic ? "Thêm" : "Chỉnh sửa"}
+              </Button>
+            </Col>
+          </Form.Group>
+        </Form>
+      )}
     </>
   );
 };

@@ -12,8 +12,12 @@ import {
   TITLE_LOGIN,
   VALIDATE_PW,
 } from "../constants";
-import { login, setUserInfo } from "../features/auth/userSlice";
-import { useDispatch} from "react-redux";
+import {
+  login,
+  setIsAdmin,
+  setUserInfo,
+} from "../features/auth/userSlice";
+import { useDispatch } from "react-redux";
 import { modalNotify } from "../features/modal/modalSlice";
 import userApi from "../api/userApi";
 import jwtDecode from "jwt-decode";
@@ -32,33 +36,39 @@ const Login = () => {
       })
     );
   };
-  //lưu data(token refreshtoken userInfo) 
+  //lưu data(token refreshtoken userInfo)
   const dispatchData = async (res) => {
     //set show modal
     if (res.data.data && res.data.data.token) {
-      const token = res.data.data.token
-      const userId = jwtDecode(token)
+      const token = res.data.data.token;
+      const userId = jwtDecode(token);
+      console.log(userId);
+      if (userId.user_role) {
+        dispatch_redux(setIsAdmin(true));
+      }
       dispatch_redux(
         login({
           token: token,
           refreshToken: res.data.data.refreshToken,
         })
       );
-      userId ? dispatchUser(userId.user_uuid, token) : console.log("Chưa lưu được dữ liệu user");
+      userId
+        ? dispatchUser(userId.user_uuid, token)
+        : console.log("Chưa lưu được dữ liệu user");
     }
-  }
+  };
   //Lưu redux user info
   const dispatchUser = async (id, token) => {
     try {
-      const getInfo = await userApi.getUserById(id, token)
+      const getInfo = await userApi.getUserById(id, token);
       if (getInfo.data.data) {
-        notify(null, LOGIN_SUCCESS)
-        dispatch_redux(setUserInfo(getInfo.data.data))
+        notify(null, LOGIN_SUCCESS);
+        dispatch_redux(setUserInfo(getInfo.data.data));
       }
     } catch (error) {
       console.log(error.response.data);
     }
-  }
+  };
   //login không remember
   const loginNormal = async () => {
     try {
@@ -72,18 +82,18 @@ const Login = () => {
       }
     } catch (error) {
       if (error.response) {
-        notify(error.response.data, null)
+        notify(error.response.data, null);
       }
     }
-  }
+  };
 
   //login khi nhấn đăng nhập
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (user_password.length < 6) {
-      notify(VALIDATE_PW, null)
+      notify(VALIDATE_PW, null);
     } else {
-      loginNormal()
+      loginNormal();
     }
   };
 
@@ -125,11 +135,7 @@ const Login = () => {
           </p>
         </div>
 
-        <Button
-          type="submit"
-          className="btn-primary"
-          variant="dark"
-        >
+        <Button type="submit" className="btn-primary" variant="dark">
           {TITLE_LOGIN}
         </Button>
 

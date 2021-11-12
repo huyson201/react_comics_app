@@ -61,10 +61,6 @@ const Dashboard = () => {
       }
     }
   }, [isLogged]);
-
-  useEffect(() => {
-    dispatch(removeSelectedComic());
-  }, [history.location]);
   return (
     <>
       <div className="container_dashboard">

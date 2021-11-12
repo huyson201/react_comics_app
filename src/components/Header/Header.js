@@ -56,12 +56,11 @@ const Navbar = (props) => {
   const [listNotifications, setListNotifications] = useState([])
   const status = useSelector((state) => state.comics.status);
   const statusFollows = useSelector((state) => state.follows.status);
-  const token = useSelector((state) => state.user.token)
-  console.log(token + '  token')
-  const [stateOption, setStateOption] = useState(false)
+  const token = useSelector((state) => state.user.token);
+  const [stateOption, setStateOption] = useState(false);
   const dispatch_redux = useDispatch();
   const categories = useSelector((state) => state.categories.categories);
-  const isLogged = useSelector((state) => state.user.isLogged);
+  const { isLogged, isAdmin } = useSelector((state) => state.user);
 
   const notify = (error, message) => {
     dispatch_redux(
@@ -202,28 +201,28 @@ const Navbar = (props) => {
   //xử lý data khi nhấn logout
   const handleLogout = async () => {
     try {
-      const res = await userApi.logout(token)
+      const res = await userApi.logout(token);
       console.log(res.data);
       if (res.status === 204) {
-        notify(null, LOGOUT_SUCCESS)
+        notify(null, LOGOUT_SUCCESS);
         Cookies.remove("refreshToken");
         dispatch_redux(logout());
       }
     } catch (error) {
-      notify(error.response.data, null)
+      notify(error.response.data, null);
     }
   };
 
   //hiện thông báo khi không có user
   const handleClick = () => {
     if (!isLogged) {
-      notify(WARN_LOGIN, null)
+      notify(WARN_LOGIN, null);
     }
   };
   //set show option when click nav item account
   const handleClickAccount = () => {
-    setStateOption(!stateOption)
-  }
+    setStateOption(!stateOption);
+  };
 
   const handleClickNotify = async () => {
     setOpenNotification(!openNotification)
@@ -274,28 +273,40 @@ const Navbar = (props) => {
         <div className="nav-item account" onClick={handleClickAccount}>
           <MdPerson />
           {props.username}
-          {stateOption === true ? <div className="drop-down">
-            {props.username === "Tài khoản" ? (
-              <>
-                <Link to="/login" className="drop-down-item">
-                  Đăng nhập
-                </Link>
-                <Link to="/register" className="drop-down-item">
-                  Đăng ký
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link to="/account" className="drop-down-item">
-                  Thông tin cá nhân
-                </Link>
-                <Link to="/" onClick={handleLogout} className="drop-down-item">
-                  Đăng xuất
-                </Link>
-              </>
-            )}
-          </div>
-            : ""}
+          {stateOption === true ? (
+            <div className="drop-down">
+              {props.username === "Tài khoản" ? (
+                <>
+                  <Link to="/login" className="drop-down-item">
+                    Đăng nhập
+                  </Link>
+                  <Link to="/register" className="drop-down-item">
+                    Đăng ký
+                  </Link>
+                </>
+              ) : (
+                <>
+                  {isAdmin && (
+                    <Link to="/dashboard" className="drop-down-item">
+                      Quản lí
+                    </Link>
+                  )}
+                  <Link to="/account" className="drop-down-item">
+                    Thông tin cá nhân
+                  </Link>
+                  <Link
+                    to="/"
+                    onClick={handleLogout}
+                    className="drop-down-item"
+                  >
+                    Đăng xuất
+                  </Link>
+                </>
+              )}
+            </div>
+          ) : (
+            ""
+          )}
         </div>
       </nav>
 

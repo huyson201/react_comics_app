@@ -14,6 +14,7 @@ import {
 import Loading from "../components/Loading/Loading";
 import Carousel from "../components/Slider/Carousel";
 import {
+  comicSelectors,
   getComics,
   getComicsByCategory,
   getComicsByFilters,
@@ -26,7 +27,7 @@ const Home = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const total = useSelector((state) => state.comics.count);
-  const status = useSelector((state) => state.comics.status);
+  const { status } = useSelector((state) => state.comics);
   const params = queryString.parse(history.location.search);
   const { id, number, keyword, name } = useParams();
   const pathName = history.location.pathname;
@@ -48,31 +49,28 @@ const Home = () => {
       history.push("/truyen-moi-cap-nhat/page/" + pageNumber);
     }
   };
-
+  const comics = useSelector(comicSelectors.selectAll);
   useEffect(() => {
     if (number) {
       dispatch(setOffSet((+number - 1) * LIMIT));
     } else if (Object.keys(params).length !== 0) {
       dispatch(setOffSet((+params.page - 1) * LIMIT));
-    } else {
+    } else if (pathName === "/") {
       dispatch(setOffSet(0));
     }
-  }, [number, params.page]);
+  }, [pathName, number, params.page, Object.keys(params).length !== 0]);
 
   useEffect(() => {
     if (id) {
       // comics by category
-      setCheckOther(false);
       dispatch(getComicsByCategory(id));
     } else if (keyword) {
       // searck by key
-      setCheckOther(false);
-      status === "success" && setTitle(SEARCH_BY_KEY_COMIC_TITLE + keyword);
+      setTitle(SEARCH_BY_KEY_COMIC_TITLE + keyword);
       dispatch(getComicsByKey(keyword));
     } else if (Object.keys(params).length !== 0) {
       // search by filter
-      setCheckOther(false);
-      status === "success" && setTitle(FILTER_COMIC_TITLE);
+      setTitle(FILTER_COMIC_TITLE);
       dispatch(
         getComicsByFilters({
           categories: params["the-loai"],
@@ -81,15 +79,14 @@ const Home = () => {
       );
     } else {
       // get comics
-      setCheckOther(false);
       setTitle(NEW_COMIC_TITLE);
       dispatch(getComics());
     }
+
     return () => {
       dispatch(removeComicList());
     };
   }, [
-    pathName,
     number,
     id,
     keyword,
@@ -100,9 +97,11 @@ const Home = () => {
   return (
     <div>
       {status === "loading" && <Loading />}
-      {pathName === "/" && <Carousel></Carousel>}
-      {status === "success" && <ListComic title={title} other={other} />}
-      {total >= LIMIT && status === "success" && (
+      {/* {pathName === "/" && <Carousel></Carousel>} */}
+      {status === "success" && comics && (
+        <ListComic comics={comics} keyword={keyword} filter={params} title={title} other={other} />
+      )}
+      {total >= LIMIT && status === "success" && comics && (
         <Pagination
           activePage={
             number && !params.page

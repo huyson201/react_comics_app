@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Pagination from "react-js-pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router";
@@ -15,27 +15,34 @@ import {
 import { Link } from "react-router-dom";
 import Table from "../../Table/Table";
 import { xoaDau } from "../../../utilFunction";
+import ModalAlert from "../../Modal/ModalAlert";
+import Loading from "../../Loading/Loading";
 const ComicList = ({ page }) => {
+  const [show, setShow] = useState(false);
+  const [id, setId] = useState();
   const history = useHistory();
   const dispatch = useDispatch();
   const total = useSelector((state) => state.comics.count);
   const token = useSelector((state) => state.user.token);
-  console.log(token);
-  console.log(total);
   const { status } = useSelector((state) => state.comics);
   const comics = useSelector(comicSelectors.selectAll);
   const handlePageChange = (pageNumber) => {
     history.push("/comics/page/" + pageNumber);
   };
-  const handleDeleteComic = (e) => {
-    e.preventDefault();
-    dispatch(deleteComic({ id: e.currentTarget.value, token: token }));
+  const handleShow = (e) => {
+    setId(e.currentTarget.value);
+    setShow(true);
+  };
+  const handleClose = () => setShow(false);
+  const handleDeleteComic = () => {
+    dispatch(deleteComic({ id: id, token: token }));
+    setShow(false);
   };
   useEffect(() => {
     dispatch(setOffSet((+page - 1) * LIMIT));
     dispatch(getComics());
     return () => {
-      dispatch(removeComicList());
+      // dispatch(removeComicList());
       dispatch(removeSelectedComic());
     };
   }, [page]);
@@ -48,9 +55,13 @@ const ComicList = ({ page }) => {
       Header: COMIC_NAME,
       accessor: "comic_name",
       Cell: ({ cell }) => (
-        
         <div>
-          <Link className="column-comic-name" to={`/truyen-tranh/${xoaDau(cell.row.values.comic_name)}-${cell.row.values.comic_id}`}>
+          <Link
+            className="column-comic-name"
+            to={`/truyen-tranh/${xoaDau(cell.row.values.comic_name)}-${
+              cell.row.values.comic_id
+            }`}
+          >
             {cell.row.values.comic_name}
           </Link>
         </div>
@@ -74,7 +85,7 @@ const ComicList = ({ page }) => {
             <FaEdit style={{ color: "black" }}></FaEdit>
           </Link>
           <button
-            onClick={handleDeleteComic}
+            onClick={handleShow}
             value={cell.row.values.comic_id}
             style={{ marginRight: 10, background: "none" }}
           >
@@ -86,6 +97,12 @@ const ComicList = ({ page }) => {
   ];
   return (
     <div>
+      <ModalAlert
+        checkShow={show}
+        handleClose={handleClose}
+        handleSubmit={handleDeleteComic}
+      ></ModalAlert>
+      {status === "loading" && <Loading></Loading>}
       {status === "success" && (
         <Table data={comics && comics} columns={columns}></Table>
       )}

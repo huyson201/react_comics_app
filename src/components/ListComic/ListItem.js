@@ -58,7 +58,9 @@ const ListItem = ({ other, index, item, isFollow }) => {
       } else {
         rateApi.getSumRate(item.comic_id).then((res) => {
           if (res.data.data) {
-            let per = (res.data.data.sum_rate / (res.data.data.count * 5)) * 10;
+            let per = Math.round(
+              (res.data.data.sum_rate / (res.data.data.count * 5)) * 10
+            );
             setRate(per + "");
           }
         });
@@ -112,10 +114,7 @@ const ListItem = ({ other, index, item, isFollow }) => {
               {newChapter && newChapter["chapter_name"]}
             </Link>
           ) : (
-            <Link
-            to="#"
-              className="item-new-chapter"
-            >
+            <Link to="#" className="item-new-chapter">
               {UPDATING}
             </Link>
           )}

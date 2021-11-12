@@ -52,7 +52,6 @@ const Table = ({ columns, data }) => {
     }
   );
 
-  console.log(data);
 
   return (
     <>

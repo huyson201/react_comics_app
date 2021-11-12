@@ -91,6 +91,7 @@ const comicSlice = createSlice({
     offset: 0,
     selectedCategory: null,
     selectedComic: null,
+    loading: false,
   }),
   reducers: {
     removeSelectedCategory(state) {
@@ -98,7 +99,8 @@ const comicSlice = createSlice({
     },
     removeComicList(state) {
       comicAdapter.removeAll(state);
-      state.status = "";
+      state.status = "loading";
+      state.loading = false;
     },
     setOffSet(state, action) {
       state.offset = action.payload;
@@ -109,18 +111,21 @@ const comicSlice = createSlice({
     },
     removeSelectedComic(state) {
       state.selectedComic = null;
+      state.status = "";
     },
   },
   extraReducers: {
     [getComics.pending]: (state) => {
-      console.log(getComics.pending);
       state.status = "loading";
+      state.loading = true;
     },
     [getComics.rejected]: (state) => {
       state.status = "rejected";
+      state.loading = false;
     },
     [getComics.fulfilled]: (state, action) => {
       state.status = "success";
+      state.loading = false;
       comicAdapter.setAll(state, action.payload.rows);
       state.count = action.payload.count;
     },
@@ -142,7 +147,7 @@ const comicSlice = createSlice({
       state.status = "rejected";
     },
     [getCategoryById.fulfilled]: (state, action) => {
-      state.status = "success";
+      // state.status = "success";
       state.selectedCategory = action.payload;
     },
     [getComicsByKey.pending]: (state) => {
@@ -175,18 +180,20 @@ const comicSlice = createSlice({
     },
     [deleteComic.fulfilled]: (state, action) => {
       state.status = "success";
-      console.log(action.payload);
       comicAdapter.removeOne(state, action.payload);
     },
     [createComic.pending]: (state) => {
       state.status = "loading";
+      state.loading = true;
     },
     [createComic.rejected]: (state) => {
       state.status = "rejected";
+      state.loading = false;
     },
     [createComic.fulfilled]: (state, action) => {
       state.status = "success";
       comicAdapter.addOne(state, action.payload);
+      state.loading = false;
     },
     [getComicByID.pending]: (state) => {
       state.status = "loading";
@@ -196,21 +203,28 @@ const comicSlice = createSlice({
     },
     [getComicByID.fulfilled]: (state, action) => {
       state.status = "success";
-      state.selectedComic = action.payload
+      state.selectedComic = action.payload;
     },
     [updateComic.pending]: (state) => {
       state.status = "loading";
+      state.loading = true;
     },
     [updateComic.rejected]: (state) => {
       state.status = "rejected";
+      state.loading = false;
     },
     [updateComic.fulfilled]: (state, action) => {
       state.status = "success";
-      console.log(action.payload)
+      state.loading = false;
+      console.log(action.payload);
     },
   },
 });
 
-export const { removeSelectedCategory, setOffSet, removeComicList, removeSelectedComic } =
-  comicSlice.actions;
+export const {
+  removeSelectedCategory,
+  setOffSet,
+  removeComicList,
+  removeSelectedComic,
+} = comicSlice.actions;
 export default comicSlice.reducer;

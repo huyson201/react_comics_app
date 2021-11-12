@@ -7,7 +7,7 @@ const userSlice = createSlice({
     userInfo: null,
     isLogged: false,
     isAdmin: false,
-    isCheckUpdate:false
+    isCheckUpdate: false,
   },
   reducers: {
     login(state, action) {
@@ -19,6 +19,7 @@ const userSlice = createSlice({
       state.refreshToken = null;
       state.userInfo = null;
       state.isLogged = false;
+      state.isAdmin = false;
     },
     setUserInfo(state, action) {
       state.userInfo = action.payload;
