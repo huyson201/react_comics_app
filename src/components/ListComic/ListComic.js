@@ -5,24 +5,25 @@ import { useSelector } from "react-redux";
 import {
   CATEGORY_COMIC_TITLE,
   FILTER_COMIC_TITLE,
+  FOLLOW_COMICS,
   NEW_COMIC_TITLE,
   SEARCH_BY_KEY_COMIC_TITLE,
 } from "../../constants";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import ListItem from "./ListItem";
-import { comicSelectors } from "../../features/comics/comicSlice";
-
 const ListComic = ({ keyword, filter, comics, other, title, isFollow }) => {
   const category = useSelector((state) => state.comics.selectedCategory);
   const comics_follow = useSelector((state) => state.follows.comics);
-  // const comics = useSelector(comicSelectors.selectAll);
+  console.log(comics_follow);
+  console.log(isFollow);
   return (
     <>
       <div className="list-title">
         <BsStars />
-        {/* {"HIHI"} */}
-        {category
+        {isFollow 
+          ? FOLLOW_COMICS
+          : category
           ? CATEGORY_COMIC_TITLE + category["category_name"]
           : keyword
           ? SEARCH_BY_KEY_COMIC_TITLE + keyword
@@ -32,7 +33,6 @@ const ListComic = ({ keyword, filter, comics, other, title, isFollow }) => {
       </div>
       <div className="list-comic">
         {comics &&
-          !isFollow &&
           comics.map((e, i) => {
             return (
               <ListItem
@@ -44,7 +44,7 @@ const ListComic = ({ keyword, filter, comics, other, title, isFollow }) => {
               ></ListItem>
             );
           })}
-        {isFollow
+        {/* {isFollow
           ? comics_follow.map((e, i) => {
               return (
                 <ListItem
@@ -56,7 +56,7 @@ const ListComic = ({ keyword, filter, comics, other, title, isFollow }) => {
                 ></ListItem>
               );
             })
-          : null}
+          : null} */}
       </div>
     </>
   );

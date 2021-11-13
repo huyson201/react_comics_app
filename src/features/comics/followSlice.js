@@ -84,6 +84,9 @@ const followSlice = createSlice({
     deleteComic(state, action) {
       state.comics.splice(action.payload, 1);
     },
+    removeFollowComic(state) {
+      state.comics = []
+    },
   },
   extraReducers: {
     [followComic.pending]: (state) => {
@@ -118,5 +121,5 @@ const followSlice = createSlice({
     },
   },
 });
-export const { deleteComic } = followSlice.actions;
+export const { deleteComic,removeFollowComic } = followSlice.actions;
 export default followSlice.reducer;

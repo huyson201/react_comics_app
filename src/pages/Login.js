@@ -43,7 +43,7 @@ const Login = () => {
       const token = res.data.data.token;
       const userId = jwtDecode(token);
       console.log(userId);
-      if (userId.user_role) {
+      if (userId.user_role==='admin') {
         dispatch_redux(setIsAdmin(true));
       }
       dispatch_redux(
