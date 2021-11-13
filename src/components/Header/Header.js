@@ -87,7 +87,7 @@ const Navbar = (props) => {
   // socket io processing
   useEffect(() => {
 
-    const socket = io('http://localhost:3001/', {
+    const socket = io('http://127.0.0.1:3001/', {
       auth: {
         token: token
       }
@@ -155,6 +155,7 @@ const Navbar = (props) => {
   // generate notify items
   let notifications = useMemo(() => {
     console.log('use Memo')
+    console.log("token", token);
     if (!token) {
       return (
         <li className='notify-item empty'>

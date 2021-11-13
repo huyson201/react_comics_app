@@ -20,8 +20,8 @@ const chapApi = {
         })
     },
     updateImg: (chapId, options, formData) => {
-        const url = `/admin/chapters/image/${chapId}`
-        return axiosClient.post(url, formData, options)
+        const url = `/admin/chapters/${chapId}`
+        return axiosClient.patch(url, formData, options)
     },
   
 };

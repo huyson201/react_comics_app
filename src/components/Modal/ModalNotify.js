@@ -35,7 +35,17 @@ const ModalNotify = (props) => {
           history.push("/register");
         }
         break;
-      case "/profile" || "/changePassword" || `/truyen-tranh/${props.name}`:
+      case "/profile":
+        if (error === WARN_LOGIN) {
+          history.push("/login");
+        }
+        break;
+      case "/changePassword":
+        if (error === WARN_LOGIN) {
+          history.push("/login");
+        }
+        break;
+      case `/truyen-tranh/${props.name}`:
         if (error === WARN_LOGIN) {
           history.push("/login");
         }

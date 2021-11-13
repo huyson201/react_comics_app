@@ -58,8 +58,7 @@ const chapterSlice = createSlice({
         status: "",
         count: 0,
         offset: 0,
-        chapImgs: null,
-        chapName: null
+        chap: null
     }),
     reducers: {
         removeChapList(state) {
@@ -70,8 +69,8 @@ const chapterSlice = createSlice({
             state.offset = action.payload;
         },
         resetChap(state) {
-            state.chapImgs = null;
-            state.chapName = null;
+            state.chap = null;
+            state.status = '';
         }
     },
     extraReducers: {
@@ -126,11 +125,12 @@ const chapterSlice = createSlice({
         },
         [getChapterByChapID.fulfilled]: (state, action) => {
             state.status = "success";
-            state.chapImgs = action.payload.chapter_imgs.split(",");
-            state.chapName = action.payload.chapter_name;
+            state.chap = action.payload
+            // state.chapImgs = action.payload.chapter_imgs.split(",");
+            // state.chapName = action.payload.chapter_name;
         },
     },
 });
 
-export const { removeChapList, setOffSet,resetChap } = chapterSlice.actions;
+export const { removeChapList, setOffSet, resetChap } = chapterSlice.actions;
 export default chapterSlice.reducer;

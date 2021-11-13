@@ -31,7 +31,6 @@ const AddChap = () => {
                 Authorization: `Bearer ${token}`
             },
             onUploadProgress: (progressEvent) => {
-                console.log(progressEvent);
                 const { loaded, total } = progressEvent
                 setPogress(Math.ceil((loaded / total) * 100))
             }
@@ -39,8 +38,6 @@ const AddChap = () => {
         dispatch(createChapter({ formData: formData, options: options }))
 
     }
-    console.log(progress)
-
     return (
         <>
             <div className="container_form_add">
