@@ -152,10 +152,15 @@ const Navbar = (props) => {
     })()
   }, [openNotification])
 
+  useEffect(() => {
+    const handleClickWindow = () => {
+      setOpenNotification(false)
+      setOpen(false)
+    }
+    window.onclick = handleClickWindow
+  }, [])
   // generate notify items
   let notifications = useMemo(() => {
-    console.log('use Memo')
-    console.log("token", token);
     if (!token) {
       return (
         <li className='notify-item empty'>
@@ -202,15 +207,15 @@ const Navbar = (props) => {
   //xử lý data khi nhấn logout
   const handleLogout = async () => {
     try {
-      const res = await userApi.logout(token);
+      const res = await userApi.logout(token)
       console.log(res.data);
       if (res.status === 204) {
-        notify(null, LOGOUT_SUCCESS);
+        notify(null, LOGOUT_SUCCESS)
         Cookies.remove("refreshToken");
         dispatch_redux(logout());
       }
     } catch (error) {
-      notify(error.response.data, null);
+      notify(error.response.data, null)
     }
   };
 
@@ -222,10 +227,11 @@ const Navbar = (props) => {
   };
   //set show option when click nav item account
   const handleClickAccount = () => {
-    setStateOption(!stateOption);
-  };
+    setStateOption(!stateOption)
+  }
 
-  const handleClickNotify = async () => {
+  const handleClickNotify = async (e) => {
+    e.stopPropagation()
     setOpenNotification(!openNotification)
     setOpen(false)
   }
@@ -242,7 +248,7 @@ const Navbar = (props) => {
         </Link>
         <div
           className="nav-item"
-          onClick={() => { setOpen(!open); setOpenNotification(false) }}
+          onClick={(e) => { e.stopPropagation(); setOpen(!open); setOpenNotification(false) }}
           aria-controls="categories-collapse"
           aria-expanded={open}
         >
