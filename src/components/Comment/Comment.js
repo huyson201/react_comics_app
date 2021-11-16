@@ -22,7 +22,8 @@ const Comment = ({ comicId }) => {
     };
     getComments();
   }, [comicId]);
-  const addComment = (text, parentId, parentIndex) => {
+
+  const addComment = (text, parentId) => {
     comicApi
       .createComment(comicId, text, parentId, token)
       .then((res) => {
@@ -34,13 +35,7 @@ const Comment = ({ comicId }) => {
             user_image: userInfo.user_image,
             user_email: userInfo.user_email,
           };
-          console.log(data)
-          if (parentId !== 0) {
-            const newArr = updateCommentList(parentIndex, data);
-            setComments(newArr);
-          } else {
-            setComments([...comments, data]);
-          }
+          setComments([...comments, data]);
         }
       })
       .catch((err) => {
@@ -53,14 +48,46 @@ const Comment = ({ comicId }) => {
         );
       });
   };
-  const updateCommentList = (parentIndex, data) => {
-    const arr = [...comments];
-    const parent = comments[parentIndex];
-    const parentSub = parent.subComments;
-    parentSub.push(data);
-    arr[parentIndex] = parent;
-    return arr;
-  };
+
+  // const addComment = (text, parentId, parentIndex) => {
+  //   comicApi
+  //     .createComment(comicId, text, parentId, token)
+  //     .then((res) => {
+  //       if (res.data.data) {
+  //         const data = res.data.data;
+  //         data.subComments = [];
+  //         data.user_info = {
+  //           user_name: userInfo.user_name,
+  //           user_image: userInfo.user_image,
+  //           user_email: userInfo.user_email,
+  //         };
+  //         console.log(data)
+  //         if (parentId !== 0) {
+  //           const newArr = updateCommentList(parentIndex, data);
+  //           setComments(newArr);
+  //         } else {
+  //           setComments([...comments, data]);
+  //         }
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       dispatch(
+  //         modalNotify({
+  //           show: true,
+  //           message: null,
+  //           error: WARN_LOGIN,
+  //         })
+  //       );
+  //     });
+  // };
+
+  // const updateCommentList = (parentIndex, data) => {
+  //   const arr = [...comments];
+  //   const parent = comments[parentIndex];
+  //   parent.subComments = [data, ...parent.subComments]
+  //   arr[parentIndex] = parent;
+  //   return arr;
+  // };
 
   return (
     <>
@@ -75,11 +102,12 @@ const Comment = ({ comicId }) => {
                   <CommentItem
                     parentIndex={index}
                     addComment={addComment}
-                    subComments={e.subComments}
+                    // subComments={e.subComments}
                     activeComment={activeComment}
                     setActiveComment={setActiveComment}
                     key={e.comment_id}
                     item={e}
+                    comicId={comicId}
                   ></CommentItem>
                 </div>
               );

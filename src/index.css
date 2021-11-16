@@ -87,7 +87,7 @@ span {
   border-radius: 20px;
   margin-top: 20px;
   display: grid;
-  
+
 }
 
 label,
@@ -376,7 +376,7 @@ li:hover {
   font-size: 13px;
 }
 
-.head .head_right > div {
+.head .head_right>div {
   margin-bottom: 10px;
   display: flex;
   text-align: center;
@@ -396,7 +396,7 @@ li:hover {
   flex: 0.8;
 }
 
-.item > a {
+.item>a {
   background: #4e4949;
   border-radius: 5px;
   padding: 5px;
@@ -679,7 +679,7 @@ li:hover {
   margin: 0;
 }
 
-.chapter_content .nav_top > div:first-child {
+.chapter_content .nav_top>div:first-child {
   padding: 7px;
   font-size: 18px;
   font-weight: 100;
@@ -689,7 +689,7 @@ li:hover {
   justify-content: space-between;
 }
 
-.chapter_content .nav_top > div > div {
+.chapter_content .nav_top>div>div {
   margin-right: 5px;
 }
 
@@ -867,10 +867,17 @@ ol,
 ul {
   padding-left: 0 !important;
 }
+
 .column-comic-name {
   color: black !important;
 }
 
 .progress {
   height: 1.5rem !important;
+}
+
+.btn-all-cmt {
+  background: none;
+  outline: none;
+  color: rgb(59, 130, 246);
 }

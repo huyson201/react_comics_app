@@ -1,31 +1,53 @@
 /* eslint-disable jsx-a11y/alt-text */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import CommentForm from "./CommentForm";
 import moment from "moment";
 import { useSelector } from "react-redux";
+import jwtDecode from "jwt-decode";
+import SubComment from './SubComment'
+
 const CommentItem = ({
   parentIndex,
   addComment,
   parentId = null,
   item,
   activeComment,
-  subComments,
+  // subComments,
   setActiveComment,
-  reply
+  reply,
+  comicId
 }) => {
-  const [replies, setReplies] = useState([]);
-  useEffect(() => {
-    if (subComments !== undefined) {
-      setReplies(subComments);
-    }
-  }, [subComments]);
+  const replyId = parentId ? parentId : item.comment_id;
+
+  const isReplying = activeComment === item.comment_id;
+
+  const token = useSelector((state) => state.user.token);
+
+
   const date = moment(item.createdAt).format("L LTS");
-  const onReply = () => {
+
+
+  // const [replies, setReplies] = useState([]);
+
+  // useEffect(() => {
+  //   if (subComments !== undefined) {
+  //     let newSubCmt = [...subComments]
+  //     if (newSubCmt.length > 3) newSubCmt.length = 3
+  //     setReplies(newSubCmt);
+  //   }
+  // }, [subComments]);
+
+
+  const handleClickReply = () => {
     setActiveComment(item.comment_id);
   };
-  const replyId = parentId ? parentId : item.comment_id;
-  const isReplying = activeComment === item.comment_id;
-  console.log(item.user_info.user_name)
+
+
+  let currentUserUid = useMemo(() => {
+    let decode = jwtDecode(token)
+    return decode.user_uuid
+  }, [token])
+
   return (
     <>
       <li className="item-comment">
@@ -39,23 +61,40 @@ const CommentItem = ({
         <div className="content-li-content-commnet">
           <div className="h3-span-content-li-content-commnet">
             <h3>{item.user_info.user_name}</h3>
+            {currentUserUid === item.user_uuid && (<span>{"<You>"}</span>)}
             <span>{date}</span>
           </div>
           <span className="summary-content-li-content-commnet">
             {`${item.comment_content}`}
           </span>
           {(!reply || reply === false) &&
-            (<div id={item.comment_id} onClick={onReply} className="reply-btn">
+            (<div id={item.comment_id} onClick={handleClickReply} className="reply-btn">
               Trả lời
             </div>)
           }
         </div>
       </li>
-      <div className="sub-comment">
+
+      <SubComment
+        parentIndex={parentIndex}
+        addComment={addComment}
+        subComments={item.subComments}
+        setActiveComment={setActiveComment}
+        isReplying={isReplying}
+        replyId={replyId}
+        userName={item.user_info.user_name}
+        comicId={comicId}
+      />
+
+
+      {/* <div className="sub-comment">
         {isReplying && (
           <CommentForm
             username={item.user_info.user_name}
-            handleSubmit={(text) => addComment(text, replyId, parentIndex)}
+            handleSubmit={(text) => {
+              addComment(text, replyId, parentIndex)
+              setActiveComment(-1)
+            }}
           ></CommentForm>
         )}
         {replies &&
@@ -75,7 +114,7 @@ const CommentItem = ({
               </div>
             );
           })}
-      </div>
+      </div> */}
     </>
   );
 };

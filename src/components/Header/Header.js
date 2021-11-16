@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   MdHome,
   MdBookmark,
@@ -61,6 +61,7 @@ const Navbar = (props) => {
   const dispatch_redux = useDispatch();
   const categories = useSelector((state) => state.categories.categories);
   const { isLogged, isAdmin } = useSelector((state) => state.user);
+  const [socketData, setSocketData] = useState()
 
   const notify = (error, message) => {
     dispatch_redux(
@@ -77,6 +78,7 @@ const Navbar = (props) => {
     await notifyApi.update(notify.id, notify)
     return true
   }
+
   //effect follow
   useEffect(() => {
     if (status === "loading" || statusFollows === "loading") {
@@ -84,10 +86,21 @@ const Navbar = (props) => {
     }
   }, [status, statusFollows]);
 
+  // get notify
+  useEffect(() => {
+    if (token) {
+      let decoded = jwt_decode(token)
+        ; (async () => {
+          let res = await notifyApi.get(decoded.user_uuid, token)
+          setListNotifications([...res.data.data])
+        })()
+    }
+
+  }, [token])
   // socket io processing
   useEffect(() => {
 
-    const socket = io('http://127.0.0.1:3001/', {
+    const socket = io('http://localhost:3001/', {
       auth: {
         token: token
       }
@@ -98,13 +111,7 @@ const Navbar = (props) => {
     });
 
     socket.on('comment-notify', data => {
-      ; (async () => {
-        if (data) {
-          let decoded = jwt_decode(token)
-          let res = await notifyApi.get(decoded.user_uuid, token)
-          setListNotifications([...res.data.data])
-        }
-      })()
+      setSocketData(data)
     })
 
     socket.on('disconnect', () => {
@@ -120,18 +127,12 @@ const Navbar = (props) => {
 
   }, [token])
 
-  // get notify
+
   useEffect(() => {
-    if (token) {
-      let decoded = jwt_decode(token)
-        ; (async () => {
-          let res = await notifyApi.get(decoded.user_uuid, token)
-          setListNotifications([...res.data.data])
-        })()
+    if (socketData) {
+      setListNotifications([socketData, ...listNotifications])
     }
-
-
-  }, [token])
+  }, [socketData])
 
   // update status after user clicked notify
   useEffect(() => {
@@ -159,6 +160,7 @@ const Navbar = (props) => {
     }
     window.onclick = handleClickWindow
   }, [])
+
   // generate notify items
   let notifications = useMemo(() => {
     if (!token) {
