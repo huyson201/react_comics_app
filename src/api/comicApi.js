@@ -49,6 +49,13 @@ const comicApi = {
     const url = `comics/${id}/comments?sort=updatedAt:asc`;
     return axiosClient.get(url);
   },
+  getSubComment: (id, parentId, option) => {
+    let url = `comics/${id}/comments?sort=createdAt:asc&parent_id=${parentId}`;
+    if (option) {
+      url += `&${option}`
+    }
+    return axiosClient.get(url);
+  },
   createComment: (id, content, parentId = 0, userToken) => {
     const url = "/comments";
     return axiosClient.post(
@@ -70,7 +77,7 @@ const comicApi = {
       },
     });
   },
-  updateComic: (id,data, userToken) => {
+  updateComic: (id, data, userToken) => {
     const url = `/admin/comics/${id}`;
     return axiosClient.patch(url, data, {
       headers: {

@@ -10,27 +10,28 @@ import commentApi from '../../api/commentApi'
 
 const SubComment = ({
     userName = 'NaN',
-    subComments,
     setActiveComment,
     isReplying,
     replyId,
     comicId
 }) => {
-    const [showBtnGetAll, setShowBtnGetAll] = useState(false)
-    const [currentSubComments, setCurrentSubComments] = useState(() => {
-        let cmt = [...subComments]
-        if (cmt.length > 1) {
-            cmt.length = 1
-            setShowBtnGetAll(true)
-        }
 
-        return cmt
-    })
-
+    const [currentSubComments, setCurrentSubComments] = useState([])
+    const [countSubCmt, setCountSubCmt] = useState(0)
     const [clickGetAll, setClickGetAll] = useState(false)
     const { userInfo, token } = useSelector((state) => state.user);
     const dispatch = useDispatch();
 
+    useEffect(() => {
+        async function getSubComment() {
+            let res = await comicApi.getSubComment(comicId, replyId, `offSet=1&limit=1`)
+            if (res.data.data) {
+                setCurrentSubComments([...res.data.data.rows])
+                setCountSubCmt(res.data.data.count)
+            }
+        }
+        getSubComment()
+    }, [])
 
     const items = useMemo(() => {
         return generateItems(currentSubComments, token)
@@ -70,6 +71,8 @@ const SubComment = ({
             });
     };
 
+
+
     return (
         <>
             <div className="sub-comment">
@@ -83,7 +86,7 @@ const SubComment = ({
                     ></CommentForm>
                 )}
                 {items !== null && items}
-                {(!clickGetAll && showBtnGetAll) && (<button className='btn-all-cmt' onClick={handleGetAll}>Xem toàn bộ...</button>)}
+                {(countSubCmt > 0 && !clickGetAll) && (<button className='btn-all-cmt' onClick={handleGetAll}>Xem toàn bộ ({countSubCmt}) trả lời.</button>)}
             </div>
         </>
     )

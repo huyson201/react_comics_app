@@ -76,7 +76,6 @@ const CommentItem = ({
       </li>
 
       <SubComment
-        parentIndex={parentIndex}
         addComment={addComment}
         subComments={item.subComments}
         setActiveComment={setActiveComment}

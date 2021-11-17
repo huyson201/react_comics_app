@@ -16,8 +16,10 @@ const Comment = ({ comicId }) => {
   useEffect(() => {
     const getComments = async () => {
       const res = await comicApi.getCommentsByComicID(comicId);
+      console.log(res)
       if (res.data.data) {
-        setComments(res.data.data);
+        console.log(res)
+        setComments(res.data.data.rows);
       }
     };
     getComments();
