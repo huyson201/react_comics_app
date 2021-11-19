@@ -14,11 +14,15 @@ body {
   /* height: 100vh; */
   color: #353535;
 }
-
+svg {
+  margin-bottom: 3px;
+}
 #root {
   height: 100%;
 }
-
+tbody, td, tfoot, th, thead, tr {
+  vertical-align: middle;
+}
 .container_dashboard {
   background-color: #fff;
   height: 100vh;
@@ -39,7 +43,6 @@ body {
 
 .header-text-sidebar {
   color: white;
-  padding: 24px;
   text-transform: uppercase;
   font-weight: bold;
   font-size: 20px;
@@ -110,7 +113,7 @@ input {
   /* left: 0; */
   right: 0;
   z-index: 9999;
-  background-color: #000;
+  background-color: #161616;
   opacity: 0;
   visibility: hidden;
   margin: 0;
@@ -401,7 +404,7 @@ li:hover {
   border-radius: 5px;
   padding: 5px;
   margin: 2px 2px;
-  /* display: inline-flex; */
+  display: inline-flex;
 }
 
 .fa-book-reader {
@@ -486,7 +489,7 @@ li:hover {
   padding: 6px 3px;
   border-style: solid;
   font-size: 13px;
-  width: 25%;
+  /* width: 25%; */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -876,6 +879,18 @@ ul {
   height: 1.5rem !important;
 }
 
+.dashboard-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-nav-bar {
+  padding: 10px;
+  font-size: 25px;
+  color: white;
+  background: #1d1d1d;
+}
 .btn-all-cmt {
   background: none;
   outline: none;

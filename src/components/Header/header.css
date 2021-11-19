@@ -5,7 +5,6 @@
   flex-wrap: nowrap;
   align-content: center;
   justify-content: center;
-  background-color: #000;
 }
 .nav-item {
   color: white;
@@ -25,7 +24,7 @@
   padding: 7px 5px;
   max-width: 45px;
   flex: 1;
-  color:white;
+  color: white;
   background-color: #747924;
 }
 .form-search {
@@ -199,4 +198,44 @@
   font-size: 16px;
   border-radius: 5px;
   margin-top: 5px;
+}
+.menu {
+  padding: 15px;
+  color: white;
+  font-size: 20px;
+  display: none;
+  justify-content: space-between;
+}
+.menu-body-item {
+  font-family: "Baloo 2";
+  padding: 0.25rem;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  color: black !important;
+}
+.menu-account {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+}
+.margin-left {
+  margin-left: 3px;
+}
+.margin-right {
+  margin-right: 3px;
+}
+.offcanvas-title {
+  color: black !important;
+}
+.divine {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 14px;
+  font-variant: tabular-nums;
+  line-height: 1.5715;
+  list-style: none;
+  font-feature-settings: "tnum";
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
 }

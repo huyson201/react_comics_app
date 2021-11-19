@@ -14,73 +14,45 @@ import UpdateChap from "./UpdateChap";
 import Sidebar from "./Sidebar";
 import ComicList from "./Comics/ComicList";
 import AddOrEditComic from "./Comics/AddOrEditComic";
-import Cookies from "js-cookie";
-import jwt_decode from "jwt-decode";
-import userApi from "../../api/userApi";
-import { useDispatch, useSelector } from "react-redux";
-import { isCheck, login, setUserInfo } from "../../features/auth/userSlice";
-import { removeSelectedComic } from "../../features/comics/comicSlice";
+import { GiHamburgerMenu } from "react-icons/gi";
 const Dashboard = () => {
   const history = useHistory();
-  const dispatch = useDispatch()
   const { number, comicId, numberPageChap, chapId } = useParams();
-  const { userInfo, isLogged } = useSelector((state) => state.user);
-
-  const dispatchUser = async (id, token) => {
-    try {
-      const getInfo = await userApi.getUserById(id, token);
-      if (getInfo.data.data) {
-        dispatch(setUserInfo(getInfo.data.data));
-      }
-    } catch (error) {
-      console.log(error.response.data);
-    }
+  const [toggled, setToggled] = useState(false);
+  const handleToggleSidebar = (value) => {
+    console.log(value)
+    setToggled(value);
   };
-  //lấy thông tin user sau khi xử lý refresh token cookie
-  const refreshTokenCookie = async (cookie) => {
-    try {
-      const res = await userApi.refreshToken(cookie);
-      if (res.data.token) {
-        const userFromToken = jwt_decode(res.data.token);
-        dispatch(
-          login({
-            token: res.data.token,
-            refreshToken: cookie,
-          })
-        );
-        dispatchUser(userFromToken.user_uuid, res.data.token);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    if (userInfo === null) {
-      if (Cookies.get("refreshToken")) {
-        refreshTokenCookie(Cookies.get("refreshToken"));
-      }
-    }
-  }, [isLogged]);
   return (
     <>
       <div className="container_dashboard">
-        <Sidebar></Sidebar>
-        <div className="main-content">
-          {history.location.pathname === `/comics/${comicId}/chaps/page/${numberPageChap}` ? (
-            <ChapList page={numberPageChap} />
-          ) : history.location.pathname === `/comic/${comicId}/chaps/add` ? (
-            <AddChap />
-          ) : history.location.pathname === `/comics/${comicId}/chaps/${chapId}/update` ? (
-            <UpdateChap id={chapId} />
-          ) : number ? (
-            <ComicList page={number} />
-          ) : history.location.pathname === `/comics/add` ? (
-            <AddOrEditComic />
-          ) : history.location.pathname === `/comics/edit/${comicId}` ? (
-            <AddOrEditComic id={comicId} />
-          ) : (
-            ""
-          )}
+        <Sidebar
+          toggled={toggled}
+          handleToggleSidebar={handleToggleSidebar}
+        ></Sidebar>
+        <div className="dashboard-content">
+          <div className="dashboard-nav-bar">
+            <GiHamburgerMenu onClick={() => handleToggleSidebar(true)} />
+          </div>
+          <div className="main-content">
+            {history.location.pathname ===
+            `/comics/${comicId}/chaps/page/${numberPageChap}` ? (
+              <ChapList page={numberPageChap} />
+            ) : history.location.pathname === `/comic/${comicId}/chaps/add` ? (
+              <AddChap />
+            ) : history.location.pathname ===
+              `/comics/${comicId}/chaps/${chapId}/update` ? (
+              <UpdateChap id={chapId} />
+            ) : number ? (
+              <ComicList page={number} />
+            ) : history.location.pathname === `/comics/add` ? (
+              <AddOrEditComic />
+            ) : history.location.pathname === `/comics/edit/${comicId}` ? (
+              <AddOrEditComic id={comicId} />
+            ) : (
+              ""
+            )}
+          </div>
         </div>
       </div>
 

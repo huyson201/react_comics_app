@@ -36,9 +36,9 @@ export const createChapter = createAsyncThunk(
 );
 
 export const updateChapter = createAsyncThunk(
-    "chapters/create",
+    "chapters/update",
     async ({ chapId, options, formData }, thunkAPI) => {
-        const res = await chapApi.update(chapId, options, formData);
+        const res = await chapApi.updateImg(chapId, options, formData);
         return res.data.data;
     }
 );

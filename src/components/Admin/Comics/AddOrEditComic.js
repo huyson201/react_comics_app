@@ -91,6 +91,7 @@ const AddOrEditComic = ({ id }) => {
         if (!id) {
           formData.append("comic_img", file);
           dispatch(createComic({ data: formData, userToken: token }));
+          setValidated(false);
         } else
           dispatch(updateComic({ id: id, data: formData, userToken: token }));
       } else {

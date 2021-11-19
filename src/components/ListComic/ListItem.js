@@ -98,13 +98,16 @@ const ListItem = ({ other, index, item, isFollow }) => {
         <div className="item-lastest-update">
           {moment(item["updatedAt"]).fromNow()}
         </div>
-        <Link to={`/truyen-tranh/${name}-${item["comic_id"]}`}>
-          <img
-            className="item-img"
-            src={item["comic_img"]}
-            alt={item["comic_name"]}
-          ></img>
-        </Link>
+        <div className="image">
+          <Link to={`/truyen-tranh/${name}-${item["comic_id"]}`}>
+            <img
+              className="item-img"
+              src={item["comic_img"]}
+              alt={item["comic_name"]}
+            ></img>
+          </Link>
+        </div>
+
         <div className="item-row">
           {chapterName != null && newChapter != null ? (
             <Link

@@ -9,6 +9,11 @@
   .nav-item {
     font-size: 16px;
   }
+  .nav-bar,
+  .search,
+  .list-category {
+    background-color: #000;
+  }
   .category-item {
     width: 20%;
   }
@@ -19,13 +24,13 @@
   .list-comic-item {
     width: 16.66666666666667%;
   }
-  .item-img {
-    height: 230px;
-  }
 
   .form {
     width: 50%;
     margin: 0 auto;
+  }
+  .dashboard-nav-bar {
+    display: none;
   }
 }
 
@@ -40,6 +45,11 @@
   .nav-item {
     font-size: 16px;
   }
+  .nav-bar,
+  .search,
+  .list-category {
+    background-color: #000;
+  }
   .category-item {
     width: 20%;
   }
@@ -50,16 +60,15 @@
   .list-comic-item {
     width: 20%;
   }
-  .item-img {
-    height: 230px;
-  }
 
   .form {
     width: 50%;
     margin: 0 auto;
   }
+  .dashboard-nav-bar {
+    display: none;
+  }
 }
-
 
 /* 
     ##Device = Low Resolution Tablets, Mobiles (Landscape)
@@ -69,15 +78,20 @@
 @media (min-width: 481px) and (max-width: 768px) {
   /* CSS */
   /* Header */
-  .nav-item {
+  /* .nav-item {
     font-size: 0px;
-  }
+  } */
   .nav-item svg {
     font-size: 16px;
   }
   .category-item {
     width: 33.333%;
     font-size: 14px;
+  }
+  .nav-bar,
+  .search,
+  .list-category {
+    background-color: #000;
   }
   .drop-down {
     font-size: 16px;
@@ -87,10 +101,7 @@
   }
   /* List comic */
   .list-comic-item {
-    width: 33.3333%;
-  }
-  .item-img {
-    height: 280px;
+    width: 25%;
   }
 
   .form {
@@ -106,6 +117,17 @@
   .head .head_left {
     width: 30% !important;
   }
+
+  .content .body {
+    flex-direction: column-reverse !important;
+  }
+  .list_item_chap a {
+    width: 25%;
+  }
+
+  .dashboard-nav-bar {
+    display: flex;
+  }
 }
 
 /* 
@@ -113,10 +135,10 @@
     ##Screen = B/w 320px to 479px
   */
 
-@media (min-width: 320px) and (max-width: 480px) {
+@media (max-width: 480px) {
   /* CSS */
   /* Header */
-  .nav-item {
+  /* .nav-item {
     font-size: 0px;
   }
   .nav-item svg {
@@ -132,15 +154,36 @@
   .checkbox-item {
     width: 33.333%;
     font-size: 11px !important;
+  } */
+  .nav-bar {
+    display: none !important;
+  }
+  #notify .notify-list {
+    min-width: 300px !important;
+  }
+  /* Menu */
+  .menu {
+    display: flex !important;
+  }
+
+  .category-item {
+    font-size: 15px !important;
+    font-family: "Fira Sans" !important;
+    font-weight: 500 !important;
+    color: #08111c !important;
+    padding: 6px 0px !important;
+    width: 50% !important;
+  }
+  .list-category {
+    padding-left: 30px;
   }
   /* List comic */
   .list-comic-item {
     width: 50%;
   }
-  .item-img {
-    height: 280px;
+  .checkbox-item {
+    width: 50%;
   }
-
   .form {
     font-size: 13px !important;
     margin: 20px 20px 0 20px !important;
@@ -202,7 +245,6 @@
   .form-profile {
     margin-left: 0 !important;
   }
-
   .head {
     display: block !important;
   }
@@ -222,12 +264,11 @@
   }
 
   .content .button .head_left {
-    justify-content: space-between;
+    display: block !important;
   }
 
   .content .button .head_left a {
-    font-size: small !important;
-    padding: 5px !important;
+    padding: 10px !important;
   }
 
   .content .button .head_left a .icon {
@@ -240,9 +281,11 @@
   }
 
   .content .body {
-    display: block !important;
+    flex-direction: column-reverse !important;
   }
-
+  .list_item_chap a {
+    width: 33.33%;
+  }
   .rating {
     margin-top: 5px;
     justify-content: center;
@@ -262,5 +305,9 @@
 
   .modal-content {
     width: 90% !important;
+  }
+
+  .dashboard-nav-bar {
+    display: flex;
   }
 }

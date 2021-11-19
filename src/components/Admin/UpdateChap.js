@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Form, FormGroup, FormLabel, Button, ProgressBar } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
+import chapApi from "../../api/chapApi";
 import { getChapterByChapID, resetChap, updateChapter } from "../../features/comics/chapterSlice";
 const UpdateChap = (props) => {
     const { chap, status } = useSelector(state => state.chapter)
@@ -57,7 +58,9 @@ const UpdateChap = (props) => {
         }
 
         try {
-            const res = await dispatch(updateChapter(chapId, options, formData))
+            // const res = await dispatch(updateChapter({chapId:chapId,options: options,formData: formData}))
+            const res = await chapApi.updateImg(chapId,options,formData)
+            // console.log(res)
             if (res.data.data) {
                 alert("update thanh cong")
             }
@@ -121,14 +124,14 @@ const UpdateChap = (props) => {
                         Cập nhật
                     </Button>
 
-                    {status && status === "loading" && progress && < ProgressBar animated now={progress} label={`${progress < 100 ? progress : 'loading...'}`} />}
-                    {status && status === "success" && progress && <ProgressBar variant="success" now={100} label="Done" />}
+                    {/* {status && status === "loading" && progress && < ProgressBar animated now={progress} label={`${progress < 100 ? progress : 'loading...'}`} />}
+                    {status && status === "success" && progress && <ProgressBar variant="success" now={100} label="Done" />} */}
 
                 </Form>
 
             </div>
             {status === "success" &&
-                <table class="table table-striped">
+                <table className="table table-striped">
                     <thead>
                         <tr>
                             <th scope="col">STT</th>
