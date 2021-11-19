@@ -18,6 +18,7 @@ import {
 import { useDispatch } from "react-redux";
 import { modalNotify } from "../features/modal/modalSlice";
 import userApi from "../api/userApi";
+import { toast } from 'react-toastify';
 
 const Register = () => {
   const [user_name, setUserName] = useState();
@@ -37,15 +38,21 @@ const Register = () => {
     });
   }, [user_name, user_email, user_password, confirm_password]);
 
-  const notify = (error, message) => {
-    dispatch_redux(
-      modalNotify({
-        show: true,
-        message: message,
-        error: error,
-      })
-    );
-  };
+  const notify = (error, message, warn) => {
+    if (error !== null) {
+      if (!toast.isActive(error)) {
+        toast.error(error, { toastId: error })
+      }
+    } else if (message !== null) {
+      if (!toast.isActive(message)) {
+        toast.success(message, { toastId: message })
+      }
+    } else {
+      if (!toast.isActive(warn)) {
+        toast.warn(warn, { toastId: warn })
+      }
+    }
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -57,18 +64,18 @@ const Register = () => {
     setValidated(true);
     if (form.checkValidity() === true) {
       if (user_password.length < 6) {
-        notify(VALIDATE_PW, null);
+        notify(VALIDATE_PW, null, null);
       } else if (checkCfPw(user_password, confirm_password) === false) {
-        notify(CHECK_PW, null);
+        notify(CHECK_PW, null, null);
       } else {
         try {
           const res = await userApi.register(user);
           if (res.data.data) {
-            notify(null, REGISTER_SUCCESS);
+            notify(null, REGISTER_SUCCESS, null);
           }
         } catch (error) {
           console.log(error.response.data);
-          notify(error.response.data, null)
+          notify(error.response.data, null, null)
         }
       }
     }

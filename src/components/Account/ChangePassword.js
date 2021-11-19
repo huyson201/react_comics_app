@@ -8,14 +8,12 @@ import {
   LABEL_NEW_PW,
   LABEL_OLD_PW,
   TITLE_CHANGE_PW,
-  WARN_LOGIN,
 } from "../../constants";
 import { login, logout } from "../../features/auth/userSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { modalNotify } from "../../features/modal/modalSlice";
 import userApi from "../../api/userApi";
 import { useHistory } from "react-router";
-import Cookies from "js-cookie";
+import { toast } from 'react-toastify';
 
 const ChangePassword = () => {
   const [old_password, setUserPassword] = useState();
@@ -25,15 +23,21 @@ const ChangePassword = () => {
   const history = useHistory();
   const dispatch_redux = useDispatch();
 
-  const notify = (error, message) => {
-    dispatch_redux(
-      modalNotify({
-        show: true,
-        message: message,
-        error: error,
-      })
-    );
-  };
+  const notify = (error, message, warn) => {
+    if (error !== null) {
+      if (!toast.isActive(error)) {
+        toast.error(error, { toastId: error })
+      }
+    } else if (message !== null) {
+      if (!toast.isActive(message)) {
+        toast.success(message, { toastId: message })
+      }
+    } else {
+      if (!toast.isActive(warn)) {
+        toast.warn(warn, { toastId: warn })
+      }
+    }
+  }
   //refresh token
   const updateToken = async () => {
     try {
@@ -56,10 +60,10 @@ const ChangePassword = () => {
     try {
       const res = await userApi.changePassword(old_password, new_password, token);
       if (res.data.data) {
-        notify(null, res.data.message)
+        notify(null, res.data.message,null)
       }
     } catch (error) {
-      notify(error.response.data, null)
+      notify(error.response.data, null,null)
     }
   }
   //xử lý dữ liệu khi người dùng nhấn submit
@@ -74,11 +78,11 @@ const ChangePassword = () => {
           changePW()
         } else {
           dispatch_redux(logout())
-          notify(EXPIRED, null)
+          notify(null, null,EXPIRED)
         }
       }
     } else {
-      notify(CHECK_PW, null)
+      notify(CHECK_PW, null,null)
     }
   };
 

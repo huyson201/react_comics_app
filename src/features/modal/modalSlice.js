@@ -5,6 +5,7 @@ const modalSlice = createSlice({
     show: false,
     error: null,
     message: null,
+    warn: null,
     showChapter: false,
     check: false,
   },
@@ -13,6 +14,7 @@ const modalSlice = createSlice({
       state.show = action.payload.show;
       state.error = action.payload.error;
       state.message = action.payload.message;
+      state.warn = action.payload.warn;
     },
     modalChapter(state, action) {
       state.showChapter = action.payload.showChapter;
@@ -23,5 +25,5 @@ const modalSlice = createSlice({
   },
 });
 
-export const { modalNotify, modalChapter,checkRate } = modalSlice.actions;
+export const { modalNotify, modalChapter, checkRate } = modalSlice.actions;
 export default modalSlice.reducer;

@@ -6,36 +6,42 @@ import Profile from "../components/Account/Profile";
 import ChangePassword from "../components/Account/ChangePassword";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/auth/userSlice";
-import { modalNotify } from "../features/modal/modalSlice";
 import userApi from "../api/userApi";
 import Follow from "./Follow";
+import { toast } from 'react-toastify';
 
 const Account = () => {
   const history = useHistory();
   const token = useSelector(state => state.user.token)
   const dispatch_redux = useDispatch();
 
-  const notify = (error, message) => {
-    dispatch_redux(
-      modalNotify({
-        show: true,
-        message: message,
-        error: error,
-      })
-    );
-  };
+  const notify = (error, message, warn) => {
+    if (error !== null) {
+      if (!toast.isActive(error)) {
+        toast.error(error, { toastId: error })
+      }
+    } else if (message !== null) {
+      if (!toast.isActive(message)) {
+        toast.success(message, { toastId: message })
+      }
+    } else {
+      if (!toast.isActive(warn)) {
+        toast.warn(warn, { toastId: warn })
+      }
+    }
+  }
 
   const handleLogout = async () => {
     try {
       const res = await userApi.logout(token)
       // console.log(res.data);
       if (res.status === 204) {
-        notify(null, LOGOUT_SUCCESS)
+        notify(null, LOGOUT_SUCCESS, null)
         Cookies.remove("refreshToken");
         dispatch_redux(logout());
       }
     } catch (error) {
-      notify(error.response.data, null)
+      notify(error.response.data, null, null)
     }
   };
 
@@ -93,7 +99,7 @@ const Account = () => {
           </div>
         </div>
         {history.location.pathname === "/follows" ? (
-            <Follow />) : ""}
+          <Follow />) : ""}
       </div>
     </>
   );

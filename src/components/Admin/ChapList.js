@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router";
 import Loading from "../Loading/Loading";
 import { Link } from "react-router-dom";
@@ -15,9 +15,11 @@ import Pagination from "react-js-pagination";
 import { LIMIT } from "../../constants";
 import Button from "@restart/ui/esm/Button";
 import { comicSelectors } from "../../features/comics/comicSlice";
+import ModalAlert from "../Modal/ModalAlert";
 
 const ChapList = (props) => {
   const { comicId } = useParams();
+  const [id, setId] = useState();
   const page = props.page;
   const history = useHistory();
   const dispatch = useDispatch();
@@ -27,6 +29,7 @@ const ChapList = (props) => {
   const selectedComic = useSelector((state) =>
     comicSelectors.selectById(state, +comicId)
   );
+  const [show, setShow] = useState(false);
   console.log(chapters);
   const handleClickAdd = () => {
     history.push(`/comic/${comicId}/chaps/add`);
@@ -38,9 +41,15 @@ const ChapList = (props) => {
   const handlePageChange = (pageNumber) => {
     history.push(`/comics/${comicId}/chaps/page/${pageNumber}`);
   };
-  const handleDeleteChap = (e) => {
-    e.preventDefault();
-    dispatch(deleteChapter({ id: e.currentTarget.value, token: token }));
+  //Show alert
+  const handleShow = (e) => {
+    setId(e.currentTarget.value);
+    setShow(true);
+  };
+  const handleClose = () => setShow(false);
+  const handleDeleteChap = () => {
+    dispatch(deleteChapter({ id: id, token: token }));
+    setShow(false);
   };
 
   useEffect(() => {
@@ -57,13 +66,15 @@ const ChapList = (props) => {
       Header: "CHAP_NAME",
       accessor: "chapter_name",
     },
-    {
-      Header: "AD_NAME",
-      Cell: ({ cell }) => <div>Kieu Oanh</div>,
-    },
+    // {
+    //   Header: "AD_NAME",
+    //   Cell: ({ cell }) => <div>Kieu Oanh</div>,
+    // },
     {
       Header: "CREATED_AT",
       accessor: "createdAt",
+      Cell: ({ cell }) => (<div>{cell.row.values.createdAt.split('T')[0]}</div>)
+      // accessor: "createdAt",
     },
     {
       Header: "Action",
@@ -77,7 +88,7 @@ const ChapList = (props) => {
             <FaEdit style={{ color: "black" }}></FaEdit>
           </Link>
           <button
-            onClick={handleDeleteChap}
+            onClick={handleShow}
             value={cell.row.values.chapter_id}
             style={{ marginRight: 10, background: "none" }}
           >
@@ -94,10 +105,15 @@ const ChapList = (props) => {
         <Loading />
       ) : (
         <div>
+          <ModalAlert
+            checkShow={show}
+            handleClose={handleClose}
+            handleSubmit={handleDeleteChap}
+          ></ModalAlert>
           {status === "success" && (
             <>
               <h3>
-                {selectedComic  && selectedComic.comic_name} (
+                {selectedComic && selectedComic.comic_name} (
                 {`${count}`} chap)
               </h3>
               <Button

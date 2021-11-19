@@ -29,7 +29,11 @@ export const LOGOUT_SUCCESS = "Đăng xuất thành công !";
 export const LOGIN_SUCCESS = "Đăng nhập thành công !";
 export const UPDATE_SUCCESS = "Cập nhật thành công !";
 export const RATE_SUCCESS = "Cảm ơn bạn đã đánh giá !";
-
+export const ADD_CHAP = "Thêm chap thành công !"
+export const CHAP_NEXT="Không có chương kế tiếp !"
+export const CHAP_PRE="Không có chương trước đó !"
+export const CHOOSE_IMG="Vui lòng chọn ảnh để cập nhật !"
+export const DELETE="Xóa ảnh thành công !"
 // ================================COMIC================================ //
 export const LIMIT = 18;
 export const NEW_COMIC_TITLE = "Truyện mới cập nhật";

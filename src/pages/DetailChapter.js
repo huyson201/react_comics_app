@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router";
 import comicApi from "../api/comicApi";
-import { NEXT_CHAPTER, PRE_CHAPTER } from "../constants";
+import { CHAP_NEXT, CHAP_PRE, NEXT_CHAPTER, PRE_CHAPTER } from "../constants";
 import {
   IoIosListBox,
   IoIosInformationCircle,
@@ -15,10 +15,8 @@ import { BsStars } from "react-icons/bs";
 import { modalChapter } from "../features/modal/modalSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "../components/Loading/Loading";
-import {
-  chapterSelectors,
-  getChapsByComicId,
-} from "../features/comics/chapterSlice";
+import { chapterSelectors, getChapsByComicId } from "../features/comics/chapterSlice";
+import { toast } from 'react-toastify';
 
 const DetailChapter = () => {
   const history = useHistory();
@@ -99,7 +97,9 @@ const DetailChapter = () => {
   const handleClickNextChap = async () => {
     const nId = await nextId(id, chapter);
     if (checkChapter(id, nId) === 0) {
-      alert("Khong con chuong tiep theo");
+      if (!toast.isActive(CHAP_NEXT)) {
+        toast.warn(CHAP_NEXT, { toastId: CHAP_NEXT })
+      }
     } else {
       const resChapter = await comicApi.getChapterByID(nId);
       history.push(
@@ -115,7 +115,9 @@ const DetailChapter = () => {
     tempChap.sort((a, b) => (b.chapter_id > a.chapter_id ? 1 : -1));
     const pId = await preId(id, tempChap);
     if (checkChapter(id, pId) === 0) {
-      alert("khong co chuong truoc");
+      if (!toast.isActive(CHAP_PRE)) {
+        toast.warn(CHAP_PRE, { toastId: CHAP_PRE })
+      }
     } else {
       const resChapter = await comicApi.getChapterByID(pId);
       history.push(

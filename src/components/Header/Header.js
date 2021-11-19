@@ -14,21 +14,21 @@ import jwt_decode from "jwt-decode";
 import { xoaDau } from "../../utilFunction";
 import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  logout,
-} from "../../features/auth/userSlice";
+import { logout} from "../../features/auth/userSlice";
 import { LOGOUT_SUCCESS, WARN_LOGIN } from "../../constants";
 import { getCategories } from "../../features/comics/categorySlice";
-import { modalNotify } from "../../features/modal/modalSlice";
+import { toast } from 'react-toastify';
+
 import userApi from "../../api/userApi";
-import notifyApi from "../../api/notifyApi";
-import { io } from "socket.io-client";
-import dotenv from "dotenv";
-import { NOTIFY_STATUS } from "../../constants";
+import notifyApi from '../../api/notifyApi'
+import { io } from 'socket.io-client'
+import dotenv from 'dotenv'
+import { NOTIFY_STATUS } from '../../constants'
 import { GiHamburgerMenu } from "react-icons/gi";
 import SearchForm from "./SearchForm";
 import Drawer from "./Drawer";
-dotenv.config();
+dotenv.config()
+
 
 const calDate = (dateA, dateB) => {
   let dateResult;
@@ -66,16 +66,21 @@ const Navbar = (props) => {
   const [socketData, setSocketData] = useState()
 
   const [show, setShow] = useState(false);
-  //effect follow
-  const notify = (error, message) => {
-    dispatch_redux(
-      modalNotify({
-        show: true,
-        message: message,
-        error: error,
-      })
-    );
-  };
+  const notify = (error, message, warn) => {
+    if (error !== null) {
+      if (!toast.isActive(error)) {
+        toast.error(error, { toastId: error })
+      }
+    } else if (message !== null) {
+      if (!toast.isActive(message)) {
+        toast.success(message, { toastId: message })
+      }
+    } else {
+      if (!toast.isActive(warn)) {
+        toast.warn(warn, { toastId: warn })
+      }
+    }
+  }
 
   const handleClickNotifyLink = async (notify) => {
     notify.status = NOTIFY_STATUS.READ
@@ -226,19 +231,19 @@ const Navbar = (props) => {
       const res = await userApi.logout(token)
       console.log(res.data);
       if (res.status === 204) {
-        notify(null, LOGOUT_SUCCESS)
+        notify(null, LOGOUT_SUCCESS,null);
         Cookies.remove("refreshToken");
         dispatch_redux(logout());
       }
     } catch (error) {
-      notify(error.response.data, null)
+      notify(error.response.data, null,null);
     }
   };
 
   //hiện thông báo khi không có user
   const handleClick = () => {
     if (!isLogged) {
-      notify(WARN_LOGIN, null);
+      notify(null, null,WARN_LOGIN);
     }
   };
   //set show option when click nav item account

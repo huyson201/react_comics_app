@@ -22,7 +22,6 @@ import {
   WARN_LOGIN,
 } from "../constants";
 import Star from "../components/Rate/Star";
-import ModalNotify from "../components/Modal/ModalNotify";
 import { useDispatch, useSelector } from "react-redux";
 import { login, logout } from "../features/auth/userSlice";
 import { xoaDau } from "../utilFunction";
@@ -33,14 +32,10 @@ import { deleteComicFollow, followComic } from "../features/comics/followSlice";
 import followApi from "../api/followApi";
 import jwtDecode from "jwt-decode";
 import { Spinner } from "react-bootstrap";
-import { modalNotify } from "../features/modal/modalSlice";
 import Comment from "../components/Comment/Comment";
 import userApi from "../api/userApi";
-import {
-  calRate,
-  getRateByUserId,
-  setRate,
-} from "../features/comics/rateSlice";
+import { calRate, getRateByUserId, setRate } from "../features/comics/rateSlice";
+import { toast } from 'react-toastify';
 
 const DetailComic = () => {
   const history = useHistory();
@@ -61,21 +56,27 @@ const DetailComic = () => {
   let arrStar = [1, 2, 3, 4, 5];
   arrStar.length = 5;
   const [starIndex, setStarIndex] = useState();
-  const notify = (error, message) => {
-    dispatch(
-      modalNotify({
-        show: true,
-        message: message,
-        error: error,
-      })
-    );
-  };
+  const notify = (error, message, warn) => {
+    if (error !== null) {
+      if (!toast.isActive(error)) {
+        toast.error(error, { toastId: error })
+      }
+    } else if (message !== null) {
+      if (!toast.isActive(message)) {
+        toast.success(message, { toastId: message })
+      }
+    } else {
+      if (!toast.isActive(warn)) {
+        toast.warn(warn, { toastId: warn })
+      }
+    }
+  }
   //kiểm tra click star
   const changeStarIndex = (index) => {
     if (token && isJwtExpired(token) === false) {
       setStarIndex(index);
     } else {
-      notify(WARN_LOGIN, null);
+      notify(null, null, WARN_LOGIN);
       dispatch(logout());
     }
   };
@@ -100,9 +101,10 @@ const DetailComic = () => {
       }
     } catch (error) {
       if (error.response.data) {
-        notify(error.response.data, null);
-      } else {
-        notify(error.message, null);
+        notify(error.response.data, null, null);
+      }
+      else {
+        notify(error.message, null, null);
       }
     }
   };
@@ -117,10 +119,8 @@ const DetailComic = () => {
           rateState.user_uuid
         );
         if (resUpdate.data.data) {
-          dispatch(
-            getRateByUserId({ userId: userInfo.user_uuid, comicId: id })
-          );
-          notify(null, UPDATE_SUCCESS);
+          dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }))
+          notify(null, UPDATE_SUCCESS, null)
         }
       } catch (error) {
         console.log(error.response.data);
@@ -129,13 +129,11 @@ const DetailComic = () => {
       try {
         const res = await rateApi.rateComic(id, token, starIndex);
         if (res.data.data) {
-          dispatch(
-            getRateByUserId({ userId: userInfo.user_uuid, comicId: id })
-          );
-          notify(null, RATE_SUCCESS);
+          dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }))
+          notify(null, RATE_SUCCESS, null);
         }
       } catch (error) {
-        notify(error.response.data, null);
+        notify(error.response.data, null, null);
       }
     }
   };
@@ -167,13 +165,14 @@ const DetailComic = () => {
             refreshToken: refreshToken,
           })
         );
-        dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }));
-        rate(id, token, starIndex);
-        notify(null, RATE_SUCCESS);
+        dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }))
+        rate(id, token, starIndex)
+        notify(null, RATE_SUCCESS, null)
+
       }
     } catch (error) {
       console.log(error);
-      notify(error.response.data, null);
+      notify(error.response.data, null, null)
     }
   };
   //effect rate
@@ -192,7 +191,7 @@ const DetailComic = () => {
       ) {
         updateToken();
       } else {
-        notify(WARN_LOGIN, null);
+        notify(null, null, WARN_LOGIN)
       }
     } else {
       if (token && isJwtExpired(token) === false && userInfo) {
@@ -246,13 +245,7 @@ const DetailComic = () => {
   //follow
   const handleFollow = () => {
     if (!isLogged) {
-      dispatch(
-        modalNotify({
-          show: true,
-          message: null,
-          error: WARN_LOGIN,
-        })
-      );
+     notify(null,null,WARN_LOGIN)
     } else {
       if (checked && token) {
         // delete follow comic
@@ -273,18 +266,14 @@ const DetailComic = () => {
     }
   };
 
+  // useEffect(() => { toast.warn("hsjdfhakjsdfjk") }, [])
+
   return (
     <>
       {data == null ? (
         <Loading />
       ) : (
         <>
-          <ModalNotify
-            show={show}
-            error={error}
-            message={message}
-            name={name}
-          />
           <div className="container-detail">
             <div className="content">
               <h1 className="title_comic">{data ? data.comic_name : ""}</h1>

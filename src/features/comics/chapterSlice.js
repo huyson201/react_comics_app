@@ -27,22 +27,6 @@ export const deleteChapter = createAsyncThunk(
     }
 );
 
-export const createChapter = createAsyncThunk(
-    "chapters/create",
-    async ({ formData, options }, thunkAPI) => {
-        const res = await chapApi.create(formData, options);
-        return res.data.data;
-    }
-);
-
-export const updateChapter = createAsyncThunk(
-    "chapters/update",
-    async ({ chapId, options, formData }, thunkAPI) => {
-        const res = await chapApi.updateImg(chapId, options, formData);
-        return res.data.data;
-    }
-);
-
 export const getChapterByChapID = createAsyncThunk(
     "chapters/getChaptersById",
     async (params, thunkAPI) => {
@@ -96,26 +80,6 @@ const chapterSlice = createSlice({
             console.log(action.payload)
             chapterAdapter.removeOne(state, action.payload);
             state.count = --state.count;
-        },
-        [createChapter.pending]: (state) => {
-            state.status = "loading";
-        },
-        [createChapter.rejected]: (state) => {
-            state.status = "rejected";
-        },
-        [createChapter.fulfilled]: (state, action) => {
-            state.status = "success";
-            console.log(action.payload);
-        },
-        [updateChapter.pending]: (state) => {
-            state.status = "loading";
-        },
-        [updateChapter.rejected]: (state) => {
-            state.status = "rejected";
-        },
-        [updateChapter.fulfilled]: (state, action) => {
-            state.status = "success";
-            console.log(action.payload);
         },
         [getChapterByChapID.pending]: (state) => {
             state.status = "loading";

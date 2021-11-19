@@ -7,19 +7,17 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Account from "./pages/Account";
 import Home from "./pages/Home";
-import Comment from "./components/Comment/Comment";
 import Footer from "./components/Footer/Footer";
 import DetailComic from "./pages/DetailComic";
 import DetailChapter from "./pages/DetailChapter";
 import "moment/min/locales";
-import ModalNotify from "./components/Modal/ModalNotify";
 import Follow from "./pages/Follow";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import "moment/locale/vi";
 import { useDispatch, useSelector } from "react-redux";
 import jwtDecode from "jwt-decode";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Dashboard from "./components/Admin/Dashboard";
 import { login, setIsAdmin, setUserInfo } from "./features/auth/userSlice";
 import { io } from "socket.io-client";
@@ -29,6 +27,9 @@ import ProtectedRoute from "./ProtectedRoute";
 import ProtectedRouteAdmin from "./ProtectedRouteAdmin";
 import History from "./pages/History";
 import Loading from "./components/Loading/Loading";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 function App() {
   const { token, userInfo, isLogged, isAdmin } = useSelector(
     (state) => state.user
@@ -95,6 +96,21 @@ function App() {
       {loading ? (
         <Loading />
       ) : (
+      <div>
+        <ToastContainer
+          theme="light"
+          position="bottom-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover>
+
+        </ToastContainer>
+      </div>
         <Router>
           <Switch>
             {/* Admin */}

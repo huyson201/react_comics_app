@@ -18,24 +18,33 @@ import {
   setUserInfo,
 } from "../features/auth/userSlice";
 import { useDispatch } from "react-redux";
-import { modalNotify } from "../features/modal/modalSlice";
 import userApi from "../api/userApi";
 import jwtDecode from "jwt-decode";
-
+import { toast } from 'react-toastify';
+import { useHistory } from "react-router";
 const Login = () => {
   const [user_email, setEmail] = useState();
   const [user_password, setPassword] = useState();
+  const history = useHistory()
   const dispatch_redux = useDispatch();
 
-  const notify = (error, message) => {
-    dispatch_redux(
-      modalNotify({
-        show: true,
-        message: message,
-        error: error,
-      })
-    );
-  };
+  const notify = (error, message, warn) => {
+    if (error !== null) {
+      if (!toast.isActive(error)) {
+        toast.error(error, { toastId: error })
+      }
+    } else if (message !== null) {
+      if (!toast.isActive(message)) {
+        toast.success(message, { toastId: message })
+        history.push("/")
+      }
+
+    } else {
+      if (!toast.isActive(warn)) {
+        toast.warn(warn, { toastId: warn })
+      }
+    }
+  }
   //lưu data(token refreshtoken userInfo)
   const dispatchData = async (res) => {
     //set show modal
@@ -43,7 +52,7 @@ const Login = () => {
       const token = res.data.data.token;
       const userId = jwtDecode(token);
       console.log(userId);
-      if (userId.user_role==='admin') {
+      if (userId.user_role === 'admin') {
         dispatch_redux(setIsAdmin(true));
       }
       dispatch_redux(
@@ -62,7 +71,7 @@ const Login = () => {
     try {
       const getInfo = await userApi.getUserById(id, token);
       if (getInfo.data.data) {
-        notify(null, LOGIN_SUCCESS);
+        notify(null, LOGIN_SUCCESS, null);
         dispatch_redux(setUserInfo(getInfo.data.data));
       }
     } catch (error) {
@@ -82,16 +91,15 @@ const Login = () => {
       }
     } catch (error) {
       if (error.response) {
-        notify(error.response.data, null);
+        notify(error.response.data, null, null);
       }
     }
   };
-
   //login khi nhấn đăng nhập
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (user_password.length < 6) {
-      notify(VALIDATE_PW, null);
+      notify(VALIDATE_PW, null, null);
     } else {
       loginNormal();
     }

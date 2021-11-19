@@ -12,9 +12,9 @@ import {
 } from "../../constants";
 import { useDispatch, useSelector } from "react-redux";
 import { login, logout, setUserInfo } from "../../features/auth/userSlice";
-import { modalNotify } from "../../features/modal/modalSlice";
 import userApi from "../../api/userApi"
 import { useHistory } from "react-router";
+import { toast } from 'react-toastify';
 
 const Profile = () => {
   const [user_name, setUserName] = useState();
@@ -24,15 +24,21 @@ const Profile = () => {
   const history = useHistory()
   const dispatch_redux = useDispatch();
 
-  const notify = (error, message) => {
-    dispatch_redux(
-      modalNotify({
-        show: true,
-        message: message,
-        error: error,
-      })
-    );
-  };
+  const notify = (error, message, warn) => {
+    if (error !== null) {
+      if (!toast.isActive(error)) {
+        toast.error(error, { toastId: error })
+      }
+    } else if (message !== null) {
+      if (!toast.isActive(message)) {
+        toast.success(message, { toastId: message })
+      }
+    } else {
+      if (!toast.isActive(warn)) {
+        toast.warn(warn, { toastId: warn })
+      }
+    }
+  }
   //effect user info
   useEffect(() => {
     if (userInfo !== null) {
@@ -57,7 +63,7 @@ const Profile = () => {
       }
     } catch (error) {
       console.log(error);
-      notify(error.response.data, null)
+      notify(error.response.data, null, null)
     }
   };
   //Lưu redux user info
@@ -74,7 +80,7 @@ const Profile = () => {
   //thông báo login khi token hết hạn
   const resetDispatch = () => {
     dispatch_redux(logout());
-    notify(WARN_LOGIN, null);
+    notify(null, null, WARN_LOGIN);
   };
 
   const convertBase64 = (file) => {
@@ -100,14 +106,14 @@ const Profile = () => {
       const res = await userApi.updateUserImage(token, formData, userInfo.user_uuid)
       if (res.data.data) {
         dispatchUser(userInfo.user_uuid, token)
-        notify(null, UPDATE_SUCCESS)
+        notify(null, UPDATE_SUCCESS,null)
       }
     } catch (error) {
       console.log(error.response.data);
     }
   }
   //xử lý dữ liệu khi nhấn update
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let formData = new FormData();
     const file = e.target[2].files[0]

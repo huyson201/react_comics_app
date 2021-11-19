@@ -60,18 +60,13 @@ const AddOrEditComic = ({ id }) => {
   const handleSubmit = (e) => {
     const form = e.currentTarget;
     if (form.checkValidity() === false) {
-      console.log(selectedCategories.length, "b");
-      console.log(form.checkValidity());
       if (selectedCategories.length === 0) {
         setColor(false);
       }
       e.preventDefault();
       e.stopPropagation();
-      console.log(image);
       setValidated(true);
     } else if (form.checkValidity()) {
-      console.log(form.checkValidity(), "HIHI");
-      console.log(selectedCategories.length, "a");
       e.preventDefault();
       setValidated(true);
       if (selectedCategories.length > 0) {
@@ -92,6 +87,12 @@ const AddOrEditComic = ({ id }) => {
           formData.append("comic_img", file);
           dispatch(createComic({ data: formData, userToken: token }));
           setValidated(false);
+          setName("");
+          setAuthor("");
+          setSummary("");
+          setSelectedCategories("");
+          setImage("");
+          setStatus("");
         } else
           dispatch(updateComic({ id: id, data: formData, userToken: token }));
       } else {

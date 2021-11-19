@@ -10,9 +10,9 @@ const CommentForm = ({ username, handleSubmit }) => {
     setText("");
   };
   useEffect(() => {
-   if(username){
-    ref.current.value = `@${username} `
-   }
+    if (username) {
+      ref.current.value = `@${username} `
+    }
   }, [])
   return (
     <>
@@ -23,7 +23,8 @@ const CommentForm = ({ username, handleSubmit }) => {
           onChange={(e) => setText(e.target.value)}
           value={text}
         ></textarea>
-        <button className="comment-form-button">Gửi</button>
+
+        <button className="comment-form-button" disabled={text.trim() !== '' ? false : true} >Gửi</button>
       </form>
     </>
   );
