@@ -14,8 +14,9 @@ import Table from "../Table/Table";
 import Pagination from "react-js-pagination";
 import { LIMIT } from "../../constants";
 import Button from "@restart/ui/esm/Button";
-import { comicSelectors } from "../../features/comics/comicSlice";
+import { comicSelectors, getComicByID, removeSelectedComic } from "../../features/comics/comicSlice";
 import ModalAlert from "../Modal/ModalAlert";
+import { xoaDau } from "../../utilFunction";
 
 const ChapList = (props) => {
   const { comicId } = useParams();
@@ -26,9 +27,8 @@ const ChapList = (props) => {
   const chapters = useSelector(chapterSelectors.selectAll);
   const { status, count } = useSelector((state) => state.chapter);
   const { token } = useSelector((state) => state.user);
-  const selectedComic = useSelector((state) =>
-    comicSelectors.selectById(state, +comicId)
-  );
+  const selectedComic = useSelector((state) => state.comics.selectedComic);
+  console.log(selectedComic);
   const [show, setShow] = useState(false);
   console.log(chapters);
   const handleClickAdd = () => {
@@ -53,8 +53,12 @@ const ChapList = (props) => {
   };
 
   useEffect(() => {
+    dispatch(getComicByID(comicId));
     dispatch(getChapsByComicId(comicId));
-    return dispatch(removeChapList());
+    return () => {
+      dispatch(removeChapList())
+      dispatch(removeSelectedComic())
+    }
   }, [page, count]);
 
   const columns = [
@@ -65,6 +69,16 @@ const ChapList = (props) => {
     {
       Header: "CHAP_NAME",
       accessor: "chapter_name",
+      Cell: ({ cell }) => (
+        <div>
+          <Link
+            className="column-comic-name"
+            to={`/${xoaDau(cell.row.values.chapter_name)}/${cell.row.values.chapter_id}/truyen-tranh/${selectedComic ? xoaDau(selectedComic.comic_name) : ""}-${comicId}`}
+          >
+            {cell.row.values.chapter_name}
+          </Link>
+        </div>
+      ),
     },
     // {
     //   Header: "AD_NAME",

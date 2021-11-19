@@ -12,7 +12,7 @@ const UpdateChap = (props) => {
     const { chap, status } = useSelector(state => state.chapter)
     const [urls, setUrls] = useState([])
     const [files, setFiles] = useState()
-    const [name, setName] = useState()
+    const [name, setName] = useState("")
     const { chapId } = useParams()
     const dispatch = useDispatch()
     const { token } = useSelector(state => state.user)
