@@ -1,0 +1,42 @@
+.history-list{
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 7px;
+}
+.history-item {
+  width: 50%;
+  padding: 0 3px;
+}
+.history-item-content {
+  background: #2d2d2d;
+  display: flex;
+  margin-bottom: 10px;
+  padding: 7px;
+  align-items: center;
+  border-top: 2px solid #a74949;
+  color: #ccc;
+}
+.history-item-content:hover {
+  opacity: 0.5;
+}
+.history-item-content div:first-child {
+  margin-right: 10px;
+}
+.history-item-content img {
+  width: 50px;
+  height: 70px;
+}
+.history-item-name,
+.history-chapter-item {
+  font-size: 15px;
+  color: #fff;
+  text-align: left;
+}
+.history-chapter-item {
+  margin-top: 5px;
+  color: #ccc;
+}
+.history-list .history-item:nth-child(even) .history-item-content {
+  border-color: #dea550;
+  background: #462a2a;
+}

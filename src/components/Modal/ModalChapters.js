@@ -25,7 +25,7 @@ const ModalChapters = (props) => {
   };
 
   return (
-    <Modal show={showChapter} className="modal_chapters">
+    <Modal show={showChapter} dialogClassName="modal_chapters">
       <Modal.Header>
         <div>Danh sách chap</div>
         <div className="btn_close" onClick={handleClose}>

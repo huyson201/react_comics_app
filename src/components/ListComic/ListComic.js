@@ -14,9 +14,6 @@ import "slick-carousel/slick/slick-theme.css";
 import ListItem from "./ListItem";
 const ListComic = ({ keyword, filter, comics, other, title, isFollow }) => {
   const category = useSelector((state) => state.comics.selectedCategory);
-  const comics_follow = useSelector((state) => state.follows.comics);
-  console.log(comics_follow);
-  console.log(isFollow);
   return (
     <>
       <div className="list-title">
@@ -44,19 +41,6 @@ const ListComic = ({ keyword, filter, comics, other, title, isFollow }) => {
               ></ListItem>
             );
           })}
-        {/* {isFollow
-          ? comics_follow.map((e, i) => {
-              return (
-                <ListItem
-                  index={i}
-                  other={other}
-                  key={i}
-                  isFollow={isFollow}
-                  item={e}
-                ></ListItem>
-              );
-            })
-          : null} */}
       </div>
     </>
   );

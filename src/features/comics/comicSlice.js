@@ -60,6 +60,7 @@ export const createComic = createAsyncThunk(
   "comics/create",
   async ({ data, userToken }) => {
     const comic = await comicApi.createComic(data, userToken);
+    console.log(comic.data.data)
     return comic.data.data;
   }
 );

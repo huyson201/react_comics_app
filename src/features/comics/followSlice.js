@@ -30,6 +30,7 @@ export const getComicsFollow = createAsyncThunk(
     thunkAPI.dispatch(removeSelectedCategory());
     try {
       const res = await followApi.getFollowUser(id, userToken);
+      console.log(res.data.data)
       return res.data.data;
     } catch (error) {
       console.log(error);
@@ -55,15 +56,15 @@ export const deleteComicFollow = createAsyncThunk(
       const res = await followApi.deleteFollow(id, userToken);
       return res.data.data;
     } catch (error) {
-      console.log(error);
-      thunkAPI.dispatch(logout());
-      thunkAPI.dispatch(
-        modalNotify({
-          show: true,
-          message: null,
-          error: WARN_LOGIN,
-        })
-      );
+      // console.log(error);
+      // thunkAPI.dispatch(logout());
+      // thunkAPI.dispatch(
+      //   modalNotify({
+      //     show: true,
+      //     message: null,
+      //     error: WARN_LOGIN,
+      //   })
+      // );
     }
   }
 );

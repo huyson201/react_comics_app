@@ -20,6 +20,7 @@ const Follow = () => {
       setTitle(FOLLOW_COMICS);
       setIsFollow(true);
       const user_id = jwt_decode(token).user_uuid;
+      console.log(user_id)
       dispatch(getComicsFollow({ id: user_id, userToken: token }));
     }
     return () => {

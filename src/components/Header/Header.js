@@ -1,19 +1,13 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo} from "react";
 import {
   MdHome,
   MdBookmark,
   MdPerson,
-  MdFilterAlt,
-  MdLogout,
-  MdAccountCircle,
-  MdArrowDropDown,
-  MdLogin,
 } from "react-icons/md";
-import { AiFillHeart, AiOutlineForm } from "react-icons/ai";
 
 import { FaBell } from "react-icons/fa";
-import { ImBooks, ImHistory, ImSearch } from "react-icons/im";
-import { Collapse, Button, Offcanvas } from "react-bootstrap";
+import { ImBooks, ImHistory } from "react-icons/im";
+import { Collapse} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "./header.css";
 import jwt_decode from "jwt-decode";
@@ -170,6 +164,10 @@ const Navbar = (props) => {
       setOpen(false)
     }
     window.onclick = handleClickWindow
+    return ()=>{
+      setOpenNotification(false)
+      setOpen(false)
+    }
   }, [])
 
   // generate notify items
@@ -222,7 +220,6 @@ const Navbar = (props) => {
       return el.status === NOTIFY_STATUS.NEW;
     }).length;
   }, [listNotifications]);
-  console.log(countNotify)
   //xử lý data khi nhấn logout
   const handleLogout = async () => {
     try {
@@ -302,7 +299,7 @@ const Navbar = (props) => {
           <ImBooks />
           Thể loại
         </div>
-        <Link to="#" className="nav-item">
+        <Link to="/lich-su" className="nav-item">
           <ImHistory /> Lịch sử
         </Link>
         <Link

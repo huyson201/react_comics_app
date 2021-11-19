@@ -33,6 +33,7 @@ import { io } from "socket.io-client";
 import userApi from "./api/userApi";
 import Cookies from "js-cookie";
 import ProtectedRoute from "./ProtectedRoute";
+import History from "./pages/History";
 function App() {
   const { token, userInfo, isLogged, isAdmin } = useSelector(
     (state) => state.user
@@ -146,6 +147,7 @@ function App() {
               <ModalNotify />
               <Header />
               <Route exact path="/" component={Home}></Route>
+              <Route exact path="/lich-su" component={History}></Route>
               <Route
                 exact
                 path="/truyen-moi-cap-nhat/page/:number"

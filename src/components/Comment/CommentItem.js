@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
-import React, { useEffect, useState, useMemo } from "react";
-import CommentForm from "./CommentForm";
+import React, { useMemo } from "react";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import jwtDecode from "jwt-decode";
@@ -12,37 +11,17 @@ const CommentItem = ({
   parentId = null,
   item,
   activeComment,
-  // subComments,
   setActiveComment,
   reply,
   comicId
 }) => {
   const replyId = parentId ? parentId : item.comment_id;
-
   const isReplying = activeComment === item.comment_id;
-
   const token = useSelector((state) => state.user.token);
-
-
   const date = moment(item.createdAt).format("L LTS");
-
-
-  // const [replies, setReplies] = useState([]);
-
-  // useEffect(() => {
-  //   if (subComments !== undefined) {
-  //     let newSubCmt = [...subComments]
-  //     if (newSubCmt.length > 3) newSubCmt.length = 3
-  //     setReplies(newSubCmt);
-  //   }
-  // }, [subComments]);
-
-
   const handleClickReply = () => {
     setActiveComment(item.comment_id);
   };
-
-
   let currentUserUid = useMemo(() => {
     let decode = jwtDecode(token)
     return decode.user_uuid
@@ -84,36 +63,6 @@ const CommentItem = ({
         userName={item.user_info.user_name}
         comicId={comicId}
       />
-
-
-      {/* <div className="sub-comment">
-        {isReplying && (
-          <CommentForm
-            username={item.user_info.user_name}
-            handleSubmit={(text) => {
-              addComment(text, replyId, parentIndex)
-              setActiveComment(-1)
-            }}
-          ></CommentForm>
-        )}
-        {replies &&
-          replies.map((e, index) => {
-            return (
-              <div key={index} style={{ padding: 0 }}>
-                <CommentItem
-                  parentIndex={parentIndex}
-                  parentId={item.comment_id}
-                  addComment={addComment}
-                  activeComment={activeComment}
-                  setActiveComment={setActiveComment}
-                  key={e.comment_id}
-                  item={e}
-                  reply={true}
-                ></CommentItem>
-              </div>
-            );
-          })}
-      </div> */}
     </>
   );
 };
