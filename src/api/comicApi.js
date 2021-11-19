@@ -52,7 +52,7 @@ const comicApi = {
   getSubComment: (id, parentId, option) => {
     let url = `comics/${id}/comments?sort=createdAt:asc&parent_id=${parentId}`;
     if (option) {
-      url += `&${option}`
+      url += `&${option}`;
     }
     return axiosClient.get(url);
   },

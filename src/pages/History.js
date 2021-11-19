@@ -35,7 +35,7 @@ const History = () => {
       setHistoryList([]);
     };
   }, []);
-  //   console.log(JSON.parse(localStorage.getItem("visited_chapters")));
+  
   return (
     <div>
       {loading && <Loading />}

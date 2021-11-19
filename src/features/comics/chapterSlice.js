@@ -14,7 +14,7 @@ export const getChapsByComicId = createAsyncThunk(
     async (params, thunkAPI) => {
         const index = thunkAPI.getState().chapter.offset;
         const chapters = await chapApi.getChapterByComicId(params, index);
-        console.log(params);
+        // console.log(params);
         return chapters.data.data;
     }
 );

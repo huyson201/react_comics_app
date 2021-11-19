@@ -36,7 +36,11 @@ import { Spinner } from "react-bootstrap";
 import { modalNotify } from "../features/modal/modalSlice";
 import Comment from "../components/Comment/Comment";
 import userApi from "../api/userApi";
-import { calRate, getRateByUserId, setRate } from "../features/comics/rateSlice";
+import {
+  calRate,
+  getRateByUserId,
+  setRate,
+} from "../features/comics/rateSlice";
 
 const DetailComic = () => {
   const history = useHistory();
@@ -44,9 +48,12 @@ const DetailComic = () => {
   const arrName = name.split("-");
   const id = arrName[arrName.length - 1];
   const [data, setData] = useState();
+  const [chapters, setChapters] = useState([]);
   const [checked, setChecked] = useState(false);
   const { status } = useSelector((state) => state.follows);
-  const { token, refreshToken, isLogged, userInfo } = useSelector((state) => state.user);
+  const { token, refreshToken, isLogged, userInfo } = useSelector(
+    (state) => state.user
+  );
   const { show, error, message } = useSelector((state) => state.modal);
   const { perRate, count, rateState } = useSelector((state) => state.rate);
   const dispatch = useDispatch();
@@ -77,13 +84,24 @@ const DetailComic = () => {
     try {
       const res = await comicApi.getComicByID(id);
       if (res.data.data) {
-        setData(res.data.data);
+        const comic = res.data.data;
+        const visitedChapter = JSON.parse(
+          localStorage.getItem("visited_chapters")
+        );
+        comic.chapters.length > 0 &&
+          visitedChapter.forEach((e) => {
+            const index = comic.chapters.findIndex((x) => x.chapter_id === e);
+            if (index !== -1) {
+              comic.chapters[index].isVisited = true;
+            }
+          });
+        console.log(comic);
+        setData(comic);
       }
     } catch (error) {
       if (error.response.data) {
         notify(error.response.data, null);
-      }
-      else {
+      } else {
         notify(error.message, null);
       }
     }
@@ -92,10 +110,17 @@ const DetailComic = () => {
   const rate = async (id, token, starIndex) => {
     if (rateState) {
       try {
-        const resUpdate = await rateApi.updateRateComic(rateState.rate_id, starIndex, token, rateState.user_uuid)
+        const resUpdate = await rateApi.updateRateComic(
+          rateState.rate_id,
+          starIndex,
+          token,
+          rateState.user_uuid
+        );
         if (resUpdate.data.data) {
-          dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }))
-          notify(null, UPDATE_SUCCESS)
+          dispatch(
+            getRateByUserId({ userId: userInfo.user_uuid, comicId: id })
+          );
+          notify(null, UPDATE_SUCCESS);
         }
       } catch (error) {
         console.log(error.response.data);
@@ -104,7 +129,9 @@ const DetailComic = () => {
       try {
         const res = await rateApi.rateComic(id, token, starIndex);
         if (res.data.data) {
-          dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }))
+          dispatch(
+            getRateByUserId({ userId: userInfo.user_uuid, comicId: id })
+          );
           notify(null, RATE_SUCCESS);
         }
       } catch (error) {
@@ -132,7 +159,7 @@ const DetailComic = () => {
   //refresh token
   const updateToken = async () => {
     try {
-      const resUpdate = await userApi.refreshToken(refreshToken)
+      const resUpdate = await userApi.refreshToken(refreshToken);
       if (resUpdate.data && resUpdate.data.token) {
         dispatch(
           login({
@@ -140,14 +167,13 @@ const DetailComic = () => {
             refreshToken: refreshToken,
           })
         );
-        dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }))
-        rate(id, token, starIndex)
-        notify(null, RATE_SUCCESS)
-
+        dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }));
+        rate(id, token, starIndex);
+        notify(null, RATE_SUCCESS);
       }
     } catch (error) {
       console.log(error);
-      notify(error.response.data, null)
+      notify(error.response.data, null);
     }
   };
   //effect rate
@@ -157,20 +183,28 @@ const DetailComic = () => {
     //rating
     if (starIndex) {
       if (token && isJwtExpired(token) === false && userInfo) {
-        dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }))
+        dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }));
         rate(id, token, starIndex);
-      } else if (refreshToken && isJwtExpired(refreshToken) === false && userInfo) {
-        updateToken()
+      } else if (
+        refreshToken &&
+        isJwtExpired(refreshToken) === false &&
+        userInfo
+      ) {
+        updateToken();
       } else {
-        notify(WARN_LOGIN, null)
+        notify(WARN_LOGIN, null);
       }
     } else {
       if (token && isJwtExpired(token) === false && userInfo) {
-        dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }))
-      } else if (refreshToken && isJwtExpired(refreshToken) === false && userInfo) {
-        updateToken()
+        dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }));
+      } else if (
+        refreshToken &&
+        isJwtExpired(refreshToken) === false &&
+        userInfo
+      ) {
+        updateToken();
       } else {
-        dispatch(setRate(null))
+        dispatch(setRate(null));
       }
     }
     calculatePercentRate();
@@ -180,7 +214,8 @@ const DetailComic = () => {
   const handleReadLast = () => {
     const chapter = data.chapters[0];
     history.push(
-      `/${xoaDau(chapter.chapter_name)}/${chapter.chapter_id
+      `/${xoaDau(chapter.chapter_name)}/${
+        chapter.chapter_id
       }/truyen-tranh/${name}`
     );
   };
@@ -188,7 +223,8 @@ const DetailComic = () => {
   const handleReadFirst = () => {
     const chapter = data.chapters[data.chapters.length - 1];
     history.push(
-      `/${xoaDau(chapter.chapter_name)}/${chapter.chapter_id
+      `/${xoaDau(chapter.chapter_name)}/${
+        chapter.chapter_id
       }/truyen-tranh/${name}`
     );
   };
@@ -265,16 +301,17 @@ const DetailComic = () => {
                     <div className="item">
                       {data
                         ? data.categories.map((e, i) => {
-                          return (
-                            <Link
-                              key={i}
-                              to={`/the-loai/${xoaDau(e.category_name)}/${e.category_id
+                            return (
+                              <Link
+                                key={i}
+                                to={`/the-loai/${xoaDau(e.category_name)}/${
+                                  e.category_id
                                 }/page/1`}
-                            >
-                              {e.category_name}
-                            </Link>
-                          );
-                        })
+                              >
+                                {e.category_name}
+                              </Link>
+                            );
+                          })
                         : ""}
                     </div>
                   </div>
@@ -291,10 +328,10 @@ const DetailComic = () => {
                     <div className="item">
                       {data && data.chapters.length > 0
                         ? updateDate(
-                          data.chapters.sort((a, b) =>
-                            b.chapter_id > a.chapter_id ? 1 : -1
-                          )[0].updatedAt
-                        )
+                            data.chapters.sort((a, b) =>
+                              b.chapter_id > a.chapter_id ? 1 : -1
+                            )[0].updatedAt
+                          )
                         : "Đang cập nhật"}
                     </div>
                   </div>
@@ -347,7 +384,7 @@ const DetailComic = () => {
                           changeStarIndex={changeStarIndex}
                           style={
                             (starIndex >= i && starIndex != null) ||
-                              rateState && +rateState.rate_star - 1 >= i
+                            (rateState && +rateState.rate_star - 1 >= i)
                               ? true
                               : false
                           }
@@ -367,21 +404,23 @@ const DetailComic = () => {
                     {/* Truyền id chapter và list chapter */}
                     {data
                       ? data.chapters
-                        .sort((a, b) =>
-                          b.chapter_id > a.chapter_id ? 1 : -1
-                        )
-                        .map((e, i) => {
-                          return (
-                            <Link
-                              to={`/${xoaDau(e.chapter_name)}/${e.chapter_id
+                          .sort((a, b) =>
+                            b.chapter_id > a.chapter_id ? 1 : -1
+                          )
+                          .map((e, i) => {
+                            return (
+                              <Link
+                              className={e.isVisited && "visited"}
+                                to={`/${xoaDau(e.chapter_name)}/${
+                                  e.chapter_id
                                 }/truyen-tranh/${name}`}
-                              key={i}
-                            >
-                              <span>{e.chapter_name}</span>
-                              <span>{updateDate(e.updatedAt)}</span>
-                            </Link>
-                          );
-                        })
+                                key={i}
+                              >
+                                <span>{e.chapter_name}</span>
+                                <span>{updateDate(e.updatedAt)}</span>
+                              </Link>
+                            );
+                          })
                       : ""}
                   </div>
                 </div>

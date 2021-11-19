@@ -181,26 +181,23 @@ const AddOrEditComic = ({ id }) => {
               {COMIC_IMAGE}
             </Form.Label>
             <Col md="10">
-              {id ? (
-                <Form.Control
-                  size="sm"
-                  type="file"
-                  onChange={(e) => changeImage(e.target.files[0])}
-                />
-              ) : (
-                <Form.Control
-                  required
-                  size="sm"
-                  type="file"
-                  onChange={(e) => changeImage(e.target.files[0])}
-                />
-              )}
+              <Form.Control
+                required={id ? false : true}
+                size="sm"
+                type="file"
+                onChange={(e) => changeImage(e.target.files[0])}
+              />
 
               <Form.Control.Feedback type="invalid">
                 {"Yêu cầu"}
               </Form.Control.Feedback>
               {image !== "" && (
-                <img key={Date.now()} src={image} alt="account" />
+                <img
+                  className="image-comic"
+                  key={Date.now()}
+                  src={image}
+                  alt="comic"
+                />
               )}
             </Col>
           </Form.Group>

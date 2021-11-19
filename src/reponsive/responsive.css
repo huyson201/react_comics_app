@@ -32,6 +32,12 @@
   .dashboard-nav-bar {
     display: none;
   }
+
+  /* Dashboard */
+  .image-comic {
+    width: 300px;
+    height: 300px;
+  }
 }
 
 /* 
@@ -68,6 +74,11 @@
   .dashboard-nav-bar {
     display: none;
   }
+  /* Dashboard */
+  .image-comic {
+    width: 300px;
+    height: 300px;
+  }
 }
 
 /* 
@@ -78,9 +89,19 @@
 @media (min-width: 481px) and (max-width: 768px) {
   /* CSS */
   /* Header */
-  /* .nav-item {
-    font-size: 0px;
+  .nav-item {
+    font-size: 14px;
+  }
+  .nav-item svg {
+    font-size: 0 !important;
+  }
+  /* .nav-bar {
+    display: none !important;
+  }
+  .menu {
+    display: flex !important;
   } */
+
   .nav-item svg {
     font-size: 16px;
   }
@@ -103,16 +124,18 @@
   .list-comic-item {
     width: 25%;
   }
-
+  .list-title {
+    font-size: 17px !important;
+  }
   .form {
     width: 50%;
     margin: 0 auto;
   }
-  /* .form {
+  .form {
     width: auto !important;
     height: auto !important;
     padding: 30px !important;
-  } */
+  }
 
   .head .head_left {
     width: 30% !important;
@@ -124,9 +147,13 @@
   .list_item_chap a {
     width: 25%;
   }
-
+  /* Dashboard */
   .dashboard-nav-bar {
     display: flex;
+  }
+  .image-comic {
+    width: 300px;
+    height: 300px;
   }
 }
 
@@ -180,6 +207,9 @@
   /* List comic */
   .list-comic-item {
     width: 50%;
+  }
+  .list-title {
+    font-size: 17px !important;
   }
   .checkbox-item {
     width: 50%;
@@ -302,12 +332,16 @@
   .modal.modal_chapters {
     left: 18px !important;
   }
-
-  .modal-content {
-    width: 90% !important;
-  }
-
+  /* Dashboard */
   .dashboard-nav-bar {
     display: flex;
+  }
+  .image-comic {
+    width: 200px;
+    height: 200px;
+  }
+  /* history */
+  .history-item {
+    width: 100% !important;
   }
 }

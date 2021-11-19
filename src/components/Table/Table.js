@@ -91,7 +91,7 @@ const Table = ({ columns, data }) => {
           })}
         </tbody>
       </BTable>
-      <p>Selected Rows: {Object.keys(selectedRowIds).length}</p>
+      {/* <p>Selected Rows: {Object.keys(selectedRowIds).length}</p>
       <pre>
         <code>
           {JSON.stringify(
@@ -105,7 +105,7 @@ const Table = ({ columns, data }) => {
             2
           )}
         </code>
-      </pre>
+      </pre> */}
     </>
   );
 };

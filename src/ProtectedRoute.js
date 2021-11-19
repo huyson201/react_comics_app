@@ -7,19 +7,43 @@ const ProtectedRoute = ({ component: Component, ...rest }) => {
     <Route
       {...rest}
       render={(props) => {
-        if (isLogged && isAdmin) {
-          return <Component {...props} />;
+        if (isLogged) {
+          console.log(props);
+          if (
+            props.location.pathname === "/login" ||
+            props.location.pathname === "/register"
+          ) {
+            return (
+              <Redirect
+                to={{
+                  pathname: "/",
+                  state: {
+                    from: props.location,
+                  },
+                }}
+              ></Redirect>
+            );
+          } else {
+            return <Component {...props} />;
+          }
         } else {
-          return (
-            <Redirect
-              to={{
-                pathname: "/",
-                state: {
-                  from: props.location,
-                },
-              }}
-            ></Redirect>
-          );
+          if (
+            props.location.pathname === "/login" ||
+            props.location.pathname === "/register"
+          ) {
+            return <Component {...props} />;
+          } else {
+            return (
+              <Redirect
+                to={{
+                  pathname: "/",
+                  state: {
+                    from: props.location,
+                  },
+                }}
+              ></Redirect>
+            );
+          }
         }
       }}
     />

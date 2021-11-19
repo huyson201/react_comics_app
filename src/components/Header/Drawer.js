@@ -5,6 +5,7 @@ import {
   MdAccountCircle,
   MdArrowDropDown,
   MdLogin,
+  MdSpaceDashboard
 } from "react-icons/md";
 import { AiFillHeart, AiOutlineForm } from "react-icons/ai";
 
@@ -17,7 +18,7 @@ import { useSelector } from "react-redux";
 
 const Drawer = ({ show, handleClose, categories, handleLogout, setShow }) => {
   const [open, setOpen] = useState(false);
-  const { userInfo } = useSelector((state) => state.user);
+  const { userInfo, isAdmin } = useSelector((state) => state.user);
   return (
     <>
       <Offcanvas style={{ width: 300 }} show={show} onHide={handleClose}>
@@ -54,11 +55,27 @@ const Drawer = ({ show, handleClose, categories, handleLogout, setShow }) => {
 
         <Offcanvas.Body style={{ display: "flex", flexDirection: "column" }}>
           {userInfo && (
-            <Link to="/account" className="menu-body-item">
+            <Link
+              to="/account"
+              onClick={() => {
+                setShow(false);
+              }}
+              className="menu-body-item"
+            >
               <MdAccountCircle className="margin-right" /> Hồ sơ
             </Link>
           )}
-
+          {isAdmin && (
+            <Link
+              to="/dashboard"
+              onClick={() => {
+                setShow(false);
+              }}
+              className="menu-body-item"
+            >
+              <MdSpaceDashboard className="margin-right" /> Quản lí
+            </Link>
+          )}
           <div
             className="menu-body-item"
             onClick={() => {
@@ -91,10 +108,22 @@ const Drawer = ({ show, handleClose, categories, handleLogout, setShow }) => {
               </div>
             </Collapse>
           </div>
-          <Link to="/lich-su" className="menu-body-item">
+          <Link
+            to="/lich-su"
+            onClick={() => {
+              setShow(false);
+            }}
+            className="menu-body-item"
+          >
             <ImHistory className="margin-right" /> Lịch sử
           </Link>
-          <Link to="/truyen-theo-doi" className="menu-body-item">
+          <Link
+            to="/truyen-theo-doi"
+            onClick={() => {
+              setShow(false);
+            }}
+            className="menu-body-item"
+          >
             <MdBookmark className="margin-right" /> Theo dõi
           </Link>
           <div

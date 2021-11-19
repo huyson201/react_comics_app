@@ -21,26 +21,22 @@ import { useDispatch, useSelector } from "react-redux";
 import jwtDecode from "jwt-decode";
 import { Fragment, useEffect, useState } from "react";
 import Dashboard from "./components/Admin/Dashboard";
-import {
-  login,
-  logout,
-  setIsAdmin,
-  setUserInfo,
-} from "./features/auth/userSlice";
-import ChapList from "./components/Admin/ChapList";
-import Sidebar from "./components/Admin/Sidebar";
+import { login, setIsAdmin, setUserInfo } from "./features/auth/userSlice";
 import { io } from "socket.io-client";
 import userApi from "./api/userApi";
 import Cookies from "js-cookie";
 import ProtectedRoute from "./ProtectedRoute";
+import ProtectedRouteAdmin from "./ProtectedRouteAdmin";
 import History from "./pages/History";
+import Loading from "./components/Loading/Loading";
 function App() {
   const { token, userInfo, isLogged, isAdmin } = useSelector(
     (state) => state.user
   );
+  console.log(token, "TOKEN");
   const dispatch = useDispatch();
   const [socketIo, setSocketIo] = useState(false);
-  const [state, setState] = useState()
+  const [loading, setLoading] = useState(true);
 
   const getToken = () => {
     if (Cookies.get("refreshToken") && jwtDecode(Cookies.get("refreshToken"))) {
@@ -80,113 +76,129 @@ function App() {
     } catch (error) {
       console.log(error.response.data);
     }
-  }
+  };
   useEffect(() => {
-    getToken()
-  }, [])
+    getToken();
+  }, []);
   useEffect(() => {
-    if (token) {
-      const user = jwtDecode(token);
-
-      if (user && user.user_role != null) {
-        if (user.user_role === "user") {
-          setState(0);
-        } else {
-          setState(1);
-        }
-      }
+    if (token && isLogged) {
+      setLoading(false);
+    } else {
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
     }
   }, [token]);
 
-
-
   return (
     <>
-      <Router>
-        <Switch>
-          {/* Admin */}
-          <ProtectedRoute
-            path="/dashboard"
-            component={Dashboard}
-          ></ProtectedRoute>
-          <ProtectedRoute
-            exact
-            path="/comics/page/:number"
-            component={Dashboard}
-          ></ProtectedRoute>
-          <ProtectedRoute
-            exact
-            path="/comics/add"
-            component={Dashboard}
-          ></ProtectedRoute>
-          <ProtectedRoute
-            exact
-            path="/comics/edit/:comicId"
-            component={Dashboard}
-          ></ProtectedRoute>
-          <ProtectedRoute exact path="/comics/:comicId" component={Dashboard}></ProtectedRoute>
-          <ProtectedRoute
-            exact
-            path="/comics/:comicId/chaps/page/:numberPageChap"
-            component={Dashboard}
-          ></ProtectedRoute>
-          <ProtectedRoute
-            exact
-            path="/comic/:comicId/chaps/add"
-            component={Dashboard}
-          ></ProtectedRoute>
-          <ProtectedRoute
-            exact
-            path="/comics/:comicId/chaps/:chapId/update"
-            component={Dashboard}
-          ></ProtectedRoute>
+      {loading ? (
+        <Loading />
+      ) : (
+        <Router>
+          <Switch>
+            {/* Admin */}
+            <ProtectedRouteAdmin
+              path="/dashboard"
+              component={Dashboard}
+            ></ProtectedRouteAdmin>
+            <ProtectedRouteAdmin
+              exact
+              path="/comics/page/:number"
+              component={Dashboard}
+            ></ProtectedRouteAdmin>
+            <ProtectedRouteAdmin
+              exact
+              path="/comics/add"
+              component={Dashboard}
+            ></ProtectedRouteAdmin>
+            <ProtectedRouteAdmin
+              exact
+              path="/comics/edit/:comicId"
+              component={Dashboard}
+            ></ProtectedRouteAdmin>
+            <ProtectedRouteAdmin
+              exact
+              path="/comics/:comicId"
+              component={Dashboard}
+            ></ProtectedRouteAdmin>
+            <ProtectedRouteAdmin
+              exact
+              path="/comics/:comicId/chaps/page/:numberPageChap"
+              component={Dashboard}
+            ></ProtectedRouteAdmin>
+            <ProtectedRouteAdmin
+              exact
+              path="/comic/:comicId/chaps/add"
+              component={Dashboard}
+            ></ProtectedRouteAdmin>
+            <ProtectedRouteAdmin
+              exact
+              path="/comics/:comicId/chaps/:chapId/update"
+              component={Dashboard}
+            ></ProtectedRouteAdmin>
 
-          {/* Client */}
-          <Fragment>
-            <div className="wrapper">
-              <ModalNotify />
-              <Header />
-              <Route exact path="/" component={Home}></Route>
-              <Route exact path="/lich-su" component={History}></Route>
-              <Route
-                exact
-                path="/truyen-moi-cap-nhat/page/:number"
-                component={Home}
-              ></Route>
-              <Route
-                path="/tim-kiem/:keyword/page/:number"
-                component={Home}
-              ></Route>
-              <Route path="/tim-kiem-nang-cao" component={Home}></Route>
-              <Route
-                path="/the-loai/:name/:id/page/:number"
-                component={Home}
-              ></Route>
-              <Route path="/truyen-theo-doi" component={Follow}></Route>
-              <Route path="/truyen-tranh/:name" component={DetailComic}></Route>
-              <Route
-                path="/:chapter/:id/truyen-tranh/:name"
-                component={DetailChapter}
-              ></Route>
+            {/* Client */}
+            <Fragment>
+              <div className="wrapper">
+                <ModalNotify />
+                <Header />
+                <Route exact path="/" component={Home}></Route>
+                <Route exact path="/lich-su" component={History}></Route>
+                <Route
+                  exact
+                  path="/truyen-moi-cap-nhat/page/:number"
+                  component={Home}
+                ></Route>
+                <Route
+                  path="/tim-kiem/:keyword/page/:number"
+                  component={Home}
+                ></Route>
+                <Route path="/tim-kiem-nang-cao" component={Home}></Route>
+                <Route
+                  path="/the-loai/:name/:id/page/:number"
+                  component={Home}
+                ></Route>
+                <Route path="/truyen-theo-doi" component={Follow}></Route>
+                <Route
+                  path="/truyen-tranh/:name"
+                  component={DetailComic}
+                ></Route>
+                <Route
+                  path="/:chapter/:id/truyen-tranh/:name"
+                  component={DetailChapter}
+                ></Route>
 
-              <Route path="/register" component={Register}></Route>
-              <Route path="/account" component={Account}></Route>
-              <Route path="/profile" component={Account}></Route>
-              <Route path="/changePassword" component={Account}></Route>
-              <Route path="/follows" component={Account}></Route>
-              <Route path="/forgot-password" component={ForgotPassword}></Route>
-              <Route
-                path="/reset-password/:token"
-                component={ResetPassword}
-              ></Route>
-              <Route path="/login" component={Login}></Route>
-
-              <Footer />
-            </div>
-          </Fragment>
-          <Route path="*" component={() => "404 NOT FOUND"}></Route>
-        </Switch>
-      </Router>
+                <ProtectedRoute
+                  path="/account"
+                  component={Account}
+                ></ProtectedRoute>
+                <ProtectedRoute
+                  path="/profile"
+                  component={Account}
+                ></ProtectedRoute>
+                <ProtectedRoute
+                  path="/changePassword"
+                  component={Account}
+                ></ProtectedRoute>
+                <Route path="/follows" component={Account}></Route>
+                <Route
+                  path="/forgot-password"
+                  component={ForgotPassword}
+                ></Route>
+                <Route
+                  path="/reset-password/:token"
+                  component={ResetPassword}
+                ></Route>
+                <ProtectedRoute path="/register" component={Register}></ProtectedRoute>
+                <ProtectedRoute path="/login" component={Login}></ProtectedRoute>
+                <Footer />
+              </div>
+            </Fragment>
+            <Route path="*" component={() => "404 NOT FOUND"}></Route>
+          </Switch>
+        </Router>
+      )}
     </>
   );
 }
