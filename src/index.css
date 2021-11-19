@@ -142,6 +142,7 @@ input {
 
 #notify .notify-title {
   position: relative;
+  font-family: 'Baloo 2';
 }
 
 #notify .notify-title .notify-count {

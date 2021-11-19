@@ -222,7 +222,7 @@ const Navbar = (props) => {
       return el.status === NOTIFY_STATUS.NEW;
     }).length;
   }, [listNotifications]);
-
+  console.log(countNotify)
   //xử lý data khi nhấn logout
   const handleLogout = async () => {
     try {
@@ -315,13 +315,13 @@ const Navbar = (props) => {
         </Link>
         {/* notify */}
         <div className="nav-item" id="notify" onClick={handleClickNotify}>
-          <div className="notify-title">
+          <span className="notify-title">
             <FaBell />
             Thông báo
             {countNotify !== 0 && (
               <span className="notify-count">{countNotify}</span>
             )}
-          </div>
+          </span>
           <ul
             className={openNotification ? "notify-list active" : "notify-list"}
           >
