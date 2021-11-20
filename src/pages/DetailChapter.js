@@ -15,8 +15,12 @@ import { BsStars } from "react-icons/bs";
 import { modalChapter } from "../features/modal/modalSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "../components/Loading/Loading";
-import { chapterSelectors, getChapsByComicId } from "../features/comics/chapterSlice";
-import { toast } from 'react-toastify';
+import {
+  chapterSelectors,
+  getChapsByComicId,
+} from "../features/comics/chapterSlice";
+import { toast } from "react-toastify";
+import historyApi from "../api/historyApi";
 
 const DetailChapter = () => {
   const history = useHistory();
@@ -33,6 +37,7 @@ const DetailChapter = () => {
   });
   const dispatch = useDispatch();
   const { showChapter } = useSelector((state) => state.modal);
+  const { isLogged, token } = useSelector((state) => state.user);
   const chapter = useSelector(chapterSelectors.selectAll);
   //tính phần trăm khi user scroll
   const handleScroll = () => {
@@ -98,7 +103,7 @@ const DetailChapter = () => {
     const nId = await nextId(id, chapter);
     if (checkChapter(id, nId) === 0) {
       if (!toast.isActive(CHAP_NEXT)) {
-        toast.warn(CHAP_NEXT, { toastId: CHAP_NEXT })
+        toast.warn(CHAP_NEXT, { toastId: CHAP_NEXT });
       }
     } else {
       const resChapter = await comicApi.getChapterByID(nId);
@@ -116,7 +121,7 @@ const DetailChapter = () => {
     const pId = await preId(id, tempChap);
     if (checkChapter(id, pId) === 0) {
       if (!toast.isActive(CHAP_PRE)) {
-        toast.warn(CHAP_PRE, { toastId: CHAP_PRE })
+        toast.warn(CHAP_PRE, { toastId: CHAP_PRE });
       }
     } else {
       const resChapter = await comicApi.getChapterByID(pId);
@@ -154,32 +159,46 @@ const DetailChapter = () => {
       });
     };
   }, [id]);
+  //create history
+  const createHistory = async (comicId, id) => {
+    await historyApi.createHistory(comicId, id, token);
+  };
   // save read comic chapter history
   useEffect(() => {
+    let chapters = [];
     let histories = JSON.parse(localStorage.getItem("histories"));
-    let visitedChapter = JSON.parse(localStorage.getItem("visited_chapters"));
-    if (histories === null || visitedChapter === null) {
-      histories = [];
-      visitedChapter = [];
-      histories.push({ comic_id: +idComic, chapter_id: +id });
-      visitedChapter.push(+id);
+    if (!isLogged) {
+      if (histories === null) {
+        histories = [];
+        chapters.push(+id);
+        histories.push({ comic_id: +idComic, chapters: chapters });
+      } else {
+        const index = histories.findIndex((x) => x.comic_id === +idComic);
+        if (index === -1) {
+          chapters = [];
+          chapters.push(+id);
+          histories.push({ comic_id: +idComic, chapters: chapters });
+        } else {
+          chapters = histories[index].chapters;
+          let i = chapters.indexOf(+id);
+          if (i !== -1) {
+            chapters.splice(i, 1);
+          }
+          chapters.push(+id);
+        }
+      }
+      localStorage.setItem("histories", JSON.stringify(histories));
     } else {
-      const indexHistory = histories.findIndex((x) => x.comic_id === +idComic);
-      const indexChapter = visitedChapter.indexOf(+id);
-      if (indexHistory === -1) {
-        histories.push({ comic_id: +idComic, chapter_id: +id });
-      } else {
-        histories[indexHistory].chapter_id = +id;
+      if (histories !== null) {
+        for (let index = 0; index < histories.length; index++) {
+          const e = histories[index];
+          createHistory(e.comic_id, e.chapters.toString());
+        }
+        localStorage.removeItem("histories");
       }
-      if (indexChapter === -1) {
-        visitedChapter.push(+id);
-      } else {
-        visitedChapter[indexChapter] = +id;
-      }
+      createHistory(+idComic, +id);
     }
-    localStorage.setItem("histories", JSON.stringify(histories));
-    localStorage.setItem("visited_chapters", JSON.stringify(visitedChapter));
-  }, [id, idComic]);
+  }, [id, idComic, isLogged]);
 
   return (
     <>

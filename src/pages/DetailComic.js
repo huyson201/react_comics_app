@@ -34,8 +34,13 @@ import jwtDecode from "jwt-decode";
 import { Spinner } from "react-bootstrap";
 import Comment from "../components/Comment/Comment";
 import userApi from "../api/userApi";
-import { calRate, getRateByUserId, setRate } from "../features/comics/rateSlice";
-import { toast } from 'react-toastify';
+import {
+  calRate,
+  getRateByUserId,
+  setRate,
+} from "../features/comics/rateSlice";
+import { toast } from "react-toastify";
+import historyApi from "../api/historyApi";
 
 const DetailComic = () => {
   const history = useHistory();
@@ -59,18 +64,18 @@ const DetailComic = () => {
   const notify = (error, message, warn) => {
     if (error !== null) {
       if (!toast.isActive(error)) {
-        toast.error(error, { toastId: error })
+        toast.error(error, { toastId: error });
       }
     } else if (message !== null) {
       if (!toast.isActive(message)) {
-        toast.success(message, { toastId: message })
+        toast.success(message, { toastId: message });
       }
     } else {
       if (!toast.isActive(warn)) {
-        toast.warn(warn, { toastId: warn })
+        toast.warn(warn, { toastId: warn });
       }
     }
-  }
+  };
   //kiểm tra click star
   const changeStarIndex = (index) => {
     if (token && isJwtExpired(token) === false) {
@@ -80,30 +85,50 @@ const DetailComic = () => {
       dispatch(logout());
     }
   };
+  // get history chapter from server of user
+  const getHistoryChaptersFromServer = async () => {
+    const res = await historyApi.getHistory(userInfo.user_uuid, id);
+    return res.data.data;
+  };
+  //set chapter read
+  const setChapterRead = async (comic, chapters) => {
+    comic.chapters.length > 0 &&
+      chapters.forEach((e) => {
+        const index = comic.chapters.findIndex((x) => x.chapter_id === e);
+        if (index !== -1) {
+          comic.chapters[index].isVisited = true;
+        }
+      });
+  };
   //func get comic
   const getComic = async () => {
     try {
+      const histories = JSON.parse(localStorage.getItem("histories"));
+      console.log(histories);
       const res = await comicApi.getComicByID(id);
+
       if (res.data.data) {
         const comic = res.data.data;
-        const visitedChapter = JSON.parse(
-          localStorage.getItem("visited_chapters")
-        );
-        comic.chapters.length > 0 &&
-          visitedChapter.forEach((e) => {
-            const index = comic.chapters.findIndex((x) => x.chapter_id === e);
-            if (index !== -1) {
-              comic.chapters[index].isVisited = true;
-            }
-          });
-        console.log(comic);
+        if (!isLogged) {
+          // get readed chapters in local
+          if (histories != null) {
+            const indexComic = histories.findIndex((x) => x.comic_id === +id);
+            setChapterRead(comic, histories[indexComic].chapters);
+          }
+        } else {
+          // get readed chapters in server
+          const history = await getHistoryChaptersFromServer();
+          if (history.count > 0) {
+            const arrChapters = history.rows[0].chapters.split(",").map(Number);
+            setChapterRead(comic, arrChapters);
+          }
+        }
         setData(comic);
       }
     } catch (error) {
       if (error.response.data) {
         notify(error.response.data, null, null);
-      }
-      else {
+      } else {
         notify(error.message, null, null);
       }
     }
@@ -119,8 +144,10 @@ const DetailComic = () => {
           rateState.user_uuid
         );
         if (resUpdate.data.data) {
-          dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }))
-          notify(null, UPDATE_SUCCESS, null)
+          dispatch(
+            getRateByUserId({ userId: userInfo.user_uuid, comicId: id })
+          );
+          notify(null, UPDATE_SUCCESS, null);
         }
       } catch (error) {
         console.log(error.response.data);
@@ -129,7 +156,9 @@ const DetailComic = () => {
       try {
         const res = await rateApi.rateComic(id, token, starIndex);
         if (res.data.data) {
-          dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }))
+          dispatch(
+            getRateByUserId({ userId: userInfo.user_uuid, comicId: id })
+          );
           notify(null, RATE_SUCCESS, null);
         }
       } catch (error) {
@@ -165,14 +194,13 @@ const DetailComic = () => {
             refreshToken: refreshToken,
           })
         );
-        dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }))
-        rate(id, token, starIndex)
-        notify(null, RATE_SUCCESS, null)
-
+        dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }));
+        rate(id, token, starIndex);
+        notify(null, RATE_SUCCESS, null);
       }
     } catch (error) {
       console.log(error);
-      notify(error.response.data, null, null)
+      notify(error.response.data, null, null);
     }
   };
   //effect rate
@@ -191,7 +219,7 @@ const DetailComic = () => {
       ) {
         updateToken();
       } else {
-        notify(null, null, WARN_LOGIN)
+        notify(null, null, WARN_LOGIN);
       }
     } else {
       if (token && isJwtExpired(token) === false && userInfo) {
@@ -245,7 +273,7 @@ const DetailComic = () => {
   //follow
   const handleFollow = () => {
     if (!isLogged) {
-     notify(null,null,WARN_LOGIN)
+      notify(null, null, WARN_LOGIN);
     } else {
       if (checked && token) {
         // delete follow comic
@@ -399,7 +427,7 @@ const DetailComic = () => {
                           .map((e, i) => {
                             return (
                               <Link
-                              className={e.isVisited && "visited"}
+                                className={e.isVisited && "visited"}
                                 to={`/${xoaDau(e.chapter_name)}/${
                                   e.chapter_id
                                 }/truyen-tranh/${name}`}
