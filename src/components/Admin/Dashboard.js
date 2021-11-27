@@ -8,9 +8,9 @@ import {
   Breadcrumb,
 } from "react-bootstrap";
 import { useHistory, useParams } from "react-router";
-import AddChap from "./AddChap";
-import ChapList from "./ChapList";
-import UpdateChap from "./UpdateChap";
+import AddChap from "./Chapters/AddChap";
+import ChapList from "./Chapters/ChapList";
+import UpdateChap from "./Chapters/UpdateChap";
 import Sidebar from "./Sidebar";
 import ComicList from "./Comics/ComicList";
 import AddOrEditComic from "./Comics/AddOrEditComic";

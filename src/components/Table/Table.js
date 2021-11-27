@@ -1,6 +1,8 @@
 import React from "react";
 import { useRowSelect, useSortBy, useTable } from "react-table";
 import BTable from "react-bootstrap/Table";
+import { setCheckAll } from "../../features/comics/chapterSlice";
+import { useDispatch } from "react-redux";
 const IndeterminateCheckbox = React.forwardRef(
   ({ indeterminate, ...rest }, ref) => {
     const defaultRef = React.useRef();
@@ -9,7 +11,6 @@ const IndeterminateCheckbox = React.forwardRef(
     React.useEffect(() => {
       resolvedRef.current.indeterminate = indeterminate;
     }, [resolvedRef, indeterminate]);
-
     return (
       <>
         <input type="checkbox" ref={resolvedRef} {...rest} />
@@ -18,6 +19,7 @@ const IndeterminateCheckbox = React.forwardRef(
   }
 );
 const Table = ({ columns, data }) => {
+  const dispatch = useDispatch();
   const {
     getTableProps,
     getTableBodyProps,
@@ -39,7 +41,9 @@ const Table = ({ columns, data }) => {
           id: "selection",
 
           Header: ({ getToggleAllRowsSelectedProps }) => (
-            <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+            <>
+              <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+            </>
           ),
           Cell: ({ row }) => (
             <div>
@@ -51,8 +55,13 @@ const Table = ({ columns, data }) => {
       ]);
     }
   );
-
-
+  dispatch(
+    setCheckAll(
+      data.length > 0
+        ? data.length === Object.keys(selectedRowIds).length
+        : false
+    )
+  );
   return (
     <>
       <BTable striped bordered hover size="md" {...getTableProps()}>
@@ -62,15 +71,18 @@ const Table = ({ columns, data }) => {
               {headerGroup.headers.map((column, index) => (
                 <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                   {column.render("Header")}
-                  {index > 0 && index < headerGroup.headers.length - 1 && column.Header !== "AD_NAME" && column.Header !== "IMG" && (
-                    <span>
-                      {column.isSorted
-                        ? column.isSortedDesc
-                          ? " ⭣"
-                          : " ⭡	"
-                        : " ⮁"}
-                    </span>
-                  )}
+                  {index > 0 &&
+                    index < headerGroup.headers.length - 1 &&
+                    column.Header !== "AD_NAME" &&
+                    column.Header !== "IMG" && (
+                      <span>
+                        {column.isSorted
+                          ? column.isSortedDesc
+                            ? " ⭣"
+                            : " ⭡	"
+                          : " ⮁"}
+                      </span>
+                    )}
                 </th>
               ))}
             </tr>

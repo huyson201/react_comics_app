@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Form, FormGroup, FormLabel, Button, Modal, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
-import chapApi from "../../api/chapApi";
-import { getChapterByChapID, resetChap } from "../../features/comics/chapterSlice";
+import chapApi from "../../../api/chapApi";
+import { getChapterByChapID, resetChap } from "../../../features/comics/chapterSlice";
 import { toast } from 'react-toastify';
-import { UPDATE_SUCCESS, CHOOSE_IMG } from "../../constants";
+import { UPDATE_SUCCESS, CHOOSE_IMG } from "../../../constants";
 import { FcOk } from "react-icons/fc";
 
 const UpdateChap = (props) => {

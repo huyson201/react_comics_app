@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Form, FormGroup, FormLabel, Button, ProgressBar, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router";
-import chapApi from "../../api/chapApi";
+import chapApi from "../../../api/chapApi";
 import { FcOk } from "react-icons/fc";
 import { toast } from 'react-toastify';
-import { ADD_CHAP } from "../../constants";
+import { ADD_CHAP } from "../../../constants";
 
 // import "./addChap.css"
 const AddChap = () => {

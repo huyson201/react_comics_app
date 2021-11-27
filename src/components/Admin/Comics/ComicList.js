@@ -6,6 +6,7 @@ import { COMIC_NAME, LIMIT } from "../../../constants";
 import { FaList, FaEdit, FaTrashAlt } from "react-icons/fa";
 import {
   comicSelectors,
+  deleteAllComic,
   deleteComic,
   getComics,
   removeComicList,
@@ -17,6 +18,8 @@ import Table from "../../Table/Table";
 import { xoaDau } from "../../../utilFunction";
 import ModalAlert from "../../Modal/ModalAlert";
 import Loading from "../../Loading/Loading";
+import Button from "@restart/ui/esm/Button";
+import { setCheckAll } from "../../../features/comics/chapterSlice";
 const ComicList = ({ page }) => {
   const [show, setShow] = useState(false);
   const [id, setId] = useState();
@@ -25,7 +28,20 @@ const ComicList = ({ page }) => {
   const total = useSelector((state) => state.comics.count);
   const token = useSelector((state) => state.user.token);
   const { status } = useSelector((state) => state.comics);
+  const { checkAll } = useSelector((state) => state.chapter);
   const comics = useSelector(comicSelectors.selectAll);
+
+  const [arrId, setArrId] = useState([]);
+  useEffect(() => {
+    if (comics.length > 0 && checkAll === true) {
+      let arr = [];
+      comics.forEach((el) => {
+        arr.push(el.comic_id);
+      });
+      setArrId([...arr]);
+    }
+  }, [checkAll]);
+  console.log(arrId);
   const handlePageChange = (pageNumber) => {
     history.push("/comics/page/" + pageNumber);
   };
@@ -35,14 +51,23 @@ const ComicList = ({ page }) => {
   };
   const handleClose = () => setShow(false);
   const handleDeleteComic = () => {
-    dispatch(deleteComic({ id: id, token: token }));
+    if (checkAll === true && arrId.length > 0) {
+      dispatch(deleteAllComic({ listId: arrId, token: token }));
+      dispatch(setCheckAll(false));
+    } else {
+      dispatch(deleteComic({ id: id, token: token }));
+    }
+
     setShow(false);
+  };
+
+  const handleClickDeleteAll = () => {
+    setShow(true);
   };
   useEffect(() => {
     dispatch(setOffSet((+page - 1) * LIMIT));
     dispatch(getComics());
     return () => {
-      // dispatch(removeComicList());
       dispatch(removeSelectedComic());
     };
   }, [page]);
@@ -103,6 +128,22 @@ const ComicList = ({ page }) => {
         handleSubmit={handleDeleteComic}
       ></ModalAlert>
       {status === "loading" && <Loading></Loading>}
+      {checkAll === true && (
+        <Button
+          onClick={handleClickDeleteAll}
+          style={{
+            borderRadius: 5,
+            backgroundColor: "red",
+            padding: 7,
+            color: "white",
+            // float: "right",
+            marginBottom: 10,
+            marginRight: 10,
+          }}
+        >
+          Xóa tất cả chương
+        </Button>
+      )}
       {status === "success" && (
         <Table data={comics && comics} columns={columns}></Table>
       )}

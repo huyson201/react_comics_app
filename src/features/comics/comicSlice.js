@@ -78,6 +78,18 @@ export const deleteComic = createAsyncThunk(
     return id;
   }
 );
+
+export const deleteAllComic = createAsyncThunk(
+  "chapters/deleteAll",
+  async ({ listId, token }, thunkAPI) => {
+    listId.forEach(async (el) => {
+      const res = await comicApi.deleteComic(el, token);
+      console.log(res.data);
+    });
+    return listId;
+  }
+);
+
 const comicAdapter = createEntityAdapter({
   selectId: (comic) => comic.comic_id,
 });
@@ -182,6 +194,16 @@ const comicSlice = createSlice({
     [deleteComic.fulfilled]: (state, action) => {
       state.status = "success";
       comicAdapter.removeOne(state, action.payload);
+    },
+    [deleteAllComic.pending]: (state) => {
+      state.status = "loading";
+    },
+    [deleteAllComic.rejected]: (state) => {
+      state.status = "rejected";
+    },
+    [deleteAllComic.fulfilled]: (state, action) => {
+      state.status = "success";
+      comicAdapter.removeAll(state);
     },
     [createComic.pending]: (state) => {
       state.status = "loading";
