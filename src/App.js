@@ -2,7 +2,7 @@
 import "./App.css";
 import Header from "./components/Header/Header";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, useHistory } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Account from "./pages/Account";
@@ -26,10 +26,11 @@ import ProtectedRoute from "./ProtectedRoute";
 import ProtectedRouteAdmin from "./ProtectedRouteAdmin";
 import History from "./pages/History";
 import Loading from "./components/Loading/Loading";
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
+  const history = useHistory()
   const { token, isLogged } = useSelector(
     (state) => state.user
   );
@@ -156,6 +157,7 @@ function App() {
 
               {/* Client */}
               <Fragment>
+                {/* <Route path="/permission" component={() => }></Route> */}
                 <div className="wrapper">
                   <Header />
                   <Route exact path="/" component={Home}></Route>
@@ -210,7 +212,6 @@ function App() {
                   <Footer />
                 </div>
               </Fragment>
-              <Route path="*" component={() => "404 NOT FOUND"}></Route>
             </Switch>
           </Router>
         </>
