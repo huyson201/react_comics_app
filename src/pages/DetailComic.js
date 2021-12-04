@@ -106,14 +106,18 @@ const DetailComic = () => {
       const histories = JSON.parse(localStorage.getItem("histories"));
       console.log(histories);
       const res = await comicApi.getComicByID(id);
-
       if (res.data.data) {
         const comic = res.data.data;
         if (!isLogged) {
+          console.log(comic);
+
           // get readed chapters in local
           if (histories != null) {
             const indexComic = histories.findIndex((x) => x.comic_id === +id);
-            setChapterRead(comic, histories[indexComic].chapters);
+            console.log(indexComic)
+            if(indexComic !== -1){
+              setChapterRead(comic, histories[indexComic].chapters);
+            }
           }
         } else {
           // get readed chapters in server
@@ -126,7 +130,7 @@ const DetailComic = () => {
         setData(comic);
       }
     } catch (error) {
-      if (error.response.data) {
+      if (error.response) {
         notify(error.response.data, null, null);
       } else {
         notify(error.message, null, null);

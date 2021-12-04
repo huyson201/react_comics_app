@@ -14,6 +14,7 @@ const SearchForm = () => {
   const categories = useSelector((state) => state.categories.categories);
   const [checkedState, setCheckedState] = useState([0]);
   const [status, setStatus] = useState("");
+  const [sort, setSort] = useState("");
 
   useEffect(() => {
     setCheckedState(new Array(categories.length).fill(false));
@@ -38,7 +39,7 @@ const SearchForm = () => {
     });
     history.push({
       pathname: "/tim-kiem-nang-cao",
-      search: `the-loai=${arr}&tinh-trang=${status}&page=1`,
+      search: `the-loai=${arr}&tinh-trang=${status}&sap-xep=${sort===""?0:sort}&page=1`,
     });
   };
   //set check for checkbox category
@@ -97,18 +98,34 @@ const SearchForm = () => {
                   );
                 })}
               </div>
-              <div className="filter-status">Trình trạng</div>
-              <div className="status-form">
-                <select
-                  value={status}
-                  className="select-status"
-                  onChange={(e) => setStatus(e.target.value)}
-                >
-                  <option value="Tất cả">Tất cả</option>
-                  <option value="Đang tiến hành">Đang tiến hành</option>
-                  <option value="Đã hoàn thành">Đã hoàn thành</option>
-                </select>
+
+              <div style={{ display: "flex" }}>
+                <div className="status-form">
+                  <div className="filter-status">Trình trạng</div>
+                  <select
+                    value={status}
+                    className="select-status"
+                    onChange={(e) => setStatus(e.target.value)}
+                  >
+                    <option value="Tất cả">Tất cả</option>
+                    <option value="Đang tiến hành">Đang tiến hành</option>
+                    <option value="Đã hoàn thành">Đã hoàn thành</option>
+                  </select>
+                </div>
+                <div className="status-form" style={{ marginLeft: 20 }}>
+                  <div className="filter-status">Sắp xếp theo</div>
+                  <select
+                    value={sort}
+                    className="select-status"
+                    onChange={(e) => setSort(e.target.value)}
+                  >
+                    <option value="0">Chapter mới</option>
+                    <option value="1">A &#8594; Z</option>
+                    <option value="2">Z &#8594; A</option>
+                  </select>
+                </div>
               </div>
+
               <div className="btn-wrap">
                 <button>Lọc ngay</button>
               </div>

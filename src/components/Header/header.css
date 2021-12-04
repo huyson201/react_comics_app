@@ -176,11 +176,11 @@
   font-weight: 900;
 }
 .status-form {
-  display: flex;
+  width: 33.333%;
 }
 .select-status {
   font-size: 13px;
-  width: 33.33%;
+  width: 100%;
   padding: 2px;
   border: 0 !important;
   border-color: none !important;

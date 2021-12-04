@@ -41,10 +41,10 @@ export const getComicsByKey = createAsyncThunk(
 );
 export const getComicsByFilters = createAsyncThunk(
   "comics/searchByFilters",
-  async ({ categories, status }, thunkAPI) => {
+  async ({ categories, status,sort }, thunkAPI) => {
     thunkAPI.dispatch(removeSelectedCategory());
     const index = thunkAPI.getState().comics.offset;
-    const comics = await comicApi.getComicByFilters(categories, status, index);
+    const comics = await comicApi.getComicByFilters(categories, status, index,sort);
     return comics.data;
   }
 );

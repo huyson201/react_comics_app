@@ -22,6 +22,7 @@ import {
   updateComic,
 } from "../../../features/comics/comicSlice";
 import Loading from "../../Loading/Loading";
+import { toast } from 'react-toastify';
 const AddOrEditComic = ({ id }) => {
   const dispatch = useDispatch();
   const [inputValue, setValue] = useState("");
@@ -38,6 +39,21 @@ const AddOrEditComic = ({ id }) => {
   const { selectedComic, loading } = useSelector((state) => state.comics);
   const refSelect = useRef();
   const refForm = useRef();
+  const notify = (error, message, warn) => {
+    if (error !== null) {
+      if (!toast.isActive(error)) {
+        toast.error(error, { toastId: error })
+      }
+    } else if (message !== null) {
+      if (!toast.isActive(message)) {
+        toast.success(message, { toastId: message })
+      }
+    } else {
+      if (!toast.isActive(warn)) {
+        toast.warn(warn, { toastId: warn })
+      }
+    }
+  }
   const handleInputChange = (value) => {
     setValue(value);
   };
@@ -83,9 +99,11 @@ const AddOrEditComic = ({ id }) => {
         formData.append("comic_status", refSelect.current.value);
         formData.append("comic_view", 0);
         formData.append("categories", arrCate);
+        console.log(id)
         if (!id) {
           formData.append("comic_img", file);
           dispatch(createComic({ data: formData, userToken: token }));
+          notify(null,"Thêm truyện thành công",null)
           setValidated(false);
           setName("");
           setAuthor("");
@@ -95,6 +113,7 @@ const AddOrEditComic = ({ id }) => {
           setStatus("");
         } else
           dispatch(updateComic({ id: id, data: formData, userToken: token }));
+          notify(null,"Cập nhật truyện thành công",null)
       } else {
         setColor(false);
       }

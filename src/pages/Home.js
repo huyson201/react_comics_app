@@ -75,6 +75,7 @@ const Home = () => {
         getComicsByFilters({
           categories: params["the-loai"],
           status: params["tinh-trang"] === "Tất cả" ? "" : params["tinh-trang"],
+          sort: params["sap-xep"]
         })
       );
     } else {
@@ -93,6 +94,7 @@ const Home = () => {
     params["the-loai"],
     params["tinh-trang"],
     params.page,
+    params['sap-xep']
   ]);
   return (
     <div>

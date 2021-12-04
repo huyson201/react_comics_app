@@ -110,7 +110,7 @@ const chapterSlice = createSlice({
       state.status = "success";
       console.log(action.payload);
       chapterAdapter.removeAll(state);
-      //   state.count = --state.count;
+        state.count = 0;
     },
     [getChapterByChapID.pending]: (state) => {
       state.status = "loading";

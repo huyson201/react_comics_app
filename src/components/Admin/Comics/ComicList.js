@@ -122,7 +122,7 @@ const ComicList = ({ page }) => {
   ];
   return (
     <div>
-      <ModalAlert
+      {/* <ModalAlert
         checkShow={show}
         handleClose={handleClose}
         handleSubmit={handleDeleteComic}
@@ -143,7 +143,7 @@ const ComicList = ({ page }) => {
         >
           Xóa tất cả chương
         </Button>
-      )}
+      )} */}
       {status === "success" && (
         <Table data={comics && comics} columns={columns}></Table>
       )}

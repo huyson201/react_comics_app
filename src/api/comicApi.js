@@ -31,8 +31,16 @@ const comicApi = {
     const url = `/comics/${id}`;
     return axiosClient.get(url);
   },
-  getComicByFilters: (categories, status, offset) => {
-    const url = `/comics/filter?categories=[${categories}]&status=${status}`;
+  getComicByFilters: (categories, status, offset, sort) => {
+    let sortParams = "";
+    if (+sort === 0) {
+      sortParams = "updatedAt:desc";
+    } else if (+sort === 1) {
+      sortParams = "comic_name:asc";
+    } else {
+      sortParams = "comic_name:desc";
+    }
+    const url = `/comics/filter?categories=[${categories}]&status=${status}&sort=${sortParams}`;
     return axiosClient.get(url, { params: { limit: LIMIT, offset: offset } });
   },
   getChapterByID: (id) => {

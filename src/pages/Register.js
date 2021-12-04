@@ -19,7 +19,7 @@ import { useDispatch } from "react-redux";
 import { modalNotify } from "../features/modal/modalSlice";
 import userApi from "../api/userApi";
 import { toast } from 'react-toastify';
-
+import { useHistory } from "react-router";
 const Register = () => {
   const [user_name, setUserName] = useState();
   const [user_email, setEmail] = useState();
@@ -28,7 +28,7 @@ const Register = () => {
   const [user, setUser] = useState();
   const [validated, setValidated] = useState(false);
   const dispatch_redux = useDispatch();
-
+  const history = useHistory()
   useEffect(() => {
     setUser({
       user_name: user_name,
@@ -45,6 +45,9 @@ const Register = () => {
       }
     } else if (message !== null) {
       if (!toast.isActive(message)) {
+        if(message === REGISTER_SUCCESS){
+          history.push('/login')
+        }
         toast.success(message, { toastId: message })
       }
     } else {
