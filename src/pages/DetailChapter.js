@@ -48,7 +48,7 @@ const DetailChapter = () => {
   const { showChapter } = useSelector((state) => state.modal);
   const { isLogged, token, refreshToken } = useSelector((state) => state.user);
   const chapter = useSelector(chapterSelectors.selectAll);
-  console.log(chapter, "chapter list ");
+  // console.log(chapter, "chapter list ");
   const handleScroll = () => {
     let cal =
       ((-1 * document.body.getBoundingClientRect().top) /

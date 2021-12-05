@@ -54,7 +54,6 @@ const DetailComic = () => {
   const { token, refreshToken, isLogged, userInfo } = useSelector(
     (state) => state.user
   );
-  const { show, error, message } = useSelector((state) => state.modal);
   const { perRate, count, rateState } = useSelector((state) => state.rate);
   const dispatch = useDispatch();
   // rating
@@ -179,7 +178,7 @@ const DetailComic = () => {
         let per = (res.data.data.sum_rate / (res.data.data.count * 5)) * 10;
         dispatch(
           calRate({
-            perRate: per,
+            perRate: +per.toFixed(2),
             count: res.data.data.count,
           })
         );
@@ -201,7 +200,7 @@ const DetailComic = () => {
         );
         dispatch(getRateByUserId({ userId: userInfo.user_uuid, comicId: id }));
         rate(id, token, starIndex);
-        notify(null, RATE_SUCCESS, null);
+        // notify(null, RATE_SUCCESS, null);
       }
     } catch (error) {
       console.log(error);
@@ -245,7 +244,9 @@ const DetailComic = () => {
 
   useEffect(() => {
     calculatePercentRate();
-  }, [rateState])
+  }, [rateState]);
+
+  console.log(perRate);
   //func read first chapter
   const handleReadLast = () => {
     const chapter = data.chapters[0];
@@ -269,7 +270,7 @@ const DetailComic = () => {
     //check status follow
     if (isLogged && token) {
       const findFollow = async () => {
-        console.log('token: ' + token)
+        console.log("token: " + token);
         const user_id = jwtDecode(token).user_uuid;
         const res = await followApi.getFollow(user_id, id);
         if (res.data.data.count > 0) {
@@ -287,7 +288,7 @@ const DetailComic = () => {
     } else {
       if (checked && token) {
         // delete follow comic
-        console.log('token: ' + token)
+        console.log("token: " + token);
         const user_id = jwtDecode(token).user_uuid;
         dispatch(
           deleteComicFollow({
