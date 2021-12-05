@@ -46,9 +46,7 @@ const ListItem = ({ other, index, item, isFollow }) => {
                 setChapterName(
                   xoaDau(chapters[chapters.length - 1]["chapter_name"])
                 );
-              } else {
-                setNewChapter("Đang cập nhật");
-              }
+              } 
             });
           } catch (error) {
             setNewChapter("NaN");
@@ -56,14 +54,18 @@ const ListItem = ({ other, index, item, isFollow }) => {
         };
         getChaptersByID();
       } else {
-        rateApi.getSumRate(item.comic_id).then((res) => {
-          if (res.data.data) {
-            let per = Math.round(
-              (res.data.data.sum_rate / (res.data.data.count * 5)) * 10
-            );
-            setRate(per + "");
-          }
-        });
+        try {
+          rateApi.getSumRate(item.comic_id).then((res) => {
+            if (res.data.data) {
+              let per = Math.round(
+                (res.data.data.sum_rate / (res.data.data.count * 5)) * 10
+              );
+              setRate(per + "");
+            }
+          });
+        } catch (error) {
+          setNewChapter("NaN");
+        }
         setNewChapter(item["chapters"][0]);
         setChapterName(xoaDau(item["chapters"][0]["chapter_name"]));
       }
@@ -109,7 +111,7 @@ const ListItem = ({ other, index, item, isFollow }) => {
         </div>
 
         <div className="item-row">
-          {chapterName != null && newChapter != null ? (
+          {chapterName !=="" ? (
             <Link
               to={`/${chapterName}/${newChapter["chapter_id"]}/truyen-tranh/${name}-${item["comic_id"]}`}
               className="item-new-chapter"

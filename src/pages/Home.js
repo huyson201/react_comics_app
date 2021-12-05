@@ -6,6 +6,7 @@ import queryString from "query-string";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
+  CATEGORY_COMIC_TITLE,
   FILTER_COMIC_TITLE,
   LIMIT,
   NEW_COMIC_TITLE,
@@ -13,26 +14,17 @@ import {
 } from "../constants";
 import Loading from "../components/Loading/Loading";
 import Carousel from "../components/Slider/Carousel";
-import {
-  comicSelectors,
-  getComics,
-  getComicsByCategory,
-  getComicsByFilters,
-  getComicsByKey,
-  removeComicList,
-  setOffSet,
-} from "../features/comics/comicSlice";
-
+import comicApi from "../api/comicApi";
+import historyApi from "../api/historyApi";
 const Home = () => {
   const history = useHistory();
-  const dispatch = useDispatch();
-  const total = useSelector((state) => state.comics.count);
-  const { status } = useSelector((state) => state.comics);
   const params = queryString.parse(history.location.search);
   const { id, number, keyword, name } = useParams();
   const pathName = history.location.pathname;
   const [title, setTitle] = useState("");
-  const [other, setCheckOther] = useState(false);
+  const [data, setData] = useState([]);
+  const [offset, setOffset] = useState(0);
+  const [total, setTotal] = useState(0);
   const handlePageChange = (pageNumber) => {
     if (pathName === "/") {
       history.push("/truyen-moi-cap-nhat/page/" + pageNumber);
@@ -49,61 +41,113 @@ const Home = () => {
       history.push("/truyen-moi-cap-nhat/page/" + pageNumber);
     }
   };
-  const comics = useSelector(comicSelectors.selectAll);
   useEffect(() => {
     if (number) {
-      dispatch(setOffSet((+number - 1) * LIMIT));
+      setOffset((+number - 1) * LIMIT);
     } else if (Object.keys(params).length !== 0) {
-      dispatch(setOffSet((+params.page - 1) * LIMIT));
+      setOffset((+params.page - 1) * LIMIT);
     } else if (pathName === "/") {
-      dispatch(setOffSet(0));
+      setOffset(0);
     }
-  }, [pathName, number, params.page, Object.keys(params).length !== 0]);
+    return () => {
+      setOffset(0);
+    };
+  }, [number, offset, params, pathName]);
+  const getComics = async () => {
+    try {
+      const res = await comicApi.getAll(offset);
+      setData(res.data.data.rows);
+      setTotal(res.data.data.count);
+    } catch (error) {}
+  };
+  const getComicsByCategory = async () => {
+    try {
+      const res = await comicApi.getComicsByCategory(id, offset);
+      setTitle(
+        CATEGORY_COMIC_TITLE + " " + res.data.data.rows[0].category_name
+      );
+      setData(res.data.data.rows[0].comics);
+      setTotal(res.data.data.count);
+    } catch (error) {}
+  };
 
+  const getComicsByKey = async () => {
+    try {
+      const res = await comicApi.getComicsByKeyword(keyword, offset);
+      setData(res.data.data.rows);
+      setTotal(res.data.data.count);
+    } catch (error) {}
+  };
+  const getComicsByFilter = async () => {
+    try {
+      const res = await comicApi.getComicByFilters(
+        params["the-loai"],
+        params["tinh-trang"] === "Tất cả" ? "" : params["tinh-trang"],
+        offset,
+        params["sap-xep"]
+      );
+      setData(res.data.rows);
+      setTotal(res.data.count);
+    } catch (error) {}
+  };
   useEffect(() => {
     if (id) {
       // comics by category
-      dispatch(getComicsByCategory(id));
+      getComicsByCategory();
     } else if (keyword) {
-      // searck by key
+      // search by key
       setTitle(SEARCH_BY_KEY_COMIC_TITLE + keyword);
-      dispatch(getComicsByKey(keyword));
+      getComicsByKey();
     } else if (Object.keys(params).length !== 0) {
       // search by filter
       setTitle(FILTER_COMIC_TITLE);
-      dispatch(
-        getComicsByFilters({
-          categories: params["the-loai"],
-          status: params["tinh-trang"] === "Tất cả" ? "" : params["tinh-trang"],
-          sort: params["sap-xep"]
-        })
-      );
+      getComicsByFilter();
     } else {
       // get comics
       setTitle(NEW_COMIC_TITLE);
-      dispatch(getComics());
+      getComics();
     }
-
     return () => {
-      dispatch(removeComicList());
+      setData([]);
+      setTotal(0);
+      setTitle("");
     };
   }, [
-    number,
+    offset,
     id,
     keyword,
     params["the-loai"],
     params["tinh-trang"],
-    params.page,
-    params['sap-xep']
+    params["sap-xep"],
   ]);
+  const { isLogged, token } = useSelector((state) => state.user);
+  const createHistory = async (comicId, id) => {
+    await historyApi.createHistory(comicId, id, token);
+  };
+  useEffect(() => {
+    let histories = JSON.parse(localStorage.getItem("histories"));
+    if (histories !== null && isLogged) {
+      for (let index = 0; index < histories.length; index++) {
+        const e = histories[index];
+        createHistory(e.comic_id, e.chapters.toString());
+      }
+      localStorage.removeItem("histories");
+    }
+  }, [isLogged]);
   return (
     <div>
-      {status === "loading" && <Loading />}
-      {/* {pathName === "/" && <Carousel></Carousel>} */}
-      {status === "success" && comics && (
-        <ListComic comics={comics} keyword={keyword} filter={params} title={title} other={other} />
+      {data.length <= 0 && <Loading />}
+      {pathName === "/" && <Carousel></Carousel>}
+      {data.length > 0 && (
+        <ListComic
+          id={id}
+          comics={data}
+          keyword={keyword}
+          filter={params}
+          title={title}
+        />
       )}
-      {total >= LIMIT && status === "success" && comics && (
+      {total >= LIMIT && data && (
         <Pagination
           activePage={
             number && !params.page

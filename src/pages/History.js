@@ -9,7 +9,6 @@ import Loading from "../components/Loading/Loading";
 const History = () => {
   const histories = JSON.parse(localStorage.getItem("histories"));
   const [historyList, setHistoryList] = useState([]);
-  const [loading, setLoading] = useState(false);
   const { isLogged, token, userInfo } = useSelector((state) => state.user);
   const getData = async (comicId, chapterId) => {
     const res = await comicApi.getComicByID(comicId);
@@ -34,25 +33,22 @@ const History = () => {
     if (!isLogged) {
       histories !== null &&
         histories.forEach((e) => {
-          setLoading(true);
           getData(e.comic_id, e.chapters[e.chapters.length - 1]);
-          setLoading(false);
         });
     } else {
       getHistory(userInfo.user_uuid, token);
     }
     return () => {
-      setLoading(false);
       setHistoryList([]);
     };
   }, [isLogged]);
   return (
     <div>
-      {loading && <Loading />}
+      {historyList.length<=0 && <Loading />}
       <div className="list-title">
         <BsStars /> Lịch sử đọc truyện
       </div>
-      {!loading && (
+      {historyList.length>0 && (
         <div className="history-list">
           {historyList.map((e, i) => {
             return <HistoryItem key={i} item={e}></HistoryItem>;

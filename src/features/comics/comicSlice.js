@@ -4,6 +4,7 @@ import {
   createEntityAdapter,
 } from "@reduxjs/toolkit";
 import comicApi from "../../api/comicApi";
+import { notify } from "../../constants";
 
 export const getComics = createAsyncThunk(
   "comics/getComics",
@@ -60,7 +61,6 @@ export const createComic = createAsyncThunk(
   "comics/create",
   async ({ data, userToken }) => {
     const comic = await comicApi.createComic(data, userToken);
-    console.log(comic.data.data)
     return comic.data.data;
   }
 );
@@ -216,6 +216,7 @@ const comicSlice = createSlice({
     [createComic.fulfilled]: (state, action) => {
       state.status = "success";
       comicAdapter.addOne(state, action.payload);
+      notify(null, "Thêm truyện thành công", null);
       state.loading = false;
     },
     [getComicByID.pending]: (state) => {
@@ -239,6 +240,7 @@ const comicSlice = createSlice({
     [updateComic.fulfilled]: (state, action) => {
       state.status = "success";
       state.loading = false;
+      notify(null, "Cập nhật truyện thành công", null);
       console.log(action.payload);
     },
   },

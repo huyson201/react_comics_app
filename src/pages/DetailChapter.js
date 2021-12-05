@@ -189,13 +189,13 @@ const DetailChapter = () => {
       }
       localStorage.setItem("histories", JSON.stringify(histories));
     } else {
-      if (histories !== null) {
-        for (let index = 0; index < histories.length; index++) {
-          const e = histories[index];
-          createHistory(e.comic_id, e.chapters.toString());
-        }
-        localStorage.removeItem("histories");
-      }
+      // if (histories !== null) {
+      //   for (let index = 0; index < histories.length; index++) {
+      //     const e = histories[index];
+      //     createHistory(e.comic_id, e.chapters.toString());
+      //   }
+      //   localStorage.removeItem("histories");
+      // }
       createHistory(+idComic, +id);
     }
   }, [id, idComic, isLogged]);

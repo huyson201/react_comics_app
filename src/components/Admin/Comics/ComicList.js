@@ -51,13 +51,13 @@ const ComicList = ({ page }) => {
   };
   const handleClose = () => setShow(false);
   const handleDeleteComic = () => {
-    if (checkAll === true && arrId.length > 0) {
-      dispatch(deleteAllComic({ listId: arrId, token: token }));
-      dispatch(setCheckAll(false));
-    } else {
-      dispatch(deleteComic({ id: id, token: token }));
-    }
-
+    // if (checkAll === true && arrId.length > 0) {
+    //   dispatch(deleteAllComic({ listId: arrId, token: token }));
+    //   dispatch(setCheckAll(false));
+    // } else {
+     
+    // }
+    dispatch(deleteComic({ id: id, token: token }));
     setShow(false);
   };
 
@@ -122,12 +122,12 @@ const ComicList = ({ page }) => {
   ];
   return (
     <div>
-      {/* <ModalAlert
+      <ModalAlert
         checkShow={show}
         handleClose={handleClose}
         handleSubmit={handleDeleteComic}
       ></ModalAlert>
-      {status === "loading" && <Loading></Loading>}
+      {/* {status === "loading" && <Loading></Loading>}
       {checkAll === true && (
         <Button
           onClick={handleClickDeleteAll}

@@ -176,7 +176,7 @@ function App() {
                     path="/the-loai/:name/:id/page/:number"
                     component={Home}
                   ></Route>
-                  <Route path="/truyen-theo-doi" component={Follow}></Route>
+                  <ProtectedRoute path="/truyen-theo-doi" component={Follow}></ProtectedRoute>
                   <Route
                     path="/truyen-tranh/:name"
                     component={DetailComic}

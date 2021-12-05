@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+
 export const TITLE_LOGIN = "Đăng nhập";
 export const TITLE_REGISTER = "Đăng ký";
 export const TITLE_CHANGE_PW = "Đổi mật khẩu";
@@ -78,3 +81,42 @@ export const NOTIFY_STATUS = {
     CHECKED: 'checked',
     READ: 'read'
 }
+
+export const notify = (error, message, warn) => {
+    if (error !== null) {
+      if (!toast.isActive(error)) {
+        toast.error(error, { toastId: error });
+      }
+    } else if (message !== null) {
+      if (!toast.isActive(message)) {
+        toast.success(message, { toastId: message });
+      }
+    } else {
+      if (!toast.isActive(warn)) {
+        toast.warn(warn, { toastId: warn });
+      }
+    }
+  };
+
+  function getWindowDimensions() {
+    const { innerWidth: width, innerHeight: height } = window;
+    return {
+      width,
+      height
+    };
+  }
+  
+  export default function useWindowDimensions() {
+    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+  
+    useEffect(() => {
+      function handleResize() {
+        setWindowDimensions(getWindowDimensions());
+      }
+  
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
+  
+    return windowDimensions;
+  }

@@ -11,14 +11,12 @@ const Follow = () => {
   const dispatch = useDispatch();
   const [title, setTitle] = useState("");
   const [other, setCheckOther] = useState(false);
-  const [isFollow, setIsFollow] = useState(false);
   const { token } = useSelector((state) => state.user);
   const {status,comics} = useSelector((state) => state.follows);
   useEffect(() => {
     if (token) {
       setCheckOther(true);
       setTitle(FOLLOW_COMICS);
-      setIsFollow(true);
       const user_id = jwt_decode(token).user_uuid;
       console.log(user_id)
       dispatch(getComicsFollow({ id: user_id, userToken: token }));
