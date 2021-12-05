@@ -15,10 +15,7 @@ const History = () => {
   const histories = JSON.parse(localStorage.getItem("histories"));
   const [historyList, setHistoryList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
-  const { isLogged, token, userInfo, refreshToken } = useSelector(
-    (state) => state.user
-  );
+  const { isLogged, token, userInfo } = useSelector((state) => state.user);
   const getData = async (comicId, chapterId) => {
     const res = await comicApi.getComicByID(comicId);
     const data = res.data.data;
@@ -42,7 +39,9 @@ const History = () => {
     if (!isLogged) {
       histories !== null &&
         histories.forEach((e) => {
+          setLoading(true);
           getData(e.comic_id, e.chapters[e.chapters.length - 1]);
+          setLoading(false);
         });
     } else {
       (await checkToken(token, refreshToken)) === null && resetDispatch();
@@ -50,6 +49,7 @@ const History = () => {
         getHistory(userInfo.user_uuid, await checkToken(token, refreshToken));
     }
     return () => {
+      setLoading(false);
       setHistoryList([]);
     };
   }, [isLogged]);
@@ -85,11 +85,11 @@ const History = () => {
 
   return (
     <div>
-      {historyList.length <= 0 && <Loading />}
+      {loading && <Loading />}
       <div className="list-title">
         <BsStars /> Lịch sử đọc truyện
       </div>
-      {historyList.length > 0 && (
+      {historyList.length>0 &&!loading && (
         <div className="history-list">
           {historyList.map((e, i) => {
             return <HistoryItem key={i} item={e}></HistoryItem>;

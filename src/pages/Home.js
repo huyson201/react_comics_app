@@ -23,8 +23,8 @@ const Home = () => {
   const pathName = history.location.pathname;
   const [title, setTitle] = useState("");
   const [data, setData] = useState([]);
-  const [offset, setOffset] = useState(0);
   const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
   const handlePageChange = (pageNumber) => {
     if (pathName === "/") {
       history.push("/truyen-moi-cap-nhat/page/" + pageNumber);
@@ -41,45 +41,44 @@ const Home = () => {
       history.push("/truyen-moi-cap-nhat/page/" + pageNumber);
     }
   };
-  useEffect(() => {
-    if (number) {
-      setOffset((+number - 1) * LIMIT);
-    } else if (Object.keys(params).length !== 0) {
-      setOffset((+params.page - 1) * LIMIT);
-    } else if (pathName === "/") {
-      setOffset(0);
-    }
-    return () => {
-      setOffset(0);
-    };
-  }, [number, offset, params, pathName]);
   const getComics = async () => {
     try {
+      setLoading(true);
+      let offset = pathName === "/" ? 0 : (+number - 1) * LIMIT;
       const res = await comicApi.getAll(offset);
       setData(res.data.data.rows);
       setTotal(res.data.data.count);
+      setLoading(false);
     } catch (error) {}
   };
   const getComicsByCategory = async () => {
     try {
+      setLoading(true);
+      let offset = (+number - 1) * LIMIT;
       const res = await comicApi.getComicsByCategory(id, offset);
       setTitle(
         CATEGORY_COMIC_TITLE + " " + res.data.data.rows[0].category_name
       );
       setData(res.data.data.rows[0].comics);
       setTotal(res.data.data.count);
+      setLoading(false);
     } catch (error) {}
   };
 
   const getComicsByKey = async () => {
     try {
+      setLoading(true);
+      let offset = (+number - 1) * LIMIT;
       const res = await comicApi.getComicsByKeyword(keyword, offset);
       setData(res.data.data.rows);
       setTotal(res.data.data.count);
+      setLoading(false);
     } catch (error) {}
   };
   const getComicsByFilter = async () => {
     try {
+      setLoading(true);
+      let offset = (+params.page - 1) * LIMIT;
       const res = await comicApi.getComicByFilters(
         params["the-loai"],
         params["tinh-trang"] === "Tất cả" ? "" : params["tinh-trang"],
@@ -88,6 +87,7 @@ const Home = () => {
       );
       setData(res.data.rows);
       setTotal(res.data.count);
+      setLoading(false);
     } catch (error) {}
   };
   useEffect(() => {
@@ -108,14 +108,16 @@ const Home = () => {
       getComics();
     }
     return () => {
+      setLoading(false);
       setData([]);
       setTotal(0);
       setTitle("");
     };
   }, [
-    offset,
+    number,
     id,
     keyword,
+    params.page,
     params["the-loai"],
     params["tinh-trang"],
     params["sap-xep"],
@@ -136,9 +138,9 @@ const Home = () => {
   }, [isLogged]);
   return (
     <div>
-      {data.length <= 0 && <Loading />}
+      {loading && <Loading />}
       {pathName === "/" && <Carousel></Carousel>}
-      {data.length > 0 && (
+      {data.length > 0 && !loading && (
         <ListComic
           id={id}
           comics={data}
