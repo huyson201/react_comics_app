@@ -34,6 +34,8 @@ export const CHAP_NEXT="Không có chương kế tiếp !"
 export const CHAP_PRE="Không có chương trước đó !"
 export const CHOOSE_IMG="Vui lòng chọn ảnh để cập nhật !"
 export const DELETE="Xóa ảnh thành công !"
+export const DELETE_CHAP="Xóa chương thành công !"
+
 // ================================COMIC================================ //
 export const LIMIT = 18;
 export const NEW_COMIC_TITLE = "Truyện mới cập nhật";

@@ -902,3 +902,7 @@ ul {
   outline: none;
   color: rgb(59, 130, 246);
 }
+
+.btn_chap_list:hover {
+  opacity: 0.8;
+}

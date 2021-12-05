@@ -55,11 +55,6 @@ const Account = () => {
               <nav className="user-sidelink clearfix">
                 <ul>
                   <li className="nav-li">
-                    <Link to="">
-                      <i className="fas fa-tachometer-alt"></i> Thông tin chung
-                    </Link>
-                  </li>
-                  <li className="nav-li">
                     <Link to="/profile">
                       <i className="fas fa-info-circle"></i> Thông tin tài khoản
                     </Link>
@@ -69,11 +64,11 @@ const Account = () => {
                       <i className="fas fa-book"></i> Truyện theo dõi
                     </Link>
                   </li>
-                  <li className="nav-li">
+                  {/* <li className="nav-li">
                     <Link to="">
                       <i className="far fa-list-alt"></i> Truyện đã đăng
                     </Link>
-                  </li>
+                  </li> */}
                   <li className="nav-li">
                     <Link to="/changePassword">
                       <i className="fas fa-key"></i> Đổi mật khẩu

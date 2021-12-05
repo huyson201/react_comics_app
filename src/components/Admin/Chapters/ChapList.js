@@ -9,12 +9,13 @@ import {
   getChapsByComicId,
   removeChapList,
   setCheckAll,
+  setOffSet,
 } from "../../../features/comics/chapterSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import Table from "../../Table/Table";
 import Pagination from "react-js-pagination";
-import { LIMIT } from "../../../constants";
+import { DELETE_CHAP, LIMIT } from "../../../constants";
 import Button from "@restart/ui/esm/Button";
 import {
   comicSelectors,
@@ -23,18 +24,19 @@ import {
 } from "../../../features/comics/comicSlice";
 import ModalAlert from "../../Modal/ModalAlert";
 import { xoaDau } from "../../../utilFunction";
+import chapApi from "../../../api/chapApi";
+import { toast } from "react-toastify";
 
 const ChapList = (props) => {
   const { comicId } = useParams();
   const [id, setId] = useState();
-  const page = props.page;
+  let page = props.page;
   const history = useHistory();
   const dispatch = useDispatch();
   const chapters = useSelector(chapterSelectors.selectAll);
   const { status, count, checkAll } = useSelector((state) => state.chapter);
   const { token } = useSelector((state) => state.user);
   const selectedComic = useSelector((state) => state.comics.selectedComic);
-  // console.log(selectedComic);
   const [show, setShow] = useState(false);
   const [arrId, setArrId] = useState([]);
   useEffect(() => {
@@ -45,8 +47,8 @@ const ChapList = (props) => {
       });
       setArrId([...arr]);
     }
-  }, [checkAll]);
-  console.log(arrId);
+  }, [checkAll, chapters]);
+  // console.log(arrId);
 
   const handleClickAdd = () => {
     history.push(`/comic/${comicId}/chaps/add`);
@@ -64,14 +66,24 @@ const ChapList = (props) => {
     setShow(true);
   };
   const handleClose = () => setShow(false);
-  const handleDeleteChap = () => {
+  const handleDeleteChap = async () => {
+    console.log(checkAll);
+    console.log(arrId);
     if (checkAll === true && arrId.length > 0) {
-      dispatch(deleteAllChapter({ listId: arrId, token: token }));
+      for (let i = 0; i < arrId.length; i++) {
+        const res = await chapApi.delete(arrId[i], token);
+        console.log(res);
+      }
+      --page;
+      dispatch(getChapsByComicId(comicId));
       dispatch(setCheckAll(false));
+      if (!toast.isActive(DELETE_CHAP)) {
+        toast.success(DELETE_CHAP, { toastId: DELETE_CHAP });
+      }
+      // dispatch(deleteAllChapter({ listId: arrId, token: token }));
     } else {
       dispatch(deleteChapter({ id: id, token: token }));
     }
-
     setShow(false);
   };
 
@@ -86,6 +98,13 @@ const ChapList = (props) => {
       dispatch(removeSelectedComic());
     };
   }, [page, count]);
+
+  useEffect(() => {
+    console.log(page);
+    if (page >= 1) {
+      dispatch(setOffSet((+page - 1) * LIMIT));
+    }
+  }, [page]);
 
   const columns = [
     {
