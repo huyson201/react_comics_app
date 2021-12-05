@@ -98,7 +98,11 @@ const Home = () => {
       // search by key
       setTitle(SEARCH_BY_KEY_COMIC_TITLE + keyword);
       getComicsByKey();
-    } else if (Object.keys(params).length !== 0) {
+    } else if (
+      params["the-loai"] &&
+      params["tinh-trang"] &&
+      params["sap-xep"]
+    ) {
       // search by filter
       setTitle(FILTER_COMIC_TITLE);
       getComicsByFilter();

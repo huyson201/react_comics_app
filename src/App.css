@@ -35,3 +35,7 @@ a {
   display: flex;
   flex-direction: column;
 }
+.image-comic {
+  margin-top: 20px;
+  object-fit: contain;
+}

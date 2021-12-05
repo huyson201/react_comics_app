@@ -91,7 +91,7 @@ function App() {
 
   return (
     <>
-      {loading ? (
+      {loading  ? (
         <Loading />
       ) : (
         <>
@@ -169,7 +169,7 @@ function App() {
                     path="/tim-kiem/:keyword/page/:number"
                     component={Home}
                   ></Route>
-                  <Route path="/tim-kiem-nang-cao" component={Home}></Route>
+                  <Route exact path="/tim-kiem-nang-cao" component={Home}></Route>
                   <Route
                     path="/the-loai/:name/:id/page/:number"
                     component={Home}
