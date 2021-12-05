@@ -36,7 +36,6 @@ function App() {
   );
   console.log(token, "TOKEN");
   const dispatch = useDispatch();
-  const [socketIo, setSocketIo] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const getToken = () => {

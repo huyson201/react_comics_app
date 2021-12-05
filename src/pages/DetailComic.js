@@ -245,8 +245,7 @@ const DetailComic = () => {
   const handleReadLast = () => {
     const chapter = data.chapters[0];
     history.push(
-      `/${xoaDau(chapter.chapter_name)}/${
-        chapter.chapter_id
+      `/${xoaDau(chapter.chapter_name)}/${chapter.chapter_id
       }/truyen-tranh/${name}`
     );
   };
@@ -254,8 +253,7 @@ const DetailComic = () => {
   const handleReadFirst = () => {
     const chapter = data.chapters[data.chapters.length - 1];
     history.push(
-      `/${xoaDau(chapter.chapter_name)}/${
-        chapter.chapter_id
+      `/${xoaDau(chapter.chapter_name)}/${chapter.chapter_id
       }/truyen-tranh/${name}`
     );
   };
@@ -322,17 +320,16 @@ const DetailComic = () => {
                     <div className="item">
                       {data
                         ? data.categories.map((e, i) => {
-                            return (
-                              <Link
-                                key={i}
-                                to={`/the-loai/${xoaDau(e.category_name)}/${
-                                  e.category_id
+                          return (
+                            <Link
+                              key={i}
+                              to={`/the-loai/${xoaDau(e.category_name)}/${e.category_id
                                 }/page/1`}
-                              >
-                                {e.category_name}
-                              </Link>
-                            );
-                          })
+                            >
+                              {e.category_name}
+                            </Link>
+                          );
+                        })
                         : ""}
                     </div>
                   </div>
@@ -349,10 +346,10 @@ const DetailComic = () => {
                     <div className="item">
                       {data && data.chapters.length > 0
                         ? updateDate(
-                            data.chapters.sort((a, b) =>
-                              b.chapter_id > a.chapter_id ? 1 : -1
-                            )[0].updatedAt
-                          )
+                          data.chapters.sort((a, b) =>
+                            b.chapter_id > a.chapter_id ? 1 : -1
+                          )[0].updatedAt
+                        )
                         : "Đang cập nhật"}
                     </div>
                   </div>
@@ -405,7 +402,7 @@ const DetailComic = () => {
                           changeStarIndex={changeStarIndex}
                           style={
                             (starIndex >= i && starIndex != null) ||
-                            (rateState && +rateState.rate_star - 1 >= i)
+                              (rateState && +rateState.rate_star - 1 >= i)
                               ? true
                               : false
                           }
@@ -425,23 +422,22 @@ const DetailComic = () => {
                     {/* Truyền id chapter và list chapter */}
                     {data
                       ? data.chapters
-                          .sort((a, b) =>
-                            b.chapter_id > a.chapter_id ? 1 : -1
-                          )
-                          .map((e, i) => {
-                            return (
-                              <Link
-                                className={e.isVisited && "visited"}
-                                to={`/${xoaDau(e.chapter_name)}/${
-                                  e.chapter_id
+                        .sort((a, b) =>
+                          b.chapter_id > a.chapter_id ? 1 : -1
+                        )
+                        .map((e, i) => {
+                          return (
+                            <Link
+                              className={e.isVisited && "visited"}
+                              to={`/${xoaDau(e.chapter_name)}/${e.chapter_id
                                 }/truyen-tranh/${name}`}
-                                key={i}
-                              >
-                                <span>{e.chapter_name}</span>
-                                <span>{updateDate(e.updatedAt)}</span>
-                              </Link>
-                            );
-                          })
+                              key={i}
+                            >
+                              <span>{e.chapter_name}</span>
+                              <span>{updateDate(e.updatedAt)}</span>
+                            </Link>
+                          );
+                        })
                       : ""}
                   </div>
                 </div>

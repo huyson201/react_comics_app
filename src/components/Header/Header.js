@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo} from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   MdHome,
   MdBookmark,
@@ -7,14 +7,14 @@ import {
 
 import { FaBell } from "react-icons/fa";
 import { ImBooks, ImHistory } from "react-icons/im";
-import { Collapse} from "react-bootstrap";
+import { Collapse } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "./header.css";
 import jwt_decode from "jwt-decode";
 import { xoaDau } from "../../utilFunction";
 import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
-import { logout} from "../../features/auth/userSlice";
+import { logout } from "../../features/auth/userSlice";
 import { LOGOUT_SUCCESS, WARN_LOGIN } from "../../constants";
 import { getCategories } from "../../features/comics/categorySlice";
 import { toast } from 'react-toastify';
@@ -110,7 +110,7 @@ const Navbar = (props) => {
   // socket io processing
   useEffect(() => {
 
-    const socket = io('http://localhost:3001/', {
+    const socket = io('https://api-my-comics.herokuapp.com', {
       auth: {
         token: token,
       },
@@ -169,7 +169,7 @@ const Navbar = (props) => {
       setOpen(false)
     }
     window.onclick = handleClickWindow
-    return ()=>{
+    return () => {
       setOpenNotification(false)
       setOpen(false)
     }
@@ -231,19 +231,19 @@ const Navbar = (props) => {
       const res = await userApi.logout(token)
       console.log(res.data);
       if (res.status === 204) {
-        notify(null, LOGOUT_SUCCESS,null);
+        notify(null, LOGOUT_SUCCESS, null);
         Cookies.remove("refreshToken");
         dispatch_redux(logout());
       }
     } catch (error) {
-      notify(error.response.data, null,null);
+      notify(error.response.data, null, null);
     }
   };
 
   //hiện thông báo khi không có user
   const handleClick = () => {
     if (!isLogged) {
-      notify(null, null,WARN_LOGIN);
+      notify(null, null, WARN_LOGIN);
     }
   };
   //set show option when click nav item account
