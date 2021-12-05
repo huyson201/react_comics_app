@@ -1,15 +1,21 @@
+import { isJwtExpired } from "jwt-check-expiration";
 import React, { useEffect, useState } from "react";
 import { BsStars } from "react-icons/bs";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import comicApi from "../api/comicApi";
 import historyApi from "../api/historyApi";
+import userApi from "../api/userApi";
 import HistoryItem from "../components/History/HistoryItem";
 import Loading from "../components/Loading/Loading";
+import { EXPIRED } from "../constants";
+import { login, logout } from "../features/auth/userSlice";
 
 const History = () => {
   const histories = JSON.parse(localStorage.getItem("histories"));
   const [historyList, setHistoryList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const { isLogged, token, userInfo, refreshToken } = useSelector(
     (state) => state.user
   );
@@ -32,7 +38,7 @@ const History = () => {
     const data = res.data.data.comics_history;
     setHistoryList(data);
   };
-  useEffect(() => {
+  useEffect(async () => {
     if (!isLogged) {
       histories !== null &&
         histories.forEach((e) => {
@@ -79,11 +85,11 @@ const History = () => {
 
   return (
     <div>
-      {historyList.length<=0 && <Loading />}
+      {historyList.length <= 0 && <Loading />}
       <div className="list-title">
         <BsStars /> Lịch sử đọc truyện
       </div>
-      {historyList.length>0 && (
+      {historyList.length > 0 && (
         <div className="history-list">
           {historyList.map((e, i) => {
             return <HistoryItem key={i} item={e}></HistoryItem>;
