@@ -48,7 +48,7 @@ const DetailChapter = () => {
   const { showChapter } = useSelector((state) => state.modal);
   const { isLogged, token, refreshToken } = useSelector((state) => state.user);
   const chapter = useSelector(chapterSelectors.selectAll);
-  //tính phần trăm khi user scroll
+  console.log(chapter, "chapter list ");
   const handleScroll = () => {
     let cal =
       ((-1 * document.body.getBoundingClientRect().top) /
@@ -244,6 +244,7 @@ const DetailChapter = () => {
       toast.warn(EXPIRED, { toastId: EXPIRED });
     }
   };
+
   return (
     <>
       {imgs === null ? (

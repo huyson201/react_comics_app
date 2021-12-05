@@ -85,6 +85,7 @@ const chapterSlice = createSlice({
     },
     [getChapsByComicId.fulfilled]: (state, action) => {
       state.status = "success";
+      console.log(action.payload);
       chapterAdapter.setAll(state, action.payload.rows);
       state.count = action.payload.count;
     },
@@ -110,7 +111,7 @@ const chapterSlice = createSlice({
       state.status = "success";
       console.log(action.payload);
       chapterAdapter.removeAll(state);
-        state.count = 0;
+      state.count = 0;
     },
     [getChapterByChapID.pending]: (state) => {
       state.status = "loading";
