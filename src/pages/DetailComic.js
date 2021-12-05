@@ -163,10 +163,11 @@ const DetailComic = () => {
           dispatch(
             getRateByUserId({ userId: userInfo.user_uuid, comicId: id })
           );
-          notify(null, RATE_SUCCESS, null);
+          // notify(null, RATE_SUCCESS, null);
         }
       } catch (error) {
-        notify(error.response.data, null, null);
+        // notify(error.response.data, null, null);
+        console.log(error)
       }
     }
   };
