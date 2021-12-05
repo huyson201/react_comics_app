@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 const ProtectedRouteAdmin = ({ component: Component, ...rest }) => {
   const { isLogged, isAdmin } = useSelector((state) => state.user);
+
   return (
     <Route
       {...rest}
