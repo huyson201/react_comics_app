@@ -85,9 +85,9 @@ function App() {
     } else {
       setTimeout(() => {
         setLoading(false);
-      }, 1000);
+      }, 5000);
     }
-  }, [token]);
+  }, [token,isLogged]);
 
   return (
     <>
