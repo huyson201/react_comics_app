@@ -15,7 +15,10 @@ const History = () => {
   const histories = JSON.parse(localStorage.getItem("histories"));
   const [historyList, setHistoryList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { isLogged, token, userInfo } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const { isLogged, token, userInfo, refreshToken } = useSelector(
+    (state) => state.user
+  );
   const getData = async (comicId, chapterId) => {
     const res = await comicApi.getComicByID(comicId);
     const data = res.data.data;
