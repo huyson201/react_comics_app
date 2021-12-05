@@ -115,7 +115,7 @@ const DetailComic = () => {
           if (histories != null) {
             const indexComic = histories.findIndex((x) => x.comic_id === +id);
             console.log(indexComic)
-            if(indexComic !== -1){
+            if (indexComic !== -1) {
               setChapterRead(comic, histories[indexComic].chapters);
             }
           }
@@ -263,6 +263,7 @@ const DetailComic = () => {
     //check status follow
     if (isLogged && token) {
       const findFollow = async () => {
+        console.log('token: ' + token)
         const user_id = jwtDecode(token).user_uuid;
         const res = await followApi.getFollow(user_id, id);
         if (res.data.data.count > 0) {
@@ -280,6 +281,7 @@ const DetailComic = () => {
     } else {
       if (checked && token) {
         // delete follow comic
+        console.log('token: ' + token)
         const user_id = jwtDecode(token).user_uuid;
         dispatch(
           deleteComicFollow({

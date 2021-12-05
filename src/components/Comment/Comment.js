@@ -17,7 +17,7 @@ const Comment = ({ comicId }) => {
       if (res.data.data) {
         setComments(res.data.data.rows);
       }
-    };
+    }
     getComments();
   }, [comicId]);
 
@@ -47,7 +47,7 @@ const Comment = ({ comicId }) => {
       });
   };
 
-  
+
 
   return (
     <>

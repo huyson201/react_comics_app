@@ -23,8 +23,10 @@ const CommentItem = ({
     setActiveComment(item.comment_id);
   };
   let currentUserUid = useMemo(() => {
-    let decode = jwtDecode(token)
-    return decode.user_uuid
+    if (token) {
+      let decode = jwtDecode(token)
+      return decode.user_uuid
+    }
   }, [token])
 
   return (

@@ -97,7 +97,7 @@ export default SubComment
 const generateItems = (subComments, token) => {
     if (!Array.isArray(subComments) || subComments.length <= 0) return null
 
-    let currentUserUid = jwtDecode(token).user_uuid
+    let currentUserUid = token ? jwtDecode(token).user_uuid : null
 
     const items = (
         <ul>
