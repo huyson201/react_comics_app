@@ -12,19 +12,21 @@ import { useHistory, useParams } from "react-router";
 import chapApi from "../../../api/chapApi";
 import { FcOk } from "react-icons/fc";
 import { toast } from "react-toastify";
-import { ADD_CHAP } from "../../../constants";
+import { ADD_CHAP, EXPIRED, WARN_LOGIN } from "../../../constants";
 import { isJwtExpired } from "jwt-check-expiration";
+import userApi from "../../../api/userApi";
+import { login, logout } from "../../../features/auth/userSlice";
 
-// import "./addChap.css"
 const AddChap = () => {
   const [files, setFiles] = useState();
   const [chapter_name, setChapName] = useState();
   const { comicId } = useParams();
-  const { token } = useSelector((state) => state.user);
+  const { token, refreshToken } = useSelector((state) => state.user);
   const [progress, setPogress] = useState([]);
   const [img, setImg] = useState([]);
   const history = useHistory();
-  
+  const dispatch = useDispatch();
+
   const convertBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -45,10 +47,12 @@ const AddChap = () => {
       !toast.isActive("chapName") &&
       toast.warn("Vui lòng nhập tên chương", { toastId: "chapName" });
 
+    (await checkToken(token, refreshToken)) === null && resetDispatch();
+
     if (
       chapter_name.trim() !== "" &&
       files.length > 0 &&
-      isJwtExpired(token) === false
+      (await checkToken(token, refreshToken)) !== null
     ) {
       let base64 = [];
       for (let i = 0; i < files.length; i++) {
@@ -64,7 +68,10 @@ const AddChap = () => {
         let formDataImg = new FormData();
         formDataImg.append("img", files[i]);
         try {
-          const res = await chapApi.upload(formDataImg, token);
+          const res = await chapApi.upload(
+            formDataImg,
+            await checkToken(token, refreshToken)
+          );
           if (res.data.data) {
             arrProgress[i] = { index: i, message: "success" };
             setPogress([...arrProgress]);
@@ -80,7 +87,7 @@ const AddChap = () => {
           comicId,
           chapter_name,
           strImgs.toString(),
-          token
+          await checkToken(token, refreshToken)
         );
         if (res.data.data) {
           if (!toast.isActive(ADD_CHAP)) {
@@ -90,12 +97,42 @@ const AddChap = () => {
           e.target[1].value = null;
           setImg([]);
         }
-        console.log(res.data.data);
+        // console.log(res.data.data);
       } catch (error) {
         console.log(error);
       }
     }
   };
+
+  const checkToken = async (token, refreshToken) => {
+    let temp = null;
+    if (token && isJwtExpired(token) === false) {
+      temp = token;
+    } else {
+      if (refreshToken && isJwtExpired(refreshToken) === false) {
+        const resUpdate = await userApi.refreshToken(refreshToken);
+        if (resUpdate.data && resUpdate.data.token) {
+          temp = resUpdate.data.token;
+          dispatch(
+            login({
+              token: resUpdate.data.token,
+              refreshToken: refreshToken,
+            })
+          );
+        }
+      }
+    }
+    return temp;
+  };
+
+  //thông báo login khi refreshtoken hết hạn
+  const resetDispatch = () => {
+    dispatch(logout());
+    if (!toast.isActive(EXPIRED)) {
+      toast.warn(EXPIRED, { toastId: EXPIRED });
+    }
+  };
+
   return (
     <>
       <div className="container_form_add">

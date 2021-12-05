@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import Table from "../../Table/Table";
 import Pagination from "react-js-pagination";
-import { DELETE_CHAP, LIMIT } from "../../../constants";
+import { DELETE_CHAP, EXPIRED, LIMIT, WARN_LOGIN } from "../../../constants";
 import Button from "@restart/ui/esm/Button";
 import {
   comicSelectors,
@@ -25,7 +25,10 @@ import {
 import ModalAlert from "../../Modal/ModalAlert";
 import { xoaDau } from "../../../utilFunction";
 import chapApi from "../../../api/chapApi";
+import userApi from "../../../api/userApi";
 import { toast } from "react-toastify";
+import { isJwtExpired } from "jwt-check-expiration";
+import { login, logout } from "../../../features/auth/userSlice";
 
 const ChapList = (props) => {
   const { comicId } = useParams();
@@ -35,7 +38,7 @@ const ChapList = (props) => {
   const dispatch = useDispatch();
   const chapters = useSelector(chapterSelectors.selectAll);
   const { status, count, checkAll } = useSelector((state) => state.chapter);
-  const { token } = useSelector((state) => state.user);
+  const { token, refreshToken } = useSelector((state) => state.user);
   const selectedComic = useSelector((state) => state.comics.selectedComic);
   const [show, setShow] = useState(false);
   const [arrId, setArrId] = useState([]);
@@ -53,9 +56,6 @@ const ChapList = (props) => {
   const handleClickAdd = () => {
     history.push(`/comic/${comicId}/chaps/add`);
   };
-  const handleClickDetail = () => {
-    console.log("click detail");
-  };
 
   const handlePageChange = (pageNumber) => {
     history.push(`/comics/${comicId}/chaps/page/${pageNumber}`);
@@ -67,11 +67,19 @@ const ChapList = (props) => {
   };
   const handleClose = () => setShow(false);
   const handleDeleteChap = async () => {
-    console.log(checkAll);
-    console.log(arrId);
-    if (checkAll === true && arrId.length > 0) {
+    // console.log(token);
+    // console.log(await checkToken(token, refreshToken));
+    (await checkToken(token, refreshToken)) === null && resetDispatch();
+    if (
+      checkAll === true &&
+      arrId.length > 0 &&
+      (await checkToken(token, refreshToken)) !== null
+    ) {
       for (let i = 0; i < arrId.length; i++) {
-        const res = await chapApi.delete(arrId[i], token);
+        const res = await chapApi.delete(
+          arrId[i],
+          await checkToken(token, refreshToken)
+        );
         console.log(res);
       }
       --page;
@@ -80,9 +88,10 @@ const ChapList = (props) => {
       if (!toast.isActive(DELETE_CHAP)) {
         toast.success(DELETE_CHAP, { toastId: DELETE_CHAP });
       }
-      // dispatch(deleteAllChapter({ listId: arrId, token: token }));
     } else {
-      dispatch(deleteChapter({ id: id, token: token }));
+      dispatch(
+        deleteChapter({ id: id, token: await checkToken(token, refreshToken) })
+      );
     }
     setShow(false);
   };
@@ -90,6 +99,7 @@ const ChapList = (props) => {
   const handleClickDeleteAll = () => {
     setShow(true);
   };
+
   useEffect(() => {
     dispatch(getComicByID(comicId));
     dispatch(getChapsByComicId(comicId));
@@ -100,7 +110,7 @@ const ChapList = (props) => {
   }, [page, count]);
 
   useEffect(() => {
-    console.log(page);
+    // console.log(page);
     if (page >= 1) {
       dispatch(setOffSet((+page - 1) * LIMIT));
     }
@@ -161,6 +171,35 @@ const ChapList = (props) => {
       ),
     },
   ];
+
+  const checkToken = async (token, refreshToken) => {
+    let temp = null;
+    if (token && isJwtExpired(token) === false) {
+      temp = token;
+    } else {
+      if (refreshToken && isJwtExpired(refreshToken) === false) {
+        const resUpdate = await userApi.refreshToken(refreshToken);
+        if (resUpdate.data && resUpdate.data.token) {
+          temp = resUpdate.data.token;
+          dispatch(
+            login({
+              token: resUpdate.data.token,
+              refreshToken: refreshToken,
+            })
+          );
+        }
+      }
+    }
+    return temp;
+  };
+
+  //thông báo login khi refreshtoken hết hạn
+  const resetDispatch = () => {
+    dispatch(logout());
+    if (!toast.isActive(EXPIRED)) {
+      toast.warn(EXPIRED, { toastId: EXPIRED });
+    }
+  };
 
   return (
     <>

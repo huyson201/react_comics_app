@@ -10,6 +10,8 @@ import {
   COMIC_STATUS_ONGOING,
   COMIC_STATUS_STOP,
   COMIC_SUMMARY,
+  EXPIRED,
+  WARN_LOGIN,
 } from "../../../constants";
 import AsyncSelect from "react-select/async";
 import comicApi from "../../../api/comicApi";
@@ -22,7 +24,10 @@ import {
   updateComic,
 } from "../../../features/comics/comicSlice";
 import Loading from "../../Loading/Loading";
+import { login, logout } from "../../../features/auth/userSlice";
 import { toast } from "react-toastify";
+import userApi from "../../../api/userApi";
+import { isJwtExpired } from "jwt-check-expiration";
 const AddOrEditComic = ({ id }) => {
   const dispatch = useDispatch();
   const [inputValue, setValue] = useState("");
@@ -34,7 +39,7 @@ const AddOrEditComic = ({ id }) => {
   const [status, setStatus] = useState("");
   const [validated, setValidated] = useState(false);
   const [color, setColor] = useState(true);
-  const token = useSelector((state) => state.user.token);
+  const { token, refreshToken } = useSelector((state) => state.user);
   const statusComic = useSelector((state) => state.comics.status);
   const { selectedComic, loading } = useSelector((state) => state.comics);
   const refSelect = useRef();
@@ -59,7 +64,7 @@ const AddOrEditComic = ({ id }) => {
     setImage(base64);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     const form = e.currentTarget;
     if (form.checkValidity() === false) {
       if (selectedCategories.length === 0) {
@@ -71,7 +76,12 @@ const AddOrEditComic = ({ id }) => {
     } else if (form.checkValidity()) {
       e.preventDefault();
       setValidated(true);
-      if (selectedCategories.length > 0) {
+
+      (await checkToken(token, refreshToken)) === null && resetDispatch();
+      if (
+        selectedCategories.length > 0 &&
+        (await checkToken(token, refreshToken)) !== null
+      ) {
         setColor(true);
         let arrCate = [];
         selectedCategories.forEach((e) => {
@@ -88,8 +98,12 @@ const AddOrEditComic = ({ id }) => {
         console.log(id);
         if (!id) {
           formData.append("comic_img", file);
-          dispatch(createComic({ data: formData, userToken: token }));
-         
+          dispatch(
+            createComic({
+              data: formData,
+              userToken: await checkToken(token, refreshToken),
+            })
+          );
           setValidated(false);
           setName("");
           setAuthor("");
@@ -97,10 +111,14 @@ const AddOrEditComic = ({ id }) => {
           setSelectedCategories("");
           setImage("");
           setStatus("");
-        } else {
-          dispatch(updateComic({ id: id, data: formData, userToken: token }));
-     
-        }
+        } else
+          dispatch(
+            updateComic({
+              id: id,
+              data: formData,
+              userToken: await checkToken(token, refreshToken),
+            })
+          );
       } else {
         setColor(false);
       }
@@ -152,7 +170,37 @@ const AddOrEditComic = ({ id }) => {
       setImage("");
       setStatus("");
     }
-  }, [selectedComic]);
+  }, [selectedComic !== null]);
+
+  const checkToken = async (token, refreshToken) => {
+    let temp = null;
+    if (token && isJwtExpired(token) === false) {
+      temp = token;
+    } else {
+      if (refreshToken && isJwtExpired(refreshToken) === false) {
+        const resUpdate = await userApi.refreshToken(refreshToken);
+        if (resUpdate.data && resUpdate.data.token) {
+          temp = resUpdate.data.token;
+          dispatch(
+            login({
+              token: resUpdate.data.token,
+              refreshToken: refreshToken,
+            })
+          );
+        }
+      }
+    }
+    return temp;
+  };
+
+  //thông báo login khi refreshtoken hết hạn
+  const resetDispatch = () => {
+    dispatch(logout());
+    if (!toast.isActive(EXPIRED)) {
+      toast.warn(EXPIRED, { toastId: EXPIRED });
+    }
+  };
+
   return (
     <>
       {loading && <Loading />}

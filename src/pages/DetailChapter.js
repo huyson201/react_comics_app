@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router";
 import comicApi from "../api/comicApi";
-import { CHAP_NEXT, CHAP_PRE, NEXT_CHAPTER, PRE_CHAPTER } from "../constants";
+import {
+  CHAP_NEXT,
+  CHAP_PRE,
+  EXPIRED,
+  NEXT_CHAPTER,
+  PRE_CHAPTER,
+} from "../constants";
 import {
   IoIosListBox,
   IoIosInformationCircle,
@@ -21,6 +27,9 @@ import {
 } from "../features/comics/chapterSlice";
 import { toast } from "react-toastify";
 import historyApi from "../api/historyApi";
+import { isJwtExpired } from "jwt-check-expiration";
+import userApi from "../api/userApi";
+import { login, logout } from "../features/auth/userSlice";
 
 const DetailChapter = () => {
   const history = useHistory();
@@ -37,7 +46,7 @@ const DetailChapter = () => {
   });
   const dispatch = useDispatch();
   const { showChapter } = useSelector((state) => state.modal);
-  const { isLogged, token } = useSelector((state) => state.user);
+  const { isLogged, token, refreshToken } = useSelector((state) => state.user);
   const chapter = useSelector(chapterSelectors.selectAll);
   //tính phần trăm khi user scroll
   const handleScroll = () => {
@@ -161,7 +170,14 @@ const DetailChapter = () => {
   }, [id]);
   //create history
   const createHistory = async (comicId, id) => {
-    await historyApi.createHistory(comicId, id, token);
+    (await checkToken(token, refreshToken)) === null && resetDispatch();
+    if ((await checkToken(token, refreshToken)) !== null) {
+      await historyApi.createHistory(
+        comicId,
+        id,
+        await checkToken(token, refreshToken)
+      );
+    }
   };
   // save read comic chapter history
   useEffect(() => {
@@ -200,6 +216,34 @@ const DetailChapter = () => {
     }
   }, [id, idComic, isLogged]);
 
+  const checkToken = async (token, refreshToken) => {
+    let temp = null;
+    if (token && isJwtExpired(token) === false) {
+      temp = token;
+    } else {
+      if (refreshToken && isJwtExpired(refreshToken) === false) {
+        const resUpdate = await userApi.refreshToken(refreshToken);
+        if (resUpdate.data && resUpdate.data.token) {
+          temp = resUpdate.data.token;
+          dispatch(
+            login({
+              token: resUpdate.data.token,
+              refreshToken: refreshToken,
+            })
+          );
+        }
+      }
+    }
+    return temp;
+  };
+
+  //thông báo login khi refreshtoken hết hạn
+  const resetDispatch = () => {
+    dispatch(logout());
+    if (!toast.isActive(EXPIRED)) {
+      toast.warn(EXPIRED, { toastId: EXPIRED });
+    }
+  };
   return (
     <>
       {imgs === null ? (

@@ -297,8 +297,6 @@ const DetailComic = () => {
     }
   };
 
-  // useEffect(() => { toast.warn("hsjdfhakjsdfjk") }, [])
-
   return (
     <>
       {data == null ? (

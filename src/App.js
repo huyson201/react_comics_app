@@ -34,7 +34,6 @@ function App() {
   const { token, isLogged } = useSelector(
     (state) => state.user
   );
-  console.log(token, "TOKEN");
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
 

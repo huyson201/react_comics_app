@@ -15,8 +15,11 @@ import {
   resetChap,
 } from "../../../features/comics/chapterSlice";
 import { toast } from "react-toastify";
-import { UPDATE_SUCCESS, CHOOSE_IMG } from "../../../constants";
+import { UPDATE_SUCCESS, CHOOSE_IMG, WARN_LOGIN, EXPIRED } from "../../../constants";
 import { FcOk } from "react-icons/fc";
+import { login, logout } from "../../../features/auth/userSlice";
+import userApi from "../../../api/userApi";
+import { isJwtExpired } from "jwt-check-expiration";
 
 const UpdateChap = (props) => {
   const { chap, status } = useSelector((state) => state.chapter);
@@ -25,19 +28,12 @@ const UpdateChap = (props) => {
   const [name, setName] = useState("");
   const { chapId } = useParams();
   const dispatch = useDispatch();
-  const { token } = useSelector((state) => state.user);
+  const { token, refreshToken } = useSelector((state) => state.user);
   const [progress, setPogress] = useState([]);
   const [show, setShow] = useState(false);
   const [oldImg, setOldImg] = useState();
   const [index, setIndex] = useState();
   const history = useHistory();
-
-  const options = {
-    headers: {
-      "Content-Type": `multipart/form-data`,
-      Authorization: `Bearer ${token}`,
-    },
-  };
 
   const convertBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -55,7 +51,7 @@ const UpdateChap = (props) => {
   const updateImage = async (chapId, options, formData, index) => {
     try {
       const res = await chapApi.updateImg(chapId, options, formData);
-      console.log(res.data);
+      // console.log(res.data);
       if (res.data.data) {
         if (!toast.isActive(UPDATE_SUCCESS)) {
           toast.success(UPDATE_SUCCESS, { toastId: UPDATE_SUCCESS });
@@ -70,14 +66,22 @@ const UpdateChap = (props) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setShow(false);
-    // setPogress(null)
 
     let formData = new FormData();
     if (name) {
       formData.append("chapter_name", name);
     }
 
-    if (urls) {
+    (await checkToken(token, refreshToken)) === null && resetDispatch();
+
+    if (urls && (await checkToken(token, refreshToken)) !== null) {
+      const options = {
+        headers: {
+          "Content-Type": `multipart/form-data`,
+          Authorization: `Bearer ${(await checkToken(token, refreshToken))}`,
+        },
+      };
+
       let base64 = [];
       if (urls.length === 1 && oldImg) {
         setPogress([{ index: index, message: "loading" }]);
@@ -109,9 +113,9 @@ const UpdateChap = (props) => {
           let formDataImg = new FormData();
           formDataImg.append("img", urls[i]);
           try {
-            const res = await chapApi.upload(formDataImg, token);
+            const res = await chapApi.upload(formDataImg, (await checkToken(token, refreshToken)));
             if (res.data.data) {
-              console.log(res);
+              // console.log(res);
               arrProgress[i] = { index: i, message: "success" };
               setPogress([...arrProgress]);
               strImgs.push(res.data.data);
@@ -120,14 +124,15 @@ const UpdateChap = (props) => {
             console.log(error);
           }
         }
+
         try {
           const res = await chapApi.updateImgs(
             chapId,
             name,
             strImgs.toString(),
-            token
+            (await checkToken(token, refreshToken))
           );
-          console.log(res.data.data);
+          // console.log(res.data.data);
           if (res.data.data) {
             if (!toast.isActive(UPDATE_SUCCESS)) {
               toast.success(UPDATE_SUCCESS, { toastId: UPDATE_SUCCESS });
@@ -159,6 +164,35 @@ const UpdateChap = (props) => {
   }, [chap]);
 
   const handleClose = () => setShow(false);
+
+  const checkToken = async (token, refreshToken) => {
+    let temp = null;
+    if (token && isJwtExpired(token) === false) {
+      temp = token;
+    } else {
+      if (refreshToken && isJwtExpired(refreshToken) === false) {
+        const resUpdate = await userApi.refreshToken(refreshToken);
+        if (resUpdate.data && resUpdate.data.token) {
+          temp = resUpdate.data.token;
+          dispatch(
+            login({
+              token: resUpdate.data.token,
+              refreshToken: refreshToken,
+            })
+          );
+        }
+      }
+    }
+    return temp;
+  };
+  //thông báo login khi refreshtoken hết hạn
+  const resetDispatch = () => {
+    dispatch(logout());
+    if (!toast.isActive(EXPIRED)) {
+      toast.warn(EXPIRED, { toastId: EXPIRED });
+    }
+  };
+
   return (
     <>
       <div className="container_form_add">

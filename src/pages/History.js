@@ -9,7 +9,10 @@ import Loading from "../components/Loading/Loading";
 const History = () => {
   const histories = JSON.parse(localStorage.getItem("histories"));
   const [historyList, setHistoryList] = useState([]);
-  const { isLogged, token, userInfo } = useSelector((state) => state.user);
+  const [loading, setLoading] = useState(false);
+  const { isLogged, token, userInfo, refreshToken } = useSelector(
+    (state) => state.user
+  );
   const getData = async (comicId, chapterId) => {
     const res = await comicApi.getComicByID(comicId);
     const data = res.data.data;
@@ -36,12 +39,44 @@ const History = () => {
           getData(e.comic_id, e.chapters[e.chapters.length - 1]);
         });
     } else {
-      getHistory(userInfo.user_uuid, token);
+      (await checkToken(token, refreshToken)) === null && resetDispatch();
+      (await checkToken(token, refreshToken)) !== null &&
+        getHistory(userInfo.user_uuid, await checkToken(token, refreshToken));
     }
     return () => {
       setHistoryList([]);
     };
   }, [isLogged]);
+
+  const checkToken = async (token, refreshToken) => {
+    let temp = null;
+    if (token && isJwtExpired(token) === false) {
+      temp = token;
+    } else {
+      if (refreshToken && isJwtExpired(refreshToken) === false) {
+        const resUpdate = await userApi.refreshToken(refreshToken);
+        if (resUpdate.data && resUpdate.data.token) {
+          temp = resUpdate.data.token;
+          dispatch(
+            login({
+              token: resUpdate.data.token,
+              refreshToken: refreshToken,
+            })
+          );
+        }
+      }
+    }
+    return temp;
+  };
+
+  //thông báo login khi refreshtoken hết hạn
+  const resetDispatch = () => {
+    dispatch(logout());
+    if (!toast.isActive(EXPIRED)) {
+      toast.warn(EXPIRED, { toastId: EXPIRED });
+    }
+  };
+
   return (
     <div>
       {historyList.length<=0 && <Loading />}
