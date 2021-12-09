@@ -135,7 +135,9 @@ const Home = () => {
     if (histories !== null && isLogged) {
       for (let index = 0; index < histories.length; index++) {
         const e = histories[index];
-        createHistory(e.comic_id, e.chapters.toString());
+        e.chapters &&
+          e.comic_id &&
+          createHistory(e.comic_id, e.chapters.toString());
       }
       localStorage.removeItem("histories");
     }

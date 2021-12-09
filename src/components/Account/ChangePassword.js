@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, FormLabel, FormGroup, Button } from "react-bootstrap";
+import { Form, FormLabel, FormGroup, Button, Spinner } from "react-bootstrap";
 import { isJwtExpired } from "jwt-check-expiration";
 import {
   CHECK_PW,
@@ -13,7 +13,7 @@ import { login, logout } from "../../features/auth/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import userApi from "../../api/userApi";
 import { useHistory } from "react-router";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 const ChangePassword = () => {
   const [old_password, setUserPassword] = useState();
@@ -22,26 +22,27 @@ const ChangePassword = () => {
   const { token, refreshToken, userInfo } = useSelector((state) => state.user);
   const history = useHistory();
   const dispatch_redux = useDispatch();
+  const [loading, setloading] = useState(false);
 
   const notify = (error, message, warn) => {
     if (error !== null) {
       if (!toast.isActive(error)) {
-        toast.error(error, { toastId: error })
+        toast.error(error, { toastId: error });
       }
     } else if (message !== null) {
       if (!toast.isActive(message)) {
-        toast.success(message, { toastId: message })
+        toast.success(message, { toastId: message });
       }
     } else {
       if (!toast.isActive(warn)) {
-        toast.warn(warn, { toastId: warn })
+        toast.warn(warn, { toastId: warn });
       }
     }
-  }
+  };
   //refresh token
   const updateToken = async () => {
     try {
-      const resUpdate = await userApi.refreshToken(refreshToken)
+      const resUpdate = await userApi.refreshToken(refreshToken);
       if (resUpdate.data && resUpdate.data.token) {
         dispatch_redux(
           login({
@@ -57,38 +58,48 @@ const ChangePassword = () => {
   };
   //update
   const changePW = async () => {
+    // console.log(token);
     try {
-      const res = await userApi.changePassword(old_password, new_password, token);
+      const res = await userApi.changePassword(
+        old_password,
+        new_password,
+        token
+      );
       if (res.data.data) {
-        notify(null, res.data.message,null)
+        notify(null, res.data.message, null);
+        setloading(false);
       }
     } catch (error) {
-      notify(error.response.data, null,null)
+      notify(error.response.data, null, null);
+      setloading(false);
     }
-  }
+  };
   //xử lý dữ liệu khi người dùng nhấn submit
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setloading(true);
     if (checkCfPw(new_password, cfnew_password) === true) {
       if (token && isJwtExpired(token) === false) {
-        changePW()
+        changePW();
       } else {
         if (refreshToken && isJwtExpired(refreshToken) === false) {
-          await updateToken()
-          changePW()
+          await updateToken();
+          changePW();
         } else {
-          dispatch_redux(logout())
-          notify(null, null,EXPIRED)
+          dispatch_redux(logout());
+          notify(null, null, EXPIRED);
+          setloading(false);
         }
       }
     } else {
-      notify(CHECK_PW, null,null)
+      notify(CHECK_PW, null, null);
+      setloading(false);
     }
   };
 
   return (
     <>
-      {userInfo !== null ?
+      {userInfo !== null ? (
         <Form className="form-profile" onSubmit={handleSubmit}>
           <h3>{TITLE_CHANGE_PW}</h3>
           <FormGroup className="form-group">
@@ -126,11 +137,16 @@ const ChangePassword = () => {
             className="btn btn-primary btn-block"
             variant="dark"
           >
-            {TITLE_CHANGE_PW}
+            {loading === true ? (
+              <Spinner animation="border" />
+            ) : (
+              TITLE_CHANGE_PW
+            )}
           </Button>
         </Form>
-        : history.push("/login")}
-
+      ) : (
+        history.push("/login")
+      )}
     </>
   );
 };
@@ -141,6 +157,6 @@ const checkCfPw = (pw, cfpw) => {
     check = true;
   }
   return check;
-}
+};
 
 export default ChangePassword;

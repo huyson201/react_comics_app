@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Form, FormLabel, FormGroup, Button } from "react-bootstrap";
+import { Form, FormLabel, FormGroup, Button, Spinner } from "react-bootstrap";
 import { isJwtExpired } from "jwt-check-expiration";
 import {
   BUTTON_UPDATE,
@@ -12,46 +12,47 @@ import {
 } from "../../constants";
 import { useDispatch, useSelector } from "react-redux";
 import { login, logout, setUserInfo } from "../../features/auth/userSlice";
-import userApi from "../../api/userApi"
+import userApi from "../../api/userApi";
 import { useHistory } from "react-router";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 const Profile = () => {
   const [user_name, setUserName] = useState();
   const [user_email, setEmail] = useState();
   const [user_image, setImage] = useState();
   const { token, refreshToken, userInfo } = useSelector((state) => state.user);
-  const history = useHistory()
+  const history = useHistory();
   const dispatch_redux = useDispatch();
+  const [loading, setloading] = useState(false);
 
   const notify = (error, message, warn) => {
     if (error !== null) {
       if (!toast.isActive(error)) {
-        toast.error(error, { toastId: error })
+        toast.error(error, { toastId: error });
       }
     } else if (message !== null) {
       if (!toast.isActive(message)) {
-        toast.success(message, { toastId: message })
+        toast.success(message, { toastId: message });
       }
     } else {
       if (!toast.isActive(warn)) {
-        toast.warn(warn, { toastId: warn })
+        toast.warn(warn, { toastId: warn });
       }
     }
-  }
+  };
   //effect user info
   useEffect(() => {
     if (userInfo !== null) {
       setUserName(userInfo.user_name);
       setEmail(userInfo.user_email);
-      let image = userInfo.user_image + `&t=${new Date().getTime()}`
-      setImage(image)
+      let image = userInfo.user_image + `&t=${new Date().getTime()}`;
+      setImage(image);
     }
   }, [userInfo]);
   //refresh token
   const updateToken = async () => {
     try {
-      const resUpdate = await userApi.refreshToken(refreshToken)
+      const resUpdate = await userApi.refreshToken(refreshToken);
       if (resUpdate.data && resUpdate.data.token && userInfo !== null) {
         dispatch_redux(
           login({
@@ -59,24 +60,24 @@ const Profile = () => {
             refreshToken: refreshToken,
           })
         );
-        dispatchUser(userInfo.user_uuid, resUpdate.data.token)
+        dispatchUser(userInfo.user_uuid, resUpdate.data.token);
       }
     } catch (error) {
       console.log(error);
-      notify(error.response.data, null, null)
+      notify(error.response.data, null, null);
     }
   };
   //Lưu redux user info
   const dispatchUser = async (id, token) => {
     try {
-      const getInfo = await userApi.getUserById(id, token)
+      const getInfo = await userApi.getUserById(id, token);
       if (getInfo.data.data) {
-        dispatch_redux(setUserInfo(getInfo.data.data))
+        dispatch_redux(setUserInfo(getInfo.data.data));
       }
     } catch (error) {
       console.log(error.response.data);
     }
-  }
+  };
   //thông báo login khi token hết hạn
   const resetDispatch = () => {
     dispatch_redux(logout());
@@ -88,68 +89,73 @@ const Profile = () => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => {
-        resolve(reader.result)
-      }
+        resolve(reader.result);
+      };
       reader.onerror = (error) => {
-        reject(error)
-      }
-    })
-  }
+        reject(error);
+      };
+    });
+  };
   //Hiển thị ảnh khi user chọn ảnh từ lib
   const changeImage = async (file) => {
-    const base64 = await convertBase64(file)
+    const base64 = await convertBase64(file);
     setImage(base64);
-  }
+  };
   //update user
   const update = async (formData) => {
     try {
-      const res = await userApi.updateUserImage(token, formData, userInfo.user_uuid)
+      const res = await userApi.updateUserImage(
+        token,
+        formData,
+        userInfo.user_uuid
+      );
       if (res.data.data) {
-        dispatchUser(userInfo.user_uuid, token)
-        notify(null, UPDATE_SUCCESS,null)
+        dispatchUser(userInfo.user_uuid, token);
+        notify(null, UPDATE_SUCCESS, null);
       }
     } catch (error) {
       console.log(error.response.data);
     }
-  }
+  };
   //xử lý dữ liệu khi nhấn update
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setloading(true);
     let formData = new FormData();
-    const file = e.target[2].files[0]
-    formData.append("user_name", user_name)
+    const file = e.target[2].files[0];
+    formData.append("user_name", user_name);
 
     if (file) {
-      formData.append('user_image', file)
+      formData.append("user_image", file);
     }
 
     if (userInfo !== null) {
       if (token && isJwtExpired(token) === false) {
-        update(formData)
+        update(formData);
       } else {
         if (refreshToken && isJwtExpired(refreshToken) === false) {
-          await updateToken()
-          update(formData)
+          await updateToken();
+          update(formData);
+          setloading(false);
         } else {
-          resetDispatch()
+          setloading(false);
+          resetDispatch();
         }
       }
     } else {
+      setloading(false);
       console.log("Khong co user");
     }
   };
 
   return (
     <>
-      {userInfo !== null ?
+      {userInfo !== null ? (
         <>
           <h3>{TITLE_ACCOUNT}</h3>
           <div className="profile">
             <div className="custom_image">
-              <img
-                key={Date.now()}
-                src={user_image}
-                alt="account" />
+              <img key={Date.now()} src={user_image} alt="account" />
             </div>
             <div>
               <Form className="form-profile" onSubmit={handleSubmit}>
@@ -188,16 +194,21 @@ const Profile = () => {
                   className="btn btn-primary btn-block"
                   variant="dark"
                 >
-                  {BUTTON_UPDATE}
+                  {loading === true ? (
+                    <Spinner animation="border" />
+                  ) : (
+                    BUTTON_UPDATE
+                  )}
                 </Button>
               </Form>
             </div>
           </div>
         </>
-        : history.push("/")
-      }
+      ) : (
+        history.push("/")
+      )}
     </>
-  )
+  );
 };
 
 export default Profile;

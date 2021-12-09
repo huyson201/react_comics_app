@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, FormLabel, FormGroup, Button } from "react-bootstrap";
+import { Form, FormLabel, FormGroup, Button, Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import {
@@ -27,6 +27,7 @@ const Login = () => {
   const [user_password, setPassword] = useState();
   const history = useHistory()
   const dispatch_redux = useDispatch();
+  const [loading, setloading] = useState(false);
 
   const notify = (error, message, warn) => {
     if (error !== null) {
@@ -98,10 +99,13 @@ const Login = () => {
   //login khi nhấn đăng nhập
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setloading(true)
     if (user_password.length < 6) {
       notify(VALIDATE_PW, null, null);
+      setloading(false)
     } else {
       loginNormal();
+      setloading(false)
     }
   };
 
@@ -144,7 +148,7 @@ const Login = () => {
         </div>
 
         <Button type="submit" className="btn-primary" variant="dark">
-          {TITLE_LOGIN}
+        {loading === true ? <Spinner animation="border" /> : TITLE_LOGIN}
         </Button>
 
         <p className="text-right">

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Form, FormLabel, FormGroup, Button } from "react-bootstrap";
+import { Form, FormLabel, FormGroup, Button, Spinner } from "react-bootstrap";
 import {
   CHECK_PW,
   FB_CF_PW,
@@ -18,7 +18,7 @@ import {
 import { useDispatch } from "react-redux";
 import { modalNotify } from "../features/modal/modalSlice";
 import userApi from "../api/userApi";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { useHistory } from "react-router";
 const Register = () => {
   const [user_name, setUserName] = useState();
@@ -27,8 +27,8 @@ const Register = () => {
   const [confirm_password, setCfPassword] = useState();
   const [user, setUser] = useState();
   const [validated, setValidated] = useState(false);
-  const dispatch_redux = useDispatch();
-  const history = useHistory()
+  const history = useHistory();
+  const [loading, setloading] = useState(false);
   useEffect(() => {
     setUser({
       user_name: user_name,
@@ -41,24 +41,25 @@ const Register = () => {
   const notify = (error, message, warn) => {
     if (error !== null) {
       if (!toast.isActive(error)) {
-        toast.error(error, { toastId: error })
+        toast.error(error, { toastId: error });
       }
     } else if (message !== null) {
       if (!toast.isActive(message)) {
-        if(message === REGISTER_SUCCESS){
-          history.push('/login')
+        if (message === REGISTER_SUCCESS) {
+          history.push("/login");
         }
-        toast.success(message, { toastId: message })
+        toast.success(message, { toastId: message });
       }
     } else {
       if (!toast.isActive(warn)) {
-        toast.warn(warn, { toastId: warn })
+        toast.warn(warn, { toastId: warn });
       }
     }
-  }
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setloading(true);
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
       event.stopPropagation();
@@ -68,17 +69,21 @@ const Register = () => {
     if (form.checkValidity() === true) {
       if (user_password.length < 6) {
         notify(VALIDATE_PW, null, null);
+        setloading(false);
       } else if (checkCfPw(user_password, confirm_password) === false) {
         notify(CHECK_PW, null, null);
+        setloading(false);
       } else {
         try {
           const res = await userApi.register(user);
           if (res.data.data) {
             notify(null, REGISTER_SUCCESS, null);
+            setloading(false);
           }
         } catch (error) {
           console.log(error.response.data);
-          notify(error.response.data, null, null)
+          notify(error.response.data, null, null);
+          setloading(false);
         }
       }
     }
@@ -145,12 +150,8 @@ const Register = () => {
           </Form.Control.Feedback>
         </FormGroup>
 
-        <Button
-          type="submit"
-          className="btn-primary"
-          variant="dark"
-        >
-          {TITLE_REGISTER}
+        <Button type="submit" className="btn-primary" variant="dark">
+          {loading === true ? <Spinner animation="border" /> : TITLE_REGISTER}
         </Button>
         <Link to="/login" className="here">
           {" "}
