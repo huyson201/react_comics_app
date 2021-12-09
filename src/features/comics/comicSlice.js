@@ -105,6 +105,10 @@ const comicSlice = createSlice({
     selectedCategory: null,
     selectedComic: null,
     loading: false,
+    collapse: false,
+    checkedState: [0],
+    selectedStatus: "Tất cả",
+    selectedSort: "0",
   }),
   reducers: {
     removeSelectedCategory(state) {
@@ -122,9 +126,21 @@ const comicSlice = createSlice({
     setStatus(state, action) {
       state.status = action.payload;
     },
+    setCollapse(state, action) {
+      state.collapse = action.payload;
+    },
     removeSelectedComic(state) {
       state.selectedComic = null;
       state.status = "";
+    },
+    setCheckedState(state, action) {
+      state.checkedState = action.payload;
+    },
+    setSelectedStatus(state, action) {
+      state.selectedStatus = action.payload;
+    },
+    setSelectedSort(state, action) {
+      state.selectedSort = action.payload;
     },
   },
   extraReducers: {
@@ -249,6 +265,10 @@ const comicSlice = createSlice({
 export const {
   removeSelectedCategory,
   setOffSet,
+  setCollapse,
+  setCheckedState,
+  setSelectedSort,
+  setSelectedStatus,
   removeComicList,
   removeSelectedComic,
 } = comicSlice.actions;

@@ -4,20 +4,20 @@ import { ImSearch } from "react-icons/im";
 import { Collapse } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 import "./header.css";
+// import queryString from "query-string";
 import { xoaDau } from "../../utilFunction";
-import { useSelector } from "react-redux";
-
+import { useDispatch, useSelector } from "react-redux";
+import { setCheckedState, setCollapse, setSelectedSort, setSelectedStatus } from "../../features/comics/comicSlice";
 const SearchForm = () => {
   const history = useHistory();
+  const dispatch = useDispatch()
   const [key, setKey] = useState("");
-  const [open, setOpen] = useState(false);
   const categories = useSelector((state) => state.categories.categories);
-  const [checkedState, setCheckedState] = useState([0]);
-  const [status, setStatus] = useState("");
-  const [sort, setSort] = useState("");
-
+  const {collapse,checkedState,selectedStatus,selectedSort} = useSelector((state) => state.comics);
+  // const params = queryString.parse(history.location.search);
+  
   useEffect(() => {
-    setCheckedState(new Array(categories.length).fill(false));
+    dispatch(setCheckedState(new Array(categories.length).fill(false)));
   }, [categories.length]);
   //xử lý dữ liệu khi nhấn tìm kiếm
   const handleSubmit = (e) => {
@@ -39,7 +39,7 @@ const SearchForm = () => {
     });
     history.push({
       pathname: "/tim-kiem-nang-cao",
-      search: `the-loai=${arr}&tinh-trang=${status}&sap-xep=${sort===""?0:sort}&page=1`,
+      search: `the-loai=${arr}&tinh-trang=${selectedStatus}&sap-xep=${selectedSort===""?0:selectedSort}&page=1`,
     });
   };
   //set check for checkbox category
@@ -47,7 +47,7 @@ const SearchForm = () => {
     const updatedCheckedState = checkedState.map((item, index) =>
       index === position ? !item : item
     );
-    setCheckedState(updatedCheckedState);
+    dispatch(setCheckedState(updatedCheckedState));
   };
 
   return (
@@ -55,9 +55,9 @@ const SearchForm = () => {
       <div className="search">
         <div
           className="search-filter"
-          onClick={() => setOpen(!open)}
+          onClick={() => dispatch(setCollapse(!collapse))}
           aria-controls="filter-collapse"
-          aria-expanded={open}
+          aria-expanded={collapse}
         >
           <MdFilterAlt />
         </div>
@@ -76,7 +76,7 @@ const SearchForm = () => {
           </button>
         </form>
       </div>
-      <Collapse in={open}>
+      <Collapse in={collapse}>
         <div id="filter-collapse">
           <div className="filter-form">
             <div className="filter-category">Thể loại</div>
@@ -103,9 +103,9 @@ const SearchForm = () => {
                 <div className="status-form">
                   <div className="filter-status">Trình trạng</div>
                   <select
-                    value={status}
+                    value={selectedStatus}
                     className="select-status"
-                    onChange={(e) => setStatus(e.target.value)}
+                    onChange={(e) =>   dispatch(setSelectedStatus(e.target.value))}
                   >
                     <option value="Tất cả">Tất cả</option>
                     <option value="Đang tiến hành">Đang tiến hành</option>
@@ -115,9 +115,9 @@ const SearchForm = () => {
                 <div className="status-form" style={{ marginLeft: 20 }}>
                   <div className="filter-status">Sắp xếp theo</div>
                   <select
-                    value={sort}
+                    value={selectedSort}
                     className="select-status"
-                    onChange={(e) => setSort(e.target.value)}
+                    onChange={(e) =>   dispatch(setSelectedSort(e.target.value))}
                   >
                     <option value="0">Chapter mới</option>
                     <option value="1">A &#8594; Z</option>

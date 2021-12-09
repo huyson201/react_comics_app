@@ -34,9 +34,11 @@ const History = () => {
     ]);
   };
   const getHistory = async (id, token) => {
+    setLoading(true)
     const res = await historyApi.getHistoryListOfUser(id, token);
     const data = res.data.data.comics_history;
     setHistoryList(data);
+    setLoading(false)
   };
   useEffect(async () => {
     if (!isLogged) {

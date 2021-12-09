@@ -1,9 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import {
-  MdHome,
-  MdBookmark,
-  MdPerson,
-} from "react-icons/md";
+import { MdHome, MdBookmark, MdPerson } from "react-icons/md";
 
 import { FaBell } from "react-icons/fa";
 import { ImBooks, ImHistory } from "react-icons/im";
@@ -17,18 +13,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../features/auth/userSlice";
 import { LOGOUT_SUCCESS, WARN_LOGIN } from "../../constants";
 import { getCategories } from "../../features/comics/categorySlice";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 import userApi from "../../api/userApi";
-import notifyApi from '../../api/notifyApi'
-import { io } from 'socket.io-client'
-import dotenv from 'dotenv'
-import { NOTIFY_STATUS } from '../../constants'
+import notifyApi from "../../api/notifyApi";
+import { io } from "socket.io-client";
+import dotenv from "dotenv";
+import { NOTIFY_STATUS } from "../../constants";
 import { GiHamburgerMenu } from "react-icons/gi";
 import SearchForm from "./SearchForm";
 import Drawer from "./Drawer";
-dotenv.config()
-
+import { setCollapse } from "../../features/comics/comicSlice";
+dotenv.config();
 
 const calDate = (dateA, dateB) => {
   let dateResult;
@@ -63,30 +59,30 @@ const Navbar = (props) => {
   const dispatch_redux = useDispatch();
   const categories = useSelector((state) => state.categories.categories);
   const { isLogged, isAdmin } = useSelector((state) => state.user);
-  const [socketData, setSocketData] = useState()
+  const [socketData, setSocketData] = useState();
 
   const [show, setShow] = useState(false);
   const notify = (error, message, warn) => {
     if (error !== null) {
       if (!toast.isActive(error)) {
-        toast.error(error, { toastId: error })
+        toast.error(error, { toastId: error });
       }
     } else if (message !== null) {
       if (!toast.isActive(message)) {
-        toast.success(message, { toastId: message })
+        toast.success(message, { toastId: message });
       }
     } else {
       if (!toast.isActive(warn)) {
-        toast.warn(warn, { toastId: warn })
+        toast.warn(warn, { toastId: warn });
       }
     }
-  }
+  };
 
   const handleClickNotifyLink = async (notify) => {
-    notify.status = NOTIFY_STATUS.READ
-    await notifyApi.update(notify.id, notify)
-    return true
-  }
+    notify.status = NOTIFY_STATUS.READ;
+    await notifyApi.update(notify.id, notify);
+    return true;
+  };
 
   //effect follow
   useEffect(() => {
@@ -99,18 +95,16 @@ const Navbar = (props) => {
   // get notify
   useEffect(() => {
     if (token) {
-      let decoded = jwt_decode(token)
-        ; (async () => {
-          let res = await notifyApi.get(decoded.user_uuid, token)
-          setListNotifications([...res.data.data])
-        })()
+      let decoded = jwt_decode(token);
+      (async () => {
+        let res = await notifyApi.get(decoded.user_uuid, token);
+        setListNotifications([...res.data.data]);
+      })();
     }
-
-  }, [token])
+  }, [token]);
   // socket io processing
   useEffect(() => {
-
-    const socket = io('https://api-my-comics.herokuapp.com', {
+    const socket = io("https://api-my-comics.herokuapp.com", {
       auth: {
         token: token,
       },
@@ -120,10 +114,9 @@ const Navbar = (props) => {
       console.log("user_connected " + socket.id);
     });
 
-    socket.on('comment-notify', data => {
-      setSocketData(data)
-    })
-
+    socket.on("comment-notify", (data) => {
+      setSocketData(data);
+    });
 
     socket.on("disconnect", () => {
       console.log("user disconnected: ", socket.id);
@@ -135,12 +128,11 @@ const Navbar = (props) => {
     };
   }, [token]);
 
-
   useEffect(() => {
     if (socketData) {
-      setListNotifications([socketData, ...listNotifications])
+      setListNotifications([socketData, ...listNotifications]);
     }
-  }, [socketData])
+  }, [socketData]);
 
   // update status after user clicked notify
   useEffect(() => {
@@ -165,15 +157,15 @@ const Navbar = (props) => {
 
   useEffect(() => {
     const handleClickWindow = () => {
-      setOpenNotification(false)
-      setOpen(false)
-    }
-    window.onclick = handleClickWindow
+      setOpenNotification(false);
+      setOpen(false);
+    };
+    window.onclick = handleClickWindow;
     return () => {
-      setOpenNotification(false)
-      setOpen(false)
-    }
-  }, [])
+      setOpenNotification(false);
+      setOpen(false);
+    };
+  }, []);
 
   // generate notify items
   let notifications = useMemo(() => {
@@ -228,7 +220,7 @@ const Navbar = (props) => {
   //xử lý data khi nhấn logout
   const handleLogout = async () => {
     try {
-      const res = await userApi.logout(token)
+      const res = await userApi.logout(token);
       console.log(res.data);
       if (res.status === 204) {
         notify(null, LOGOUT_SUCCESS, null);
@@ -245,18 +237,20 @@ const Navbar = (props) => {
     if (!isLogged) {
       notify(null, null, WARN_LOGIN);
     }
+    dispatch_redux(setCollapse(false));
   };
   //set show option when click nav item account
   const handleClickAccount = () => {
-    setStateOption(!stateOption)
-  }
+    setStateOption(!stateOption);
+    dispatch_redux(setCollapse(false));
+  };
 
   const handleClickNotify = async (e) => {
-    e.stopPropagation()
-    setOpenNotification(!openNotification)
-    setOpen(false)
-  }
-
+    e.stopPropagation();
+    setOpenNotification(!openNotification);
+    setOpen(false);
+    dispatch_redux(setCollapse(false));
+  };
 
   // show sidebar
   const handleClose = () => setShow(false);
@@ -290,21 +284,33 @@ const Navbar = (props) => {
         ></Drawer>
       </div>
       {/* nav bar */}
-      <nav className="nav-bar">
+      <nav
+        className="nav-bar"
+        onClick={() => dispatch_redux(setCollapse(false))}
+      >
         <Link to="/" className="nav-item">
           <MdHome />
           Trang chủ
         </Link>
         <div
           className="nav-item"
-          onClick={(e) => { e.stopPropagation(); setOpen(!open); setOpenNotification(false) }}
+          onClick={(e) => {
+            e.stopPropagation();
+            setOpen(!open);
+            setOpenNotification(false);
+            dispatch_redux(setCollapse(false));
+          }}
           aria-controls="categories-collapse"
           aria-expanded={open}
         >
           <ImBooks />
           Thể loại
         </div>
-        <Link to="/lich-su" className="nav-item">
+        <Link
+          to="/lich-su"
+          onClick={() => dispatch_redux(setCollapse(false))}
+          className="nav-item"
+        >
           <ImHistory /> Lịch sử
         </Link>
         <Link

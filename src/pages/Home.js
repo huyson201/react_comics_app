@@ -3,7 +3,7 @@ import Pagination from "react-js-pagination";
 import ListComic from "../components/ListComic/ListComic";
 import { useHistory, useParams } from "react-router-dom";
 import queryString from "query-string";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import {
   CATEGORY_COMIC_TITLE,
@@ -99,8 +99,8 @@ const Home = () => {
       setTitle(SEARCH_BY_KEY_COMIC_TITLE + keyword);
       getComicsByKey();
     } else if (
-      params["the-loai"] &&
-      params["tinh-trang"] &&
+      params["the-loai"] ||
+      params["tinh-trang"] ||
       params["sap-xep"]
     ) {
       // search by filter
@@ -108,6 +108,7 @@ const Home = () => {
       getComicsByFilter();
     } else {
       // get comics
+    
       setTitle(NEW_COMIC_TITLE);
       getComics();
     }
