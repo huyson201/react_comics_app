@@ -60,7 +60,7 @@ const Account = () => {
                     </Link>
                   </li>
                   <li className="nav-li">
-                    <Link to="/follows">
+                    <Link to="/truyen-theo-doi">
                       <i className="fas fa-book"></i> Truyện theo dõi
                     </Link>
                   </li>
@@ -93,8 +93,8 @@ const Account = () => {
             </div>
           </div>
         </div>
-        {history.location.pathname === "/follows" ? (
-          <Follow />) : ""}
+        {/* {history.location.pathname === "/follows" ? (
+          <Follow />) : ""} */}
       </div>
     </>
   );

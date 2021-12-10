@@ -14,11 +14,19 @@ import { Collapse, Offcanvas } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "./header.css";
 import { xoaDau } from "../../utilFunction";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setCheckedState, setCollapse, setSelectedSort, setSelectedStatus } from "../../features/comics/comicSlice";
 
 const Drawer = ({ show, handleClose, categories, handleLogout, setShow }) => {
   const [open, setOpen] = useState(false);
+  const dispatch = useDispatch()
   const { userInfo, isAdmin } = useSelector((state) => state.user);
+  const resetFilter = () => {
+    dispatch(setCollapse(false));
+    dispatch(setCheckedState(new Array(categories.length).fill(false)));
+    dispatch(setSelectedStatus("0"))
+    dispatch(setSelectedSort("Tất cả"))
+  };
   return (
     <>
       <Offcanvas style={{ width: 300 }} show={show} onHide={handleClose}>
@@ -27,6 +35,7 @@ const Drawer = ({ show, handleClose, categories, handleLogout, setShow }) => {
             to="/"
             onClick={() => {
               setShow(false);
+              resetFilter()
             }}
             className="offcanvas-title h2"
           >
@@ -39,6 +48,7 @@ const Drawer = ({ show, handleClose, categories, handleLogout, setShow }) => {
           <>
             <div className="menu-account">
               <img
+              style={{height:80,width:80,borderRadius:"99%"}}
                 src={
                   userInfo.user_image !== null
                     ? userInfo.user_image
@@ -59,6 +69,7 @@ const Drawer = ({ show, handleClose, categories, handleLogout, setShow }) => {
               to="/account"
               onClick={() => {
                 setShow(false);
+                resetFilter()
               }}
               className="menu-body-item"
             >
@@ -70,6 +81,7 @@ const Drawer = ({ show, handleClose, categories, handleLogout, setShow }) => {
               to="/dashboard"
               onClick={() => {
                 setShow(false);
+                resetFilter()
               }}
               className="menu-body-item"
             >
@@ -81,6 +93,7 @@ const Drawer = ({ show, handleClose, categories, handleLogout, setShow }) => {
             onClick={() => {
               setOpen(!open);
               // setOpenNotification(false);
+              resetFilter()
             }}
             aria-controls="collapse"
             aria-expanded={open}
@@ -112,6 +125,7 @@ const Drawer = ({ show, handleClose, categories, handleLogout, setShow }) => {
             to="/lich-su"
             onClick={() => {
               setShow(false);
+              resetFilter()
             }}
             className="menu-body-item"
           >
@@ -121,6 +135,7 @@ const Drawer = ({ show, handleClose, categories, handleLogout, setShow }) => {
             to="/truyen-theo-doi"
             onClick={() => {
               setShow(false);
+              resetFilter()
             }}
             className="menu-body-item"
           >
@@ -140,6 +155,7 @@ const Drawer = ({ show, handleClose, categories, handleLogout, setShow }) => {
                 to="/login"
                 onClick={() => {
                   setShow(false);
+                  resetFilter()
                 }}
                 className="menu-body-item"
               >
@@ -149,6 +165,7 @@ const Drawer = ({ show, handleClose, categories, handleLogout, setShow }) => {
                 to="/register"
                 onClick={() => {
                   setShow(false);
+                  resetFilter()
                 }}
                 className="menu-body-item"
               >

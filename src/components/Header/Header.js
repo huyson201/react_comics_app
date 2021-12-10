@@ -23,7 +23,7 @@ import { NOTIFY_STATUS } from "../../constants";
 import { GiHamburgerMenu } from "react-icons/gi";
 import SearchForm from "./SearchForm";
 import Drawer from "./Drawer";
-import { setCollapse } from "../../features/comics/comicSlice";
+import { setCheckedState, setCollapse, setSelectedSort, setSelectedStatus } from "../../features/comics/comicSlice";
 dotenv.config();
 
 const calDate = (dateA, dateB) => {
@@ -83,7 +83,12 @@ const Navbar = (props) => {
     await notifyApi.update(notify.id, notify);
     return true;
   };
-
+  const resetFilter = () => {
+    dispatch_redux(setCollapse(false));
+    dispatch_redux(setCheckedState(new Array(categories.length).fill(false)));
+    dispatch_redux(setSelectedStatus("0"))
+    dispatch_redux(setSelectedSort("Tất cả"))
+  };
   //effect follow
   useEffect(() => {
     if (status === "loading" || statusFollows === "loading") {
@@ -186,7 +191,9 @@ const Navbar = (props) => {
         <li className="notify-item" key={el.id}>
           <Link
             className="notify-link"
-            to={`/truyen-tranh/toan-cau-sup-do-1?comment=${el.comment_id}`}
+            to={`/truyen-tranh/${xoaDau(
+              el.notification_message.split("trong ")[1]
+            )}-1?comment=${el.comment_id}`}
             onClick={() => handleClickNotifyLink(el)}
           >
             <div className="notify-col">
@@ -237,19 +244,19 @@ const Navbar = (props) => {
     if (!isLogged) {
       notify(null, null, WARN_LOGIN);
     }
-    dispatch_redux(setCollapse(false));
+    resetFilter()
   };
   //set show option when click nav item account
   const handleClickAccount = () => {
     setStateOption(!stateOption);
-    dispatch_redux(setCollapse(false));
+    resetFilter()
   };
 
   const handleClickNotify = async (e) => {
     e.stopPropagation();
     setOpenNotification(!openNotification);
     setOpen(false);
-    dispatch_redux(setCollapse(false));
+    resetFilter()
   };
 
   // show sidebar
@@ -286,7 +293,7 @@ const Navbar = (props) => {
       {/* nav bar */}
       <nav
         className="nav-bar"
-        onClick={() => dispatch_redux(setCollapse(false))}
+        onClick={() => {resetFilter()}}
       >
         <Link to="/" className="nav-item">
           <MdHome />
@@ -298,7 +305,8 @@ const Navbar = (props) => {
             e.stopPropagation();
             setOpen(!open);
             setOpenNotification(false);
-            dispatch_redux(setCollapse(false));
+            
+            resetFilter()
           }}
           aria-controls="categories-collapse"
           aria-expanded={open}
@@ -308,7 +316,7 @@ const Navbar = (props) => {
         </div>
         <Link
           to="/lich-su"
-          onClick={() => dispatch_redux(setCollapse(false))}
+          onClick={() => {resetFilter()}}
           className="nav-item"
         >
           <ImHistory /> Lịch sử

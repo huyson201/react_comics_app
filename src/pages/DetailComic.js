@@ -393,13 +393,17 @@ const DetailComic = () => {
                       </>
                     )}
                   </Link>
-                  <Link to="#" type="button" onClick={handleReadFirst}>
-                    <BiBookReader className="icon" /> {READ_FIRST}
-                  </Link>
+                  {data && data.chapters.length > 0 && (
+                    <>
+                      <Link to="#" type="button" onClick={handleReadFirst}>
+                        <BiBookReader className="icon" /> {READ_FIRST}
+                      </Link>
 
-                  <Link to="#" type="button" onClick={handleReadLast}>
-                    <BiBookReader className="icon" /> {READ_LAST}
-                  </Link>
+                      <Link to="#" type="button" onClick={handleReadLast}>
+                        <BiBookReader className="icon" /> {READ_LAST}
+                      </Link>
+                    </>
+                  )}
                 </div>
                 <div className="head_right">
                   <div className="rating">
@@ -453,7 +457,7 @@ const DetailComic = () => {
                 </div>
                 <div className="desc comic_bg">
                   <h2 className="heading">{LABEL_CONTENT}</h2>
-                  {data ? data.comic_desc : ""}
+                  {data ? data.comic_desc : "Đang cập nhật"}
                 </div>
               </div>
 

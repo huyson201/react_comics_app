@@ -21,34 +21,39 @@ const History = () => {
   );
   const getData = async (comicId, chapterId) => {
     const res = await comicApi.getComicByID(comicId);
-    const data = res.data.data;
-    const index = data.chapters.findIndex((x) => x.chapter_id === chapterId);
-    setHistoryList((historyList) => [
-      ...historyList,
-      {
-        comic_id: data.comic_id,
-        comic_name: data.comic_name,
-        comic_img: data.comic_img,
-        chapter: data.chapters[index],
-      },
-    ]);
+    if (res.data.data) {
+      const data = res.data.data;
+      const index = data.chapters.findIndex((x) => x.chapter_id === chapterId);
+      setHistoryList((historyList) => [
+        ...historyList,
+        {
+          comic_id: data.comic_id,
+          comic_name: data.comic_name,
+          comic_img: data.comic_img,
+          chapter: data.chapters[index],
+        },
+      ]);
+    }
   };
   const getHistory = async (id, token) => {
-    setLoading(true)
+    setLoading(true);
     const res = await historyApi.getHistoryListOfUser(id, token);
     const data = res.data.data.comics_history;
     setHistoryList(data);
-    setLoading(false)
+    setLoading(false);
   };
-  useEffect(async () => {
+  console.log(loading);
+  useEffect(async() => {
     if (!isLogged) {
-      histories !== null &&
-        histories.forEach((e) => {
-          setLoading(true);
-          getData(e.comic_id, e.chapters[e.chapters.length - 1]);
-          setLoading(false);
-        });
-    } else {
+      setLoading(true);
+       if (histories !== null) {
+        for (let i = 0; i < histories.length; i++) {
+          await getData(histories[i].comic_id, histories[i].chapters[histories[i].chapters.length - 1]);
+        }
+      }
+      setLoading(false);
+    } 
+    else {
       (await checkToken(token, refreshToken)) === null && resetDispatch();
       (await checkToken(token, refreshToken)) !== null &&
         getHistory(userInfo.user_uuid, await checkToken(token, refreshToken));
@@ -89,12 +94,12 @@ const History = () => {
   };
 
   return (
-    <div>
+    <div style={{ height: historyList.length > 8 ? "auto" : 500 }}>
       {loading && <Loading />}
       <div className="list-title">
         <BsStars /> Lịch sử đọc truyện
       </div>
-      {historyList.length>0 &&!loading && (
+      {historyList.length > 0 && !loading && (
         <div className="history-list">
           {historyList.map((e, i) => {
             return <HistoryItem key={i} item={e}></HistoryItem>;
