@@ -158,6 +158,7 @@ const Navbar = (props) => {
         setListNotifications([...res.data.data]);
       }
     })();
+    console.log(listNotifications)
   }, [openNotification]);
 
   useEffect(() => {
@@ -293,7 +294,7 @@ const Navbar = (props) => {
       {/* nav bar */}
       <nav
         className="nav-bar"
-        onClick={() => {resetFilter()}}
+        onClick={() => { resetFilter() }}
       >
         <Link to="/" className="nav-item">
           <MdHome />
@@ -305,7 +306,7 @@ const Navbar = (props) => {
             e.stopPropagation();
             setOpen(!open);
             setOpenNotification(false);
-            
+
             resetFilter()
           }}
           aria-controls="categories-collapse"
@@ -316,7 +317,7 @@ const Navbar = (props) => {
         </div>
         <Link
           to="/lich-su"
-          onClick={() => {resetFilter()}}
+          onClick={() => { resetFilter() }}
           className="nav-item"
         >
           <ImHistory /> Lịch sử
