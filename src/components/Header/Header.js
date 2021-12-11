@@ -135,9 +135,15 @@ const Navbar = (props) => {
   }, [token]);
 
   useEffect(() => {
-    if (socketData) {
-      setListNotifications([socketData, ...listNotifications]);
-    }
+    (async () => {
+      if (socketData) {
+        let res = await commentApi.getById(socketData.comment_id)
+        socketData.comment_info = res.data.data
+        setListNotifications([socketData, ...listNotifications]);
+        console.log(socketData)
+      }
+    })()
+
   }, [socketData]);
 
   // update status after user clicked notify
