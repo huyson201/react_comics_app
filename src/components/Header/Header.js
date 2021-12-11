@@ -157,9 +157,10 @@ const Navbar = (props) => {
         let decoded = jwt_decode(token);
         let res = await notifyApi.get(decoded.user_uuid, token);
         setListNotifications([...res.data.data]);
+
       }
     })();
-    console.log(listNotifications)
+
   }, [openNotification]);
 
   useEffect(() => {
@@ -188,15 +189,15 @@ const Navbar = (props) => {
       return <li className="notify-item empty">Nothing...</li>;
     }
 
-    return listNotifications.map(async (el) => {
-     
+    return listNotifications.map((el) => {
+
       return (
         <li className="notify-item" key={el.id}>
           <Link
             className="notify-link"
             to={`/truyen-tranh/${xoaDau(
               el.notification_message.split("trong ")[1]
-            )}-${1}?comment=${el.comment_id}`}
+            )}-${el.comment_info.comic_id}?comment=${el.comment_id}`}
             onClick={() => handleClickNotifyLink(el)}
           >
             <div className="notify-col">
