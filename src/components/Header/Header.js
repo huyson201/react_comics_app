@@ -24,6 +24,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import SearchForm from "./SearchForm";
 import Drawer from "./Drawer";
 import { setCheckedState, setCollapse, setSelectedSort, setSelectedStatus } from "../../features/comics/comicSlice";
+import commentApi from '../../api/commentApi'
 dotenv.config();
 
 const calDate = (dateA, dateB) => {
@@ -187,14 +188,15 @@ const Navbar = (props) => {
       return <li className="notify-item empty">Nothing...</li>;
     }
 
-    return listNotifications.map((el) => {
+    return listNotifications.map(async (el) => {
+     
       return (
         <li className="notify-item" key={el.id}>
           <Link
             className="notify-link"
             to={`/truyen-tranh/${xoaDau(
               el.notification_message.split("trong ")[1]
-            )}-1?comment=${el.comment_id}`}
+            )}-${1}?comment=${el.comment_id}`}
             onClick={() => handleClickNotifyLink(el)}
           >
             <div className="notify-col">
